@@ -1,0 +1,13 @@
+{
+  "id": "evt_0010",
+  "alias": "good_outcome",
+  "presentation": {
+    "title": "Safe Exit",
+    "body": "You find the marked emergency tunnel and leave the station safely with enough information to understand what happened there."
+  },
+  "entryEffects": [],
+  "choices": [],
+  "continuationTransition": {
+    "kind": "terminal"
+  }
+}

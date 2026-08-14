@@ -1,0 +1,14 @@
+{
+  "groups": [
+    {
+      "id": "group_incomplete",
+      "label": "Drafts",
+      "eventIds": [
+        "event_incomplete_001",
+        "event_missing_001"
+      ],
+      "children": []
+    }
+  ],
+  "tags": []
+}

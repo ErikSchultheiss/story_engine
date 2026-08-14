@@ -1,0 +1,17 @@
+{
+  "id": "event_incomplete_001",
+  "presentation": {
+    "title": "Draft scene",
+    "body": "This scene is intentionally unfinished."
+  },
+  "entryEffects": [],
+  "choices": [
+    {
+      "id": "choice_incomplete_001",
+      "presentation": {
+        "text": "Unfinished choice"
+      },
+      "effects": []
+    }
+  ]
+}

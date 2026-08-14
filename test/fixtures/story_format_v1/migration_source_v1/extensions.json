@@ -1,0 +1,14 @@
+{
+  "attachments": [
+    {
+      "namespace": "com.example.fixture",
+      "target": {
+        "kind": "project"
+      },
+      "payload": {
+        "fixtureRole": "migration_source",
+        "stable": true
+      }
+    }
+  ]
+}

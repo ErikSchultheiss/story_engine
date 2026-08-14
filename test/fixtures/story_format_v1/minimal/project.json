@@ -1,0 +1,11 @@
+{
+  "formatId": "story_engine.story_format",
+  "formatVersion": 1,
+  "project": {
+    "id": "fixture_minimal",
+    "stateSchema": {
+      "variables": []
+    },
+    "eventIds": []
+  }
+}

@@ -1,0 +1,30 @@
+# Local/build artifacts (mirrors .gitignore because .pubignore takes precedence).
+.dart_tool/
+.packages
+build/
+coverage/
+pubspec.lock
+*.iml
+.idea/
+.vscode/
+
+# Repository/private development material, intentionally not uploaded to pub.dev.
+doc/architecture/
+doc/PUBLICATION_CHECKLIST.md
+doc/fixtures/
+doc/api/
+lib/src/README.md
+example/flutter_story_app/
+test/example/stage6f_flutter_developer_example_contract_test.dart
+test/architecture/stage6h_publication_readiness_test.dart
+test/architecture/public_repository_safety_test.dart
+
+# Handoff/local artifacts and common credential files.
+*.zip
+.env
+.env.*
+*.jks
+*.keystore
+key.properties
+local.properties
+benchmark/stage6g_performance_baseline.dart

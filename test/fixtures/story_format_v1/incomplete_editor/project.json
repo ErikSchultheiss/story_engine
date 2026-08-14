@@ -1,0 +1,13 @@
+{
+  "formatId": "story_engine.story_format",
+  "formatVersion": 1,
+  "project": {
+    "id": "fixture_incomplete",
+    "stateSchema": {
+      "variables": []
+    },
+    "eventIds": [
+      "event_incomplete_001"
+    ]
+  }
+}

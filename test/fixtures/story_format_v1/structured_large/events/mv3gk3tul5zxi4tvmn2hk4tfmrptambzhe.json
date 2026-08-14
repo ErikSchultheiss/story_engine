@@ -1,0 +1,13 @@
+{
+  "id": "event_structured_0099",
+  "alias": "structured_0099",
+  "presentation": {
+    "title": "Structured Event 0099",
+    "body": "Deterministic structured fixture terminal event."
+  },
+  "entryEffects": [],
+  "choices": [],
+  "continuationTransition": {
+    "kind": "terminal"
+  }
+}

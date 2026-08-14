@@ -1,0 +1,25 @@
+{
+  "groups": [
+    {
+      "id": "group_migration",
+      "alias": "migration_group",
+      "label": "Migration Fixture",
+      "eventIds": [
+        "event_migration_001",
+        "event_migration_002"
+      ],
+      "children": []
+    }
+  ],
+  "tags": [
+    {
+      "id": "tag_migration",
+      "alias": "migration_tag",
+      "label": "Migration",
+      "eventIds": [
+        "event_migration_001",
+        "event_migration_002"
+      ]
+    }
+  ]
+}

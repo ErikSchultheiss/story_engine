@@ -1,0 +1,123 @@
+{
+  "id": "evt_0001",
+  "alias": "foyer",
+  "presentation": {
+    "title": "Foyer",
+    "body": "You stand inside the entrance hall of an abandoned research station. A service drawer is built into one wall. Beside it is an old alarm panel. A caretaker waits behind a glass office door, and a dark corridor leads deeper into the building."
+  },
+  "entryEffects": [],
+  "choices": [
+    {
+      "id": "ch_0001",
+      "presentation": {
+        "text": "Inspect the alarm panel"
+      },
+      "availabilityCondition": {
+        "kind": "variable_is_unset",
+        "variableId": "var_0005"
+      },
+      "effects": [
+        {
+          "kind": "set_variable",
+          "variableId": "var_0005",
+          "value": {
+            "type": "boolean",
+            "value": false
+          }
+        }
+      ],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0001"
+      }
+    },
+    {
+      "id": "ch_0002",
+      "presentation": {
+        "text": "Open the service drawer"
+      },
+      "availabilityCondition": {
+        "kind": "all",
+        "conditions": [
+          {
+            "kind": "variable_comparison",
+            "variableId": "var_0005",
+            "operator": "not_equal",
+            "value": {
+              "type": "boolean",
+              "value": true
+            }
+          },
+          {
+            "kind": "not",
+            "condition": {
+              "kind": "variable_comparison",
+              "variableId": "var_0001",
+              "operator": "equal",
+              "value": {
+                "type": "boolean",
+                "value": true
+              }
+            }
+          }
+        ]
+      },
+      "effects": [
+        {
+          "kind": "set_variable",
+          "variableId": "var_0001",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0001"
+      }
+    },
+    {
+      "id": "ch_0003",
+      "presentation": {
+        "text": "Visit the caretaker"
+      },
+      "effects": [],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0002"
+      }
+    },
+    {
+      "id": "ch_0004",
+      "presentation": {
+        "text": "Enter the dark corridor"
+      },
+      "availabilityCondition": {
+        "kind": "variable_comparison",
+        "variableId": "var_0001",
+        "operator": "equal",
+        "value": {
+          "type": "boolean",
+          "value": true
+        }
+      },
+      "effects": [],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0004"
+      }
+    },
+    {
+      "id": "ch_0005",
+      "presentation": {
+        "text": "Leave the station"
+      },
+      "effects": [],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0011"
+      }
+    }
+  ]
+}

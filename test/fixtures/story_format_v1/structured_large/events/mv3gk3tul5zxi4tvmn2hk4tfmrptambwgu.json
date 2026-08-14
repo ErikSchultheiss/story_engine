@@ -1,0 +1,22 @@
+{
+  "id": "event_structured_0065",
+  "alias": "structured_0065",
+  "presentation": {
+    "title": "Structured Event 0065",
+    "body": "Deterministic structured fixture event 0065."
+  },
+  "entryEffects": [],
+  "choices": [
+    {
+      "id": "choice_structured_0065",
+      "presentation": {
+        "text": "Continue"
+      },
+      "effects": [],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "event_structured_0066"
+      }
+    }
+  ]
+}

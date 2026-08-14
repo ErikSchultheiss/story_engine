@@ -1,0 +1,31 @@
+{
+  "id": "event_migration_001",
+  "alias": "migration_start",
+  "presentation": {
+    "title": "Migration start",
+    "body": "Stable Story Format v1 migration-source fixture."
+  },
+  "entryEffects": [
+    {
+      "kind": "increment_variable",
+      "variableId": "var_migration_count",
+      "amount": {
+        "type": "integer",
+        "value": 1
+      }
+    }
+  ],
+  "choices": [
+    {
+      "id": "choice_migration_001",
+      "presentation": {
+        "text": "Continue"
+      },
+      "effects": [],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "event_migration_002"
+      }
+    }
+  ]
+}

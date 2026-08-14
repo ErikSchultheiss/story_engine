@@ -1,0 +1,13 @@
+{
+  "id": "event_migration_002",
+  "alias": "migration_end",
+  "presentation": {
+    "title": "Migration end",
+    "body": "This v1 fixture is reserved as future migration input."
+  },
+  "entryEffects": [],
+  "choices": [],
+  "continuationTransition": {
+    "kind": "terminal"
+  }
+}
