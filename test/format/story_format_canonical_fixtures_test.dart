@@ -23,6 +23,47 @@ void main() {
       });
     }
 
+    test('extension decode enforces nesting and round-trips at the limit', () {
+      StoryFormatBundle withExtension(int depth) => StoryFormatBundle(
+        files: {
+          ...loadStoryFormatFixture('minimal').files,
+          'extensions.json':
+              '{"attachments":[{"namespace":"audit.example",'
+              '"target":{"kind":"project"},"payload":'
+              '${'[' * depth}null${']' * depth}}]}',
+        },
+      );
+
+      for (final depth in [1, 128]) {
+        final decoded = codec.decode(withExtension(depth));
+        expect(decoded.extensions, hasLength(1));
+        expect(
+          codec.decode(codec.encode(decoded)).extensions,
+          decoded.extensions,
+        );
+      }
+
+      for (final depth in [129, 12000]) {
+        expect(
+          () => codec.decode(withExtension(depth)),
+          throwsA(
+            isA<StoryFormatCodecException>()
+                .having(
+                  (error) => error.bundlePath,
+                  'bundlePath',
+                  'extensions.json',
+                )
+                .having(
+                  (error) => error.jsonPath,
+                  'jsonPath',
+                  r'$.attachments[0].payload',
+                ),
+          ),
+          reason: 'payload depth $depth',
+        );
+      }
+    });
+
     test('minimal fixture matches the smallest programmatic document', () {
       final expected = codec.encode(
         StoryFormatDocument(

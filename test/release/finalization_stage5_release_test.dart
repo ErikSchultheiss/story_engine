@@ -8,19 +8,17 @@ import '../../tool/conformance/support/conformance_runner.dart';
 
 void main() {
   test(
-    '0.9.0 identity agrees across package pages and conformance reports',
+    '0.9.1 identity agrees across package pages and conformance reports',
     () {
       final version = RegExp(
         r'^version:\s*(\S+)',
         multiLine: true,
       ).firstMatch(File('pubspec.yaml').readAsStringSync())!.group(1)!;
-      expect(version, '0.9.0');
+      expect(version, '0.9.1');
       for (final path in [
         'README.md',
         'doc/QUICK_START.md',
         'doc/API_GUIDE.md',
-        'doc/RELEASE_0_9_0.md',
-        'doc/UPGRADING_TO_0_9_0.md',
       ]) {
         final text = File(path).readAsStringSync();
         expect(text, contains(version), reason: path);
@@ -35,8 +33,10 @@ void main() {
         expect((report['summary']! as Map)['skipped'], 0);
       }
       final changelog = File('CHANGELOG.md').readAsStringSync();
-      expect(changelog, startsWith('# Changelog\n'));
-      expect(changelog, contains('## 0.9.0'));
+      final headings = const LineSplitter().convert(changelog);
+      expect(headings.first, '# Changelog');
+      expect(headings, contains('## $version'));
+      expect(headings, contains('## 0.9.0'));
       expect(changelog, contains('## 0.1.0-alpha.1')); // Historical release.
       expect(StoryFormatMetadata.currentFormatVersion, 1);
       expect(StoryRuntimeSnapshotMetadata.currentFormatVersion, 1);

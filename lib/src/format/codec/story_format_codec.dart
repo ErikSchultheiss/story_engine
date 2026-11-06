@@ -1606,8 +1606,12 @@ StoryFormatExtensionAttachment _decodeExtension(
         bundlePath,
         '$path.target',
       ),
-      payload: StoryFormatExtensionPayload(
-        _required(map, 'payload', bundlePath, path),
+      payload: _checked(
+        bundlePath,
+        '$path.payload',
+        () => StoryFormatExtensionPayload(
+          _required(map, 'payload', bundlePath, path),
+        ),
       ),
     ),
   );

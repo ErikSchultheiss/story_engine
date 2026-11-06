@@ -124,7 +124,7 @@ Map<String, Object?> runFixtureSet(String manifestPath) {
     'fixtureSetId': fixtureSetId,
     'implementation': {
       'name': 'story_engine Dart reference',
-      'version': '0.9.0',
+      'version': '0.9.1',
       'language': 'Dart',
       'runtimeSemantics': {'coreRevision': 1},
       'randomProfiles': [

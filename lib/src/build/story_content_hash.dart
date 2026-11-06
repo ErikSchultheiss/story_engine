@@ -1,5 +1,7 @@
 import 'package:crypto/crypto.dart' as crypto;
 
+import 'story_bundle_bytes.dart';
+
 /// SHA-256 content identity used by deterministic runtime-bundle artifacts.
 ///
 /// The wire representation is `sha256:<64 lower-case hexadecimal digits>`.
@@ -8,8 +10,13 @@ final class StoryContentHash {
   StoryContentHash._(this.hex);
 
   /// Computes a SHA-256 digest over [bytes].
-  factory StoryContentHash.fromBytes(Iterable<int> bytes) =>
-      StoryContentHash._(crypto.sha256.convert(bytes.toList()).toString());
+  ///
+  /// Throws [ArgumentError] if any value is outside the byte range 0–255.
+  factory StoryContentHash.fromBytes(Iterable<int> bytes) {
+    final snapshot = List<int>.of(bytes, growable: false);
+    validateStoryBundleBytes(snapshot);
+    return StoryContentHash._(crypto.sha256.convert(snapshot).toString());
+  }
 
   /// Parses the canonical tagged wire representation.
   factory StoryContentHash.parse(String value) {

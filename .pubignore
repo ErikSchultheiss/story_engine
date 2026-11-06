@@ -15,6 +15,7 @@ pubspec.lock
 /.gitignore.public
 doc/architecture/
 doc/PUBLICATION_CHECKLIST.md
+/doc/DEVELOPMENT_HISTORY_0_9_0.md
 doc/fixtures/
 doc/api/
 test/extension_schema/

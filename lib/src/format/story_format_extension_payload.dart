@@ -4,10 +4,14 @@
 /// Payload values are restricted to the portable JSON-shaped value domain:
 /// null, Boolean, String, portable Integer, finite Number, ordered lists, and
 /// string-keyed objects containing the same values. No callbacks, Dart source,
-/// classes, or executable code can be embedded through this API.
+/// classes, or executable code can be embedded through this API. A payload
+/// may contain at most 128 nested lists or objects along any path, including
+/// the root container. Cyclic containers are rejected.
 final class StoryFormatExtensionPayload {
   factory StoryFormatExtensionPayload(Object? value) =>
-      StoryFormatExtensionPayload._(_copyAndValidate(value, r'$'));
+      StoryFormatExtensionPayload._(
+        _copyAndValidate(value, r'$', Set<Object>.identity()),
+      );
 
   StoryFormatExtensionPayload._(this.value);
 
@@ -30,7 +34,9 @@ final class StoryFormatExtensionPayload {
 const int _maxPortableInteger = 9007199254740991;
 const int _minPortableInteger = -9007199254740991;
 
-Object? _copyAndValidate(Object? value, String path) {
+const int _maxContainerDepth = 128;
+
+Object? _copyAndValidate(Object? value, String path, Set<Object> ancestors) {
   if (value == null || value is bool || value is String) {
     return value;
   }
@@ -58,38 +64,55 @@ Object? _copyAndValidate(Object? value, String path) {
     return value;
   }
 
-  if (value is List<Object?>) {
-    return List<Object?>.unmodifiable([
-      for (var index = 0; index < value.length; index++)
-        _copyAndValidate(value[index], '$path[$index]'),
-    ]);
+  if (ancestors.length == _maxContainerDepth) {
+    throw ArgumentError(
+      'Story Format extension payload exceeds $_maxContainerDepth nested '
+      'containers at $path.',
+    );
+  }
+  if (!ancestors.add(value)) {
+    throw ArgumentError(
+      'Story Format extension payload contains a cycle at $path.',
+    );
   }
 
-  if (value is Map<Object?, Object?>) {
-    final keys = <String>[];
-    for (final key in value.keys) {
-      if (key is! String) {
-        throw ArgumentError.value(
-          key,
-          path,
-          'Story Format extension object keys must be strings.',
-        );
-      }
-      keys.add(key);
+  try {
+    if (value is List<Object?>) {
+      return List<Object?>.unmodifiable([
+        for (var index = 0; index < value.length; index++)
+          _copyAndValidate(value[index], '$path[$index]', ancestors),
+      ]);
     }
-    keys.sort();
 
-    return Map<String, Object?>.unmodifiable({
-      for (final key in keys) key: _copyAndValidate(value[key], '$path.$key'),
-    });
+    if (value is Map<Object?, Object?>) {
+      final keys = <String>[];
+      for (final key in value.keys) {
+        if (key is! String) {
+          throw ArgumentError.value(
+            key,
+            path,
+            'Story Format extension object keys must be strings.',
+          );
+        }
+        keys.add(key);
+      }
+      keys.sort();
+
+      return Map<String, Object?>.unmodifiable({
+        for (final key in keys)
+          key: _copyAndValidate(value[key], '$path.$key', ancestors),
+      });
+    }
+
+    throw ArgumentError.value(
+      value,
+      path,
+      'Story Format extension payloads may contain only null, Boolean, String, '
+      'portable Integer, finite Number, List, and string-keyed Map values.',
+    );
+  } finally {
+    ancestors.remove(value);
   }
-
-  throw ArgumentError.value(
-    value,
-    path,
-    'Story Format extension payloads may contain only null, Boolean, String, '
-    'portable Integer, finite Number, List, and string-keyed Map values.',
-  );
 }
 
 bool _deepEquals(Object? left, Object? right) {

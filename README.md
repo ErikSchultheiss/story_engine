@@ -9,9 +9,10 @@ Save/restore resumes committed state, history and randomness without applying
 committed effects again. Your host owns the UI, player input, external actions
 and storage; the package has no Flutter dependency.
 
-> **Status:** 0.9.0, pre-1.0. Story Format v1 is frozen; the Dart API can still
+> **Status:** 0.9.1, pre-1.0. Story Format v1 is frozen; the Dart API can still
 > evolve before 1.0. See the [release baseline](https://github.com/ErikSchultheiss/story_engine/blob/HEAD/doc/RELEASE_0_9_0.md)
-> and [upgrade notes](https://github.com/ErikSchultheiss/story_engine/blob/HEAD/doc/UPGRADING_TO_0_9_0.md).
+> for 0.9.0 and the [0.9.1 patch notes](https://github.com/ErikSchultheiss/story_engine/blob/HEAD/CHANGELOG.md).
+> For earlier versions, see the [0.9.0 upgrade notes](https://github.com/ErikSchultheiss/story_engine/blob/HEAD/doc/UPGRADING_TO_0_9_0.md).
 
 Requires Dart SDK `>=3.11.0 <4.0.0`. Licensed under
 [BSD 3-Clause](https://github.com/ErikSchultheiss/story_engine/blob/HEAD/LICENSE).
@@ -77,11 +78,11 @@ for the complete reading order. Add advanced contracts as your host needs them.
 - Dart SDK `>=3.11.0 <4.0.0`
 - No Flutter dependency
 
-For a host using the 0.9.0 release:
+For a host using the published 0.9.1 release:
 
 ```yaml
 dependencies:
-  story_engine: 0.9.0
+  story_engine: 0.9.1
 ```
 
 For a repository checkout during development, a local path dependency remains

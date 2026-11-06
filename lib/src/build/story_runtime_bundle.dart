@@ -1,3 +1,4 @@
+import 'story_bundle_bytes.dart';
 import 'story_runtime_bundle_layout.dart';
 import 'story_runtime_bundle_manifest.dart';
 
@@ -6,6 +7,7 @@ import 'story_runtime_bundle_manifest.dart';
 /// Runtime bundle bytes are shipping artifacts, not authored source and never
 /// replace the canonical Story Format project.
 final class StoryRuntimeBundle {
+  /// Throws [ArgumentError] for non-portable paths or values outside 0–255.
   factory StoryRuntimeBundle({
     required StoryRuntimeBundleManifest manifest,
     required Map<String, List<int>> files,
@@ -19,7 +21,9 @@ final class StoryRuntimeBundle {
           'Runtime bundle paths must be portable relative paths.',
         );
       }
-      copied[entry.key] = List<int>.unmodifiable(entry.value);
+      final bytes = List<int>.unmodifiable(entry.value);
+      validateStoryBundleBytes(bytes);
+      copied[entry.key] = bytes;
     }
     return StoryRuntimeBundle._(
       manifest: manifest,

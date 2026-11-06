@@ -36,6 +36,47 @@ void main() {
       }
     });
 
+    test('both bundle layouts reject Windows-special path segments', () {
+      for (final path in const [
+        'C:/audit-probe.json',
+        'C:audit-probe.json',
+        'data.txt:alternate',
+        'CON.json',
+        'events/NuL .json',
+        'events/COM¹.runtime',
+        'LPT9/data.json',
+        r'CONIN$/data.json',
+        'events/name?.json',
+        'events/name\u0000.json',
+        'events/name\u001f.json',
+        'events/folder./data.json',
+        'events/folder /data.json',
+        'events/ folder/data.json',
+      ]) {
+        expect(
+          () => StoryFormatBundle(files: {path: '{}'}),
+          throwsArgumentError,
+          reason: path,
+        );
+        expect(
+          StoryRuntimeBundleLayout.isPortablePath(path),
+          isFalse,
+          reason: path,
+        );
+      }
+
+      for (final path in [
+        StoryFormatBundleLayout.eventPath(StoryEventId('event_portable')),
+        StoryRuntimeBundleLayout.modulePath(StoryModuleId('module_portable')),
+        'data/CONSOLE.COM1.json',
+        'data/café notes.json',
+        'data/.hidden',
+      ]) {
+        expect(StoryFormatBundle(files: {path: '{}'}).contains(path), isTrue);
+        expect(StoryRuntimeBundleLayout.isPortablePath(path), isTrue);
+      }
+    });
+
     test('equality is based on path/content rather than map identity', () {
       final first = StoryFormatBundle(
         files: const {'project.json': '{}\n', 'events/a.json': '{"id":"a"}\n'},

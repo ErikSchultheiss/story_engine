@@ -20,13 +20,13 @@ detail.
 
 ## 1. Add the dependency
 
-For the 0.9.0 release, use the versioned dependency after publication. The
+For the 0.9.1 release, use the versioned dependency after publication. The
 package remains pre-1.0; use a local path while validating an unpublished
 candidate:
 
 ```yaml
 dependencies:
-  story_engine: 0.9.0
+  story_engine: 0.9.1
 ```
 
 For a repository checkout or local engine development, a path dependency is also supported:

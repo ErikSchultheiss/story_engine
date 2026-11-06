@@ -1,6 +1,6 @@
 # story_engine API Guide
 
-This guide describes the supported public package surface for the 0.9.0
+This guide describes the supported public package surface for the 0.9.1
 pre-1.0 release. Member-level signatures and details live in Dartdoc; this document
 explains how the public concepts fit together and provides a complete top-level
 symbol index.

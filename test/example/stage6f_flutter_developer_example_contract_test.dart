@@ -7,7 +7,7 @@ void main() {
     test('Flutter app depends downstream on the public package', () {
       final pubspec = File(
         'example/flutter_story_app/pubspec.yaml',
-      ).readAsStringSync();
+      ).readAsStringSync().replaceAll('\r\n', '\n');
       final mainSource = File(
         'example/flutter_story_app/lib/main.dart',
       ).readAsStringSync();

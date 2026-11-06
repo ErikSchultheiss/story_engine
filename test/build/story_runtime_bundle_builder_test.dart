@@ -16,6 +16,51 @@ void main() {
       expect(StoryContentHash.parse(hash.value), hash);
     });
 
+    test('byte ingress rejects integers that alias unsigned bytes', () {
+      final fixture = _fixture();
+      const builder = StoryRuntimeBundleBuilder();
+      StoryRuntimeBundle build(List<int> index, List<int> module) =>
+          builder.build(
+            index: fixture.index,
+            compiledIndexBytes: index,
+            compiledModuleBytes: {
+              fixture.moduleA: module,
+              fixture.moduleB: const [1],
+            },
+            buildProfile: 'reference-proof-v1',
+            builderId: 'story-engine-stage8k',
+            builderVersion: '1.0.0',
+          );
+      const indexPath = StoryRuntimeBundleLayout.indexPath;
+      final modulePath = StoryRuntimeBundleLayout.modulePath(fixture.moduleA);
+      final bundle = build([0], [255]);
+      builder.verifyIntegrity(bundle);
+      expect(bundle.file(indexPath), [0]);
+      expect(bundle.file(modulePath), [255]);
+
+      for (final invalid in [-1, 256]) {
+        expect(
+          () => StoryContentHash.fromBytes([invalid]),
+          throwsArgumentError,
+        );
+      }
+      expect(() => build([256], [255]), throwsArgumentError);
+      expect(() => build([0], [-1]), throwsArgumentError);
+
+      for (final (path, invalid) in [(indexPath, 256), (modulePath, -1)]) {
+        expect(
+          () => StoryRuntimeBundle(
+            manifest: bundle.manifest,
+            files: {
+              ...bundle.files,
+              path: [invalid],
+            },
+          ),
+          throwsArgumentError,
+        );
+      }
+    });
+
     test(
       'same semantic build inputs produce byte-identical bundle identity',
       () {

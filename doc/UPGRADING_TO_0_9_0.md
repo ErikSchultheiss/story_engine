@@ -1,5 +1,8 @@
 # Upgrading to story_engine 0.9.0
 
+For current installation instructions, see the [Quick Start](QUICK_START.md).
+The [0.9.1 patch notes](../CHANGELOG.md) describe the stricter input validation.
+
 Update the dependency and resolve it in the host application's package context:
 
 ```yaml

@@ -59,6 +59,37 @@ void main() {
       );
     });
 
+    test('cyclic payloads fail cleanly and shared acyclic data is copied', () {
+      final list = <Object?>[];
+      list.add(list);
+      final map = <String, Object?>{};
+      map['list'] = [map];
+
+      expect(() => StoryFormatExtensionPayload(list), throwsArgumentError);
+      expect(() => StoryFormatExtensionPayload(map), throwsArgumentError);
+
+      final shared = <String, Object?>{'enabled': true};
+      final payload = StoryFormatExtensionPayload([shared, shared]);
+      shared['enabled'] = false;
+      expect(payload.value, [
+        {'enabled': true},
+        {'enabled': true},
+      ]);
+    });
+
+    test('programmatic payloads enforce the container nesting limit', () {
+      Object? nested;
+      for (var level = 0; level < 128; level++) {
+        nested = level.isEven ? [nested] : {'next': nested};
+      }
+
+      final first = StoryFormatExtensionPayload(nested);
+      final second = StoryFormatExtensionPayload(nested);
+      expect(first, second);
+      expect(first.hashCode, second.hashCode);
+      expect(() => StoryFormatExtensionPayload([nested]), throwsArgumentError);
+    });
+
     test('stable identity entities are explicit extension targets', () {
       final targets = <StoryFormatExtensionTarget>[
         const StoryFormatProjectExtensionTarget(),

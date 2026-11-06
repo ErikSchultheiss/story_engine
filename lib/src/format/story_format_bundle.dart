@@ -1,3 +1,5 @@
+import '../identity/story_bundle_path.dart';
+
 /// Immutable logical Story Format bundle containing UTF-8 JSON text files.
 ///
 /// Paths are bundle-relative portable paths using `/` separators. This value
@@ -55,20 +57,12 @@ final class StoryFormatBundle {
 }
 
 void _validatePath(String path) {
-  if (path.isEmpty ||
-      path.startsWith('/') ||
-      path.endsWith('/') ||
-      path.contains('\\') ||
-      path
-          .split('/')
-          .any(
-            (segment) => segment.isEmpty || segment == '.' || segment == '..',
-          )) {
+  if (!isPortableStoryBundlePath(path)) {
     throw ArgumentError.value(
       path,
       'files',
       'Story Format bundle paths must be non-empty portable relative file '
-          'paths using forward slashes and no dot segments.',
+          'paths using forward slashes and portable file names.',
     );
   }
 }

@@ -1,4 +1,5 @@
 import '../identity/story_module_id.dart';
+import '../identity/story_bundle_path.dart';
 
 /// Canonical portable file layout for Runtime Bundle Contract Revision 1.
 abstract final class StoryRuntimeBundleLayout {
@@ -16,17 +17,7 @@ abstract final class StoryRuntimeBundleLayout {
       '$modulesDirectory/${_encodeBase32LowerNoPadding(moduleId.value)}.runtime';
 
   /// Whether [path] is a portable bundle-relative path.
-  static bool isPortablePath(String path) =>
-      path.isNotEmpty &&
-      !path.startsWith('/') &&
-      !path.endsWith('/') &&
-      !path.contains('\\') &&
-      path
-          .split('/')
-          .every(
-            (segment) =>
-                segment.isNotEmpty && segment != '.' && segment != '..',
-          );
+  static bool isPortablePath(String path) => isPortableStoryBundlePath(path);
 }
 
 const _base32Alphabet = 'abcdefghijklmnopqrstuvwxyz234567';
