@@ -1,0 +1,41 @@
+{
+  "formatId": "open_story.conformance_history",
+  "formatVersion": 1,
+  "steps": [
+    {
+      "kind": "eventEntered",
+      "eventId": "evt_0001"
+    },
+    {
+      "kind": "choiceSelected",
+      "eventId": "evt_0001",
+      "choiceId": "ch_0003"
+    },
+    {
+      "kind": "eventEntered",
+      "eventId": "evt_0002"
+    },
+    {
+      "kind": "choiceSelected",
+      "eventId": "evt_0002",
+      "choiceId": "ch_0006"
+    },
+    {
+      "kind": "eventEntered",
+      "eventId": "evt_0004"
+    },
+    {
+      "kind": "choiceSelected",
+      "eventId": "evt_0004",
+      "choiceId": "ch_0014"
+    },
+    {
+      "kind": "eventEntered",
+      "eventId": "evt_0011"
+    },
+    {
+      "kind": "eventContinued",
+      "eventId": "evt_0011"
+    }
+  ]
+}

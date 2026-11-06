@@ -1,0 +1,18 @@
+{
+  "contract": "open_story.runtime_capabilities",
+  "contractVersion": 1,
+  "runtimeId": "limited_runtime",
+  "runtimeVersion": "99.0.0",
+  "features": [
+    {
+      "featureId": "modular_loading",
+      "revision": 2
+    }
+  ],
+  "extensions": [
+    {
+      "namespace": "com.example.combat",
+      "schemaVersion": 5
+    }
+  ]
+}

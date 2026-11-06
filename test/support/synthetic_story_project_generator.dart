@@ -120,8 +120,7 @@ extension SyntheticStoryFaultContract on SyntheticStoryFault {
     SyntheticStoryFault.duplicateChoiceId => 'duplicate_choice_id',
     SyntheticStoryFault.undeclaredVariableReference =>
       'undeclared_variable_reference',
-    SyntheticStoryFault.wrongConditionValueType =>
-      'wrong_condition_value_type',
+    SyntheticStoryFault.wrongConditionValueType => 'wrong_condition_value_type',
     SyntheticStoryFault.wrongEffectValueType => 'wrong_effect_value_type',
     SyntheticStoryFault.missingEntryEvent => 'missing_entry_event',
     SyntheticStoryFault.ambiguousEventFlow => 'ambiguous_event_flow',
@@ -361,9 +360,8 @@ final class SyntheticStoryProjectGenerator {
     );
     final requested = faults == null
         ? <SyntheticStoryFault>[
-            SyntheticStoryFault.values[
-              seed % SyntheticStoryFault.values.length
-            ],
+            SyntheticStoryFault.values[seed %
+                SyntheticStoryFault.values.length],
           ]
         : faults.toList(growable: false);
     if (requested.isEmpty) {
@@ -650,7 +648,9 @@ _SyntheticFaultInjectionResult _injectSyntheticFault({
         automaticTransition: StoryEventTransition(destinationEventId: eventId),
       );
       final entryId = project.entryEventId!;
-      final entryIndex = project.events.indexWhere((event) => event.id == entryId);
+      final entryIndex = project.events.indexWhere(
+        (event) => event.id == entryId,
+      );
       final entryEvent = project.events[entryIndex];
       final faultChoice = StoryChoice(
         id: choiceId,
@@ -761,34 +761,32 @@ StoryStateSchema _buildSchema(int variableCount, {required String prefix}) {
       'synthetic_${_safeAliasToken(prefix)}_var_${_pad(index)}',
     );
     final kind = index % 4;
-    variables.add(
-      switch (kind) {
-        0 => StoryVariableDefinition(
-          id: id,
-          alias: alias,
-          type: StoryValueType.boolean,
-          initialValue: const StoryBooleanValue(false),
-        ),
-        1 => StoryVariableDefinition(
-          id: id,
-          alias: alias,
-          type: StoryValueType.integer,
-          initialValue: StoryIntegerValue(index + 1),
-        ),
-        2 => StoryVariableDefinition(
-          id: id,
-          alias: alias,
-          type: StoryValueType.number,
-          initialValue: StoryNumberValue(index + 0.5),
-        ),
-        _ => StoryVariableDefinition(
-          id: id,
-          alias: alias,
-          type: StoryValueType.string,
-          initialValue: StoryStringValue('value_$index'),
-        ),
-      },
-    );
+    variables.add(switch (kind) {
+      0 => StoryVariableDefinition(
+        id: id,
+        alias: alias,
+        type: StoryValueType.boolean,
+        initialValue: const StoryBooleanValue(false),
+      ),
+      1 => StoryVariableDefinition(
+        id: id,
+        alias: alias,
+        type: StoryValueType.integer,
+        initialValue: StoryIntegerValue(index + 1),
+      ),
+      2 => StoryVariableDefinition(
+        id: id,
+        alias: alias,
+        type: StoryValueType.number,
+        initialValue: StoryNumberValue(index + 0.5),
+      ),
+      _ => StoryVariableDefinition(
+        id: id,
+        alias: alias,
+        type: StoryValueType.string,
+        initialValue: StoryStringValue('value_$index'),
+      ),
+    });
   }
   return StoryStateSchema(variables: variables);
 }
@@ -834,11 +832,7 @@ StoryEvent _buildStructuredEvent({
 
   if (isAutomatic) {
     final transition = eventIndex % 200 == 0
-        ? _forwardWeightedTransition(
-            profileName,
-            eventIndex,
-            lastIndex,
-          )
+        ? _forwardWeightedTransition(profileName, eventIndex, lastIndex)
         : StoryEventTransition(
             destinationEventId: _eventId(profileName, eventIndex + 1),
           );
@@ -853,9 +847,11 @@ StoryEvent _buildStructuredEvent({
   }
 
   final choices = <StoryChoice>[];
-  for (var choiceIndex = 0;
-      choiceIndex < choicesPerInteractiveEvent;
-      choiceIndex++) {
+  for (
+    var choiceIndex = 0;
+    choiceIndex < choicesPerInteractiveEvent;
+    choiceIndex++
+  ) {
     choices.add(
       _buildStructuredChoice(
         profileName: profileName,
@@ -893,7 +889,8 @@ StoryChoice _buildStructuredChoice({
   final effects = <StoryEffect>[
     if ((eventIndex + choiceIndex) % 7 == 0)
       _safeEffect(schema, eventIndex + choiceIndex, eventIndex),
-    if (!isPrimary && choiceIndex == choicesPerInteractiveEvent - 1 &&
+    if (!isPrimary &&
+        choiceIndex == choicesPerInteractiveEvent - 1 &&
         eventIndex % 22 == 0)
       StoryUnsetVariableEffect(
         variableId: schema.variables[4 % schema.variables.length].id,
@@ -1005,9 +1002,7 @@ StoryChoice _buildStructuredChoice({
       'synthetic_${profileName}_choice_${_pad(eventIndex)}_$choiceIndex',
     ),
     presentation: StoryChoicePresentation(
-      text: StoryText(
-        'Synthetic choice $choiceIndex at event $eventIndex',
-      ),
+      text: StoryText('Synthetic choice $choiceIndex at event $eventIndex'),
     ),
     availabilityCondition: availabilityCondition,
     effects: effects,
@@ -1050,9 +1045,7 @@ StoryEvent _buildRandomizedEvent({
   final entryEffects = <StoryEffect>[];
   final entryEffectCount = random.nextInt(3);
   for (var index = 0; index < entryEffectCount; index++) {
-    entryEffects.add(
-      _safeRandomEffect(schema, random, eventIndex + index),
-    );
+    entryEffects.add(_safeRandomEffect(schema, random, eventIndex + index));
   }
 
   final isAutomatic = eventIndex > 0 && random.nextInt(10) == 0;
@@ -1339,11 +1332,7 @@ StoryCondition _alwaysTrueIntegerCondition(StoryStateSchema schema) =>
       value: StoryIntegerValue(0),
     );
 
-StoryEffect _safeEffect(
-  StoryStateSchema schema,
-  int selector,
-  int valueSeed,
-) {
+StoryEffect _safeEffect(StoryStateSchema schema, int selector, int valueSeed) {
   final definition = schema.variables[selector % schema.variables.length];
   return _effectForDefinition(definition, valueSeed);
 }
@@ -1532,12 +1521,7 @@ void _inspectTransition(
     case StoryConditionalTransition(:final branches, :final fallback):
       accumulator.conditionalTransitionCount++;
       for (final branch in branches) {
-        _inspectCondition(
-          branch.condition,
-          schema,
-          accumulator,
-          depth: 1,
-        );
+        _inspectCondition(branch.condition, schema, accumulator, depth: 1);
         _inspectTransition(
           branch.transition,
           sourceEventIndex: sourceEventIndex,
@@ -1586,29 +1570,14 @@ void _inspectCondition(
   switch (condition) {
     case StoryAllCondition(:final conditions):
       for (final child in conditions) {
-        _inspectCondition(
-          child,
-          schema,
-          accumulator,
-          depth: depth + 1,
-        );
+        _inspectCondition(child, schema, accumulator, depth: depth + 1);
       }
     case StoryAnyCondition(:final conditions):
       for (final child in conditions) {
-        _inspectCondition(
-          child,
-          schema,
-          accumulator,
-          depth: depth + 1,
-        );
+        _inspectCondition(child, schema, accumulator, depth: depth + 1);
       }
     case StoryNotCondition(:final condition):
-      _inspectCondition(
-        condition,
-        schema,
-        accumulator,
-        depth: depth + 1,
-      );
+      _inspectCondition(condition, schema, accumulator, depth: depth + 1);
     case StoryVariableIsSetCondition(:final variableId):
       if (!schema.contains(variableId)) {
         accumulator.invalidVariableReferenceCount++;
@@ -1712,7 +1681,8 @@ String _conditionSignature(StoryCondition? condition) => switch (condition) {
     :final variableId,
     :final operator,
     :final value,
-  ) => 'CMP(${variableId.value},${operator.name},${_valueSignature(value)})',
+  ) =>
+    'CMP(${variableId.value},${operator.name},${_valueSignature(value)})',
 };
 
 String _effectSignature(StoryEffect effect) => switch (effect) {
@@ -1727,15 +1697,16 @@ String _effectSignature(StoryEffect effect) => switch (effect) {
 
 String _transitionSignature(StoryTransition? transition) =>
     switch (transition) {
-  null => '-',
-  StoryEventTransition(:final destinationEventId) =>
-    'GO(${destinationEventId.value})',
-  StoryConditionalTransition(:final branches, :final fallback) =>
-    _conditionalTransitionSignature(branches, fallback),
-  StoryWeightedTransition(:final options) =>
-    _weightedTransitionSignature(options),
-  StoryTerminalTransition() => 'END',
-};
+      null => '-',
+      StoryEventTransition(:final destinationEventId) =>
+        'GO(${destinationEventId.value})',
+      StoryConditionalTransition(:final branches, :final fallback) =>
+        _conditionalTransitionSignature(branches, fallback),
+      StoryWeightedTransition(:final options) => _weightedTransitionSignature(
+        options,
+      ),
+      StoryTerminalTransition() => 'END',
+    };
 
 String _conditionalTransitionSignature(
   List<StoryConditionalTransitionBranch> branches,

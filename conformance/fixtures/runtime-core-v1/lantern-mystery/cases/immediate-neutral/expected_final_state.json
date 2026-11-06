@@ -1,0 +1,51 @@
+{
+  "formatId": "open_story.conformance_state",
+  "formatVersion": 1,
+  "mode": "explicit",
+  "values": [
+    {
+      "variableId": "var_0001",
+      "state": "set",
+      "value": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "variableId": "var_0002",
+      "state": "set",
+      "value": {
+        "type": "integer",
+        "value": 40
+      }
+    },
+    {
+      "variableId": "var_0003",
+      "state": "set",
+      "value": {
+        "type": "number",
+        "value": 18.5
+      }
+    },
+    {
+      "variableId": "var_0004",
+      "state": "set",
+      "value": {
+        "type": "string",
+        "value": "Rook"
+      }
+    },
+    {
+      "variableId": "var_0005",
+      "state": "unset"
+    },
+    {
+      "variableId": "var_0006",
+      "state": "set",
+      "value": {
+        "type": "boolean",
+        "value": false
+      }
+    }
+  ]
+}

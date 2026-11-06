@@ -9,10 +9,7 @@ StoryFormatBundle loadStoryFormatFixture(String name) {
     throw ArgumentError.value(name, 'name', 'Unknown Story Format fixture.');
   }
 
-  final files = root
-      .listSync(recursive: true)
-      .whereType<File>()
-      .toList()
+  final files = root.listSync(recursive: true).whereType<File>().toList()
     ..sort((left, right) => left.path.compareTo(right.path));
 
   final entries = <String, String>{};

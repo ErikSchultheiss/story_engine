@@ -1,6 +1,8 @@
 .dart_tool/
 .packages
-build/
+# Anchor generated output so lib/src/build and test/build remain source.
+/build/
+example/flutter_story_app/build/
 coverage/
 pubspec.lock
 *.iml
@@ -16,7 +18,9 @@ doc/architecture/
 doc/PUBLICATION_CHECKLIST.md
 doc/fixtures/
 lib/src/README.md
+test/architecture/
 test/architecture/stage6h_publication_readiness_test.dart
+test/architecture/stage8*.dart
 
 # Companion application / handoff artifacts are never part of this repository.
 cyoa_studio/
@@ -31,3 +35,21 @@ CYOA-Development*/
 key.properties
 local.properties
 benchmark/stage6g_performance_baseline.dart
+
+# Mirror and publication exclusions for local outputs and credentials.
+/.gitignore.public
+.flutter-plugins
+.flutter-plugins-dependencies
+*.p12
+*.pfx
+*.pem
+*.key
+cyoa-studio/
+CYOA Studio/
+
+# Root reports produced by local validation and benchmarking.
+/loam-report*.html
+/story_engine*-loam-report.html
+/stage9d*.json
+/prepublication-*.json
+/story_engine*-tests.log

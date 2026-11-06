@@ -23,6 +23,11 @@ final class StoryDiagnosticCode implements Comparable<StoryDiagnosticCode> {
     'structure.entry_event_not_found',
   );
 
+  /// A host-declared validation root does not resolve.
+  static const structureValidationEntryNotFound = StoryDiagnosticCode(
+    'structure.validation_entry_not_found',
+  );
+
   /// Two or more authored events carry the same machine ID.
   static const identityDuplicateEventId = StoryDiagnosticCode(
     'identity.duplicate_event_id',
@@ -139,9 +144,7 @@ final class StoryDiagnosticCode implements Comparable<StoryDiagnosticCode> {
   );
 
   /// A reachable cycle crosses more than one event flow mode.
-  static const graphMixedCycle = StoryDiagnosticCode(
-    'graph.mixed_cycle',
-  );
+  static const graphMixedCycle = StoryDiagnosticCode('graph.mixed_cycle');
 
   /// A reachable event or cycle region has no structural path to termination.
   static const graphEventCannotReachTermination = StoryDiagnosticCode(

@@ -79,9 +79,9 @@ void main() {
         ),
       );
 
-      final source = codec.encode(document).file(
-        StoryFormatBundleLayout.eventPath(eventId),
-      )!;
+      final source = codec
+          .encode(document)
+          .file(StoryFormatBundleLayout.eventPath(eventId))!;
 
       expect(source, contains('"kind": "variable_comparison"'));
       expect(source, contains('"operator": "greater_than_or_equal"'));
@@ -130,9 +130,11 @@ void main() {
         expect(after.availabilityCondition, before.availabilityCondition);
         expect(after.entryEffects, before.entryEffects);
         expect(after.choices.length, before.choices.length);
-        for (var choiceIndex = 0;
-            choiceIndex < before.choices.length;
-            choiceIndex++) {
+        for (
+          var choiceIndex = 0;
+          choiceIndex < before.choices.length;
+          choiceIndex++
+        ) {
           final beforeChoice = before.choices[choiceIndex];
           final afterChoice = after.choices[choiceIndex];
 
@@ -178,45 +180,54 @@ void main() {
       }
     });
 
-    test('extension attachment order is canonical rather than caller order', () {
-      final project = StoryProject(id: StoryProjectId('project_extensions'));
-      final a = StoryFormatExtensionAttachment(
-        namespace: StoryFormatExtensionNamespace('com.example.a'),
-        target: const StoryFormatProjectExtensionTarget(),
-        payload: StoryFormatExtensionPayload({'z': 1, 'a': 2}),
-      );
-      final b = StoryFormatExtensionAttachment(
-        namespace: StoryFormatExtensionNamespace('com.example.b'),
-        target: const StoryFormatProjectExtensionTarget(),
-        payload: StoryFormatExtensionPayload({'enabled': true}),
-      );
+    test(
+      'extension attachment order is canonical rather than caller order',
+      () {
+        final project = StoryProject(id: StoryProjectId('project_extensions'));
+        final a = StoryFormatExtensionAttachment(
+          namespace: StoryFormatExtensionNamespace('com.example.a'),
+          target: const StoryFormatProjectExtensionTarget(),
+          payload: StoryFormatExtensionPayload({'z': 1, 'a': 2}),
+        );
+        final b = StoryFormatExtensionAttachment(
+          namespace: StoryFormatExtensionNamespace('com.example.b'),
+          target: const StoryFormatProjectExtensionTarget(),
+          payload: StoryFormatExtensionPayload({'enabled': true}),
+        );
 
-      final first = codec.encode(
-        StoryFormatDocument(project: project, extensions: [b, a]),
-      );
-      final second = codec.encode(
-        StoryFormatDocument(project: project, extensions: [a, b]),
-      );
+        final first = codec.encode(
+          StoryFormatDocument(project: project, extensions: [b, a]),
+        );
+        final second = codec.encode(
+          StoryFormatDocument(project: project, extensions: [a, b]),
+        );
 
-      expect(first, second);
-      final source = first.file('extensions.json')!;
-      expect(source.indexOf('com.example.a'), lessThan(source.indexOf('com.example.b')));
-      expect(source.indexOf('"a": 2'), lessThan(source.indexOf('"z": 1')));
-    });
+        expect(first, second);
+        final source = first.file('extensions.json')!;
+        expect(
+          source.indexOf('com.example.a'),
+          lessThan(source.indexOf('com.example.b')),
+        );
+        expect(source.indexOf('"a": 2'), lessThan(source.indexOf('"z": 1')));
+      },
+    );
 
     test('authored event order lives in manifest, not event file ordering', () {
       final a = StoryEventId('event_codec_order_a');
       final b = StoryEventId('event_codec_order_b');
-      StoryFormatDocument build(List<StoryEventId> order) => StoryFormatDocument(
-        project: StoryProject(
-          id: StoryProjectId('project_codec_order'),
-          events: [for (final id in order) StoryEvent(id: id)],
-        ),
-      );
+      StoryFormatDocument build(List<StoryEventId> order) =>
+          StoryFormatDocument(
+            project: StoryProject(
+              id: StoryProjectId('project_codec_order'),
+              events: [for (final id in order) StoryEvent(id: id)],
+            ),
+          );
 
       final first = codec.encode(build([b, a]));
       final second = codec.encode(build([a, b]));
-      final eventPaths = first.files.keys.where((path) => path.startsWith('events/')).toList();
+      final eventPaths = first.files.keys
+          .where((path) => path.startsWith('events/'))
+          .toList();
 
       expect(eventPaths, [...eventPaths]..sort());
       expect(
@@ -230,29 +241,32 @@ void main() {
       expect(first.file('project.json'), isNot(second.file('project.json')));
     });
 
-    test('incomplete editor project round-trips without runtime validation', () {
-      final eventId = StoryEventId('event_codec_incomplete');
-      final document = StoryFormatDocument(
-        project: StoryProject(
-          id: StoryProjectId('project_codec_incomplete'),
-          events: [
-            StoryEvent(
-              id: eventId,
-              choices: [
-                StoryChoice(id: StoryChoiceId('choice_codec_incomplete')),
-              ],
-            ),
-          ],
-        ),
-      );
+    test(
+      'incomplete editor project round-trips without runtime validation',
+      () {
+        final eventId = StoryEventId('event_codec_incomplete');
+        final document = StoryFormatDocument(
+          project: StoryProject(
+            id: StoryProjectId('project_codec_incomplete'),
+            events: [
+              StoryEvent(
+                id: eventId,
+                choices: [
+                  StoryChoice(id: StoryChoiceId('choice_codec_incomplete')),
+                ],
+              ),
+            ],
+          ),
+        );
 
-      final decoded = codec.decode(codec.encode(document));
-      final report = StoryValidator.validate(decoded.project);
+        final decoded = codec.decode(codec.encode(document));
+        final report = StoryValidator.validate(decoded.project);
 
-      expect(decoded.project.entryEventId, isNull);
-      expect(decoded.project.events.single.choices.single.transition, isNull);
-      expect(report.errors, isNotEmpty);
-    });
+        expect(decoded.project.entryEventId, isNull);
+        expect(decoded.project.events.single.choices.single.transition, isNull);
+        expect(report.errors, isNotEmpty);
+      },
+    );
 
     test('Lantern Mystery round-trips to identical canonical bundle', () {
       final document = StoryFormatDocument(
@@ -271,8 +285,11 @@ void main() {
       expect(
         () => codec.decode(StoryFormatBundle(files: const {})),
         throwsA(
-          isA<StoryFormatCodecException>()
-              .having((error) => error.bundlePath, 'bundlePath', 'project.json'),
+          isA<StoryFormatCodecException>().having(
+            (error) => error.bundlePath,
+            'bundlePath',
+            'project.json',
+          ),
         ),
       );
     });
@@ -355,10 +372,12 @@ void main() {
           StoryFormatBundle(
             files: {
               ...encoded.files,
-              'project.json': encoded.file('project.json')!.replaceFirst(
-                '"project": {',
-                '"unknown": true,\n  "project": {',
-              ),
+              'project.json': encoded
+                  .file('project.json')!
+                  .replaceFirst(
+                    '"project": {',
+                    '"unknown": true,\n  "project": {',
+                  ),
             },
           ),
         ),
@@ -388,10 +407,12 @@ void main() {
           StoryFormatBundle(
             files: {
               ...withChoice.files,
-              eventPath: withChoice.file(eventPath)!.replaceFirst(
-                '"kind": "terminal"',
-                '"kind": "future_transition"',
-              ),
+              eventPath: withChoice
+                  .file(eventPath)!
+                  .replaceFirst(
+                    '"kind": "terminal"',
+                    '"kind": "future_transition"',
+                  ),
             },
           ),
         ),
@@ -411,7 +432,8 @@ void main() {
       );
       final eventPath = StoryFormatBundleLayout.eventPath(eventId);
 
-      final withoutEvent = Map<String, String>.of(encoded.files)..remove(eventPath);
+      final withoutEvent = Map<String, String>.of(encoded.files)
+        ..remove(eventPath);
       expect(
         () => codec.decode(StoryFormatBundle(files: withoutEvent)),
         throwsA(isA<StoryFormatCodecException>()),
@@ -422,10 +444,9 @@ void main() {
           StoryFormatBundle(
             files: {
               ...encoded.files,
-              eventPath: encoded.file(eventPath)!.replaceFirst(
-                'event_codec_integrity',
-                'event_codec_other',
-              ),
+              eventPath: encoded
+                  .file(eventPath)!
+                  .replaceFirst('event_codec_integrity', 'event_codec_other'),
             },
           ),
         ),

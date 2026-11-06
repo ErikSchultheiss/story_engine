@@ -17,14 +17,11 @@ final class StoryFormatExtensionPayload {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is StoryFormatExtensionPayload &&
-          _deepEquals(value, other.value);
+      other is StoryFormatExtensionPayload && _deepEquals(value, other.value);
 
   @override
-  int get hashCode => Object.hash(
-    StoryFormatExtensionPayload,
-    _deepHash(value),
-  );
+  int get hashCode =>
+      Object.hash(StoryFormatExtensionPayload, _deepHash(value));
 
   @override
   String toString() => 'StoryFormatExtensionPayload($value)';
@@ -44,7 +41,7 @@ Object? _copyAndValidate(Object? value, String path) {
         value,
         path,
         'Story Format extension integers must remain within the portable '
-            'exact-integer range.',
+        'exact-integer range.',
       );
     }
     return value;
@@ -83,8 +80,7 @@ Object? _copyAndValidate(Object? value, String path) {
     keys.sort();
 
     return Map<String, Object?>.unmodifiable({
-      for (final key in keys)
-        key: _copyAndValidate(value[key], '$path.$key'),
+      for (final key in keys) key: _copyAndValidate(value[key], '$path.$key'),
     });
   }
 
@@ -92,7 +88,7 @@ Object? _copyAndValidate(Object? value, String path) {
     value,
     path,
     'Story Format extension payloads may contain only null, Boolean, String, '
-        'portable Integer, finite Number, List, and string-keyed Map values.',
+    'portable Integer, finite Number, List, and string-keyed Map values.',
   );
 }
 

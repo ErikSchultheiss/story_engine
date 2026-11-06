@@ -1,0 +1,46 @@
+{
+  "formatId": "open_story.conformance_expected_trace",
+  "formatVersion": 1,
+  "observations": [
+    {
+      "afterInputIndex": 0,
+      "status": "awaitingChoice",
+      "currentEventId": "evt_0001",
+      "availableChoiceIds": [
+        "ch_0001",
+        "ch_0003",
+        "ch_0005"
+      ]
+    },
+    {
+      "afterInputIndex": 1,
+      "status": "awaitingChoice",
+      "currentEventId": "evt_0002",
+      "availableChoiceIds": [
+        "ch_0006",
+        "ch_0007",
+        "ch_0008"
+      ]
+    },
+    {
+      "afterInputIndex": 2,
+      "status": "awaitingChoice",
+      "currentEventId": "evt_0004",
+      "availableChoiceIds": [
+        "ch_0014"
+      ]
+    },
+    {
+      "afterInputIndex": 3,
+      "status": "awaitingContinue",
+      "currentEventId": "evt_0011",
+      "availableChoiceIds": []
+    },
+    {
+      "afterInputIndex": 4,
+      "status": "terminated",
+      "currentEventId": "evt_0011",
+      "availableChoiceIds": []
+    }
+  ]
+}

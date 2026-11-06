@@ -1,0 +1,88 @@
+{
+  "id": "evt_0006",
+  "alias": "cellar",
+  "presentation": {
+    "title": "Cellar",
+    "body": "The cellar contains a frost-covered wall and a narrow unstable passage leading underground."
+  },
+  "entryEffects": [],
+  "choices": [
+    {
+      "id": "ch_0015",
+      "presentation": {
+        "text": "Study the frost markings"
+      },
+      "availabilityCondition": {
+        "kind": "all",
+        "conditions": [
+          {
+            "kind": "variable_comparison",
+            "variableId": "var_0003",
+            "operator": "less_than_or_equal",
+            "value": {
+              "type": "number",
+              "value": 16.0
+            }
+          },
+          {
+            "kind": "not",
+            "condition": {
+              "kind": "variable_comparison",
+              "variableId": "var_0006",
+              "operator": "equal",
+              "value": {
+                "type": "boolean",
+                "value": true
+              }
+            }
+          }
+        ]
+      },
+      "effects": [
+        {
+          "kind": "set_variable",
+          "variableId": "var_0006",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0006"
+      }
+    },
+    {
+      "id": "ch_0016",
+      "presentation": {
+        "text": "Enter the unstable passage"
+      },
+      "availabilityCondition": {
+        "kind": "variable_comparison",
+        "variableId": "var_0001",
+        "operator": "equal",
+        "value": {
+          "type": "boolean",
+          "value": true
+        }
+      },
+      "effects": [],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0008"
+      }
+    },
+    {
+      "id": "ch_0017",
+      "presentation": {
+        "text": "Return upstairs"
+      },
+      "effects": [],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0004"
+      }
+    }
+  ]
+}

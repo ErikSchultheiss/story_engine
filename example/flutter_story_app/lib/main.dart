@@ -72,9 +72,7 @@ class _StoryPlayerScreenState extends State<StoryPlayerScreen> {
 
   void _saveSnapshot() {
     _runEngineOperation(() {
-      _savedSnapshotJson = _snapshotCodec.encodeJson(
-        _engine!.createSnapshot(),
-      );
+      _savedSnapshotJson = _snapshotCodec.encodeJson(_engine!.createSnapshot());
       _message = 'Snapshot saved in memory.';
     });
   }
@@ -176,10 +174,7 @@ class _StoryPlayerScreenState extends State<StoryPlayerScreen> {
             ],
             if (_message != null) ...[
               const SizedBox(height: 12),
-              Text(
-                _message!,
-                key: const ValueKey<String>('host-message'),
-              ),
+              Text(_message!, key: const ValueKey<String>('host-message')),
             ],
           ],
         ),
@@ -241,10 +236,7 @@ class _FailureCard extends StatelessWidget {
 }
 
 class _RuntimeCard extends StatelessWidget {
-  const _RuntimeCard({
-    required this.engine,
-    required this.hasSavedSnapshot,
-  });
+  const _RuntimeCard({required this.engine, required this.hasSavedSnapshot});
 
   final StoryEngine engine;
   final bool hasSavedSnapshot;
@@ -317,10 +309,7 @@ class _EventCard extends StatelessWidget {
               key: const ValueKey<String>('event-title'),
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            if (body != null) ...[
-              const SizedBox(height: 8),
-              Text(body),
-            ],
+            if (body != null) ...[const SizedBox(height: 8), Text(body)],
             const SizedBox(height: 16),
             if (engine.status == StoryEngineStatus.awaitingChoice)
               for (final choice in engine.availableChoices)

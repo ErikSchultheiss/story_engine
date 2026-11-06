@@ -2,6 +2,7 @@ import '../identity/story_choice_id.dart';
 import '../identity/story_event_id.dart';
 import '../identity/story_project_id.dart';
 import '../identity/story_variable_id.dart';
+import 'story_ordered_comparison.dart';
 
 /// Kind of authored structure identified by a [StoryDiagnosticLocation].
 enum StoryDiagnosticLocationKind {
@@ -56,8 +57,9 @@ final class StoryDiagnosticFieldPathSegment extends StoryDiagnosticPathSegment {
   @override
   int compareTo(StoryDiagnosticPathSegment other) {
     return switch (other) {
-      StoryDiagnosticFieldPathSegment(name: final otherName) =>
-        name.compareTo(otherName),
+      StoryDiagnosticFieldPathSegment(name: final otherName) => name.compareTo(
+        otherName,
+      ),
       StoryDiagnosticIndexPathSegment() => -1,
     };
   }
@@ -289,7 +291,6 @@ final class StoryDiagnosticLocation
     return buffer.toString();
   }
 
-
   /// Human-readable location including the most specific stable authored ID.
   ///
   /// This is intended for logs, console output, and developer diagnostics.
@@ -298,19 +299,19 @@ final class StoryDiagnosticLocation
   String get displayString {
     final owner = switch (kind) {
       StoryDiagnosticLocationKind.project => 'project ${projectId.value}',
-      StoryDiagnosticLocationKind.variable =>
-        'variable ${variableId!.value}',
+      StoryDiagnosticLocationKind.variable => 'variable ${variableId!.value}',
       StoryDiagnosticLocationKind.event => 'event ${eventId!.value}',
       StoryDiagnosticLocationKind.choice =>
         'choice ${choiceId!.value} in event ${eventId!.value}',
       StoryDiagnosticLocationKind.condition ||
       StoryDiagnosticLocationKind.effect ||
-      StoryDiagnosticLocationKind.transition => choiceId != null
-          ? '${kind.name} in choice ${choiceId!.value} '
-              '(event ${eventId!.value})'
-          : eventId != null
-          ? '${kind.name} in event ${eventId!.value}'
-          : '${kind.name} in project ${projectId.value}',
+      StoryDiagnosticLocationKind.transition =>
+        choiceId != null
+            ? '${kind.name} in choice ${choiceId!.value} '
+                  '(event ${eventId!.value})'
+            : eventId != null
+            ? '${kind.name} in event ${eventId!.value}'
+            : '${kind.name} in project ${projectId.value}',
     };
     final renderedPath = pathString;
     return renderedPath.isEmpty ? owner : '$owner @ $renderedPath';
@@ -328,9 +329,9 @@ final class StoryDiagnosticLocation
       return comparison;
     }
 
-    comparison = _locationKindPriority(kind).compareTo(
-      _locationKindPriority(other.kind),
-    );
+    comparison = _locationKindPriority(
+      kind,
+    ).compareTo(_locationKindPriority(other.kind));
     if (comparison != 0) {
       return comparison;
     }
@@ -387,16 +388,7 @@ final class StoryDiagnosticLocation
 int _comparePaths(
   List<StoryDiagnosticPathSegment> left,
   List<StoryDiagnosticPathSegment> right,
-) {
-  final sharedLength = left.length < right.length ? left.length : right.length;
-  for (var index = 0; index < sharedLength; index++) {
-    final comparison = left[index].compareTo(right[index]);
-    if (comparison != 0) {
-      return comparison;
-    }
-  }
-  return left.length.compareTo(right.length);
-}
+) => compareStoryOrderedValues(left, right);
 
 bool _orderedPathEqual(
   List<StoryDiagnosticPathSegment> left,

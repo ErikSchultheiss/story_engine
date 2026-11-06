@@ -3,28 +3,31 @@ import 'package:test/test.dart';
 
 void main() {
   group('Stage 6C consumer failure ergonomics', () {
-    test('validation report is actionable without knowing internal validators', () {
-      final project = StoryProject(
-        id: StoryProjectId('stage6c_invalid_project'),
-        events: [
-          StoryEvent(
-            id: StoryEventId('event_orphan'),
-            automaticTransition: const StoryTerminalTransition(),
-          ),
-        ],
-      );
+    test(
+      'validation report is actionable without knowing internal validators',
+      () {
+        final project = StoryProject(
+          id: StoryProjectId('stage6c_invalid_project'),
+          events: [
+            StoryEvent(
+              id: StoryEventId('event_orphan'),
+              automaticTransition: const StoryTerminalTransition(),
+            ),
+          ],
+        );
 
-      final report = StoryValidator.validate(project);
+        final report = StoryValidator.validate(project);
 
-      expect(report.isValid, isFalse);
-      expect(report.summary, startsWith('1 error'));
-      final diagnostic = report.diagnosticsFor(
-        StoryDiagnosticCode.structureMissingEntryEvent,
-      ).single;
-      expect(diagnostic.suggestion, contains('entryEventId'));
-      expect(report.format(), contains('structure.missing_entry_event'));
-      expect(report.format(), contains('Suggested fix:'));
-    });
+        expect(report.isValid, isFalse);
+        expect(report.summary, startsWith('1 error'));
+        final diagnostic = report
+            .diagnosticsFor(StoryDiagnosticCode.structureMissingEntryEvent)
+            .single;
+        expect(diagnostic.suggestion, contains('entryEventId'));
+        expect(report.format(), contains('structure.missing_entry_event'));
+        expect(report.format(), contains('Suggested fix:'));
+      },
+    );
 
     test('invalid choice selection reports operation and authored IDs', () {
       final eventId = StoryEventId('event_start');

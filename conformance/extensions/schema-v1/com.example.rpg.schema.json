@@ -1,0 +1,104 @@
+{
+  "contract": "open_story.extension_schema",
+  "contractVersion": 1,
+  "namespace": "com.example.rpg",
+  "schemaVersion": 3,
+  "metadata": {
+    "label": "Example RPG integration",
+    "helpText": "Reference schema for language-neutral host capabilities.",
+    "editor": {
+      "category": "Gameplay",
+      "icon": "swords"
+    }
+  },
+  "enums": [
+    {
+      "id": "combat_mode",
+      "metadata": {
+        "label": "Combat mode"
+      },
+      "values": [
+        {
+          "id": "normal",
+          "metadata": {
+            "label": "Normal"
+          }
+        },
+        {
+          "id": "ambush",
+          "metadata": {
+            "label": "Ambush"
+          }
+        }
+      ]
+    }
+  ],
+  "referenceTypes": [
+    {
+      "id": "enemy",
+      "metadata": {
+        "label": "Enemy"
+      }
+    },
+    {
+      "id": "arena",
+      "metadata": {
+        "label": "Arena"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "start_combat",
+      "metadata": {
+        "label": "Start Combat",
+        "helpText": "Ask the trusted host to begin combat."
+      },
+      "parameters": [
+        {
+          "name": "enemy",
+          "type": {
+            "kind": "reference",
+            "referenceTypeId": "enemy"
+          },
+          "required": true
+        },
+        {
+          "name": "arena",
+          "type": {
+            "kind": "reference",
+            "referenceTypeId": "arena"
+          },
+          "required": false
+        },
+        {
+          "name": "mode",
+          "type": {
+            "kind": "enum",
+            "enumId": "combat_mode"
+          },
+          "required": false,
+          "default": "normal"
+        }
+      ]
+    }
+  ],
+  "conditions": [
+    {
+      "id": "enemy_defeated",
+      "metadata": {
+        "label": "Enemy defeated?"
+      },
+      "parameters": [
+        {
+          "name": "enemy",
+          "type": {
+            "kind": "reference",
+            "referenceTypeId": "enemy"
+          },
+          "required": true
+        }
+      ]
+    }
+  ]
+}

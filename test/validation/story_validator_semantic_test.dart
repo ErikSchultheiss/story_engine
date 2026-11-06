@@ -56,18 +56,14 @@ void main() {
 
       expect(report.errors, hasLength(1));
       final diagnostic = report.errors.single;
-      expect(
-        diagnostic.code,
-        StoryDiagnosticCode.typeConditionOperandMismatch,
-      );
+      expect(diagnostic.code, StoryDiagnosticCode.typeConditionOperandMismatch);
       expect(
         diagnostic.location.pathString,
         'events[0].availabilityCondition.value',
       );
-      expect(
-        diagnostic.references,
-        [StoryDiagnosticReference.variable(variableId)],
-      );
+      expect(diagnostic.references, [
+        StoryDiagnosticReference.variable(variableId),
+      ]);
       expect(diagnostic.relatedLocations, hasLength(1));
       expect(
         diagnostic.relatedLocations.single.pathString,
@@ -119,13 +115,10 @@ void main() {
           .toList();
 
       expect(typeErrors, hasLength(2));
-      expect(
-        typeErrors.map((diagnostic) => diagnostic.code).toSet(),
-        {
-          StoryDiagnosticCode.typeConditionOperandMismatch,
-          StoryDiagnosticCode.typeConditionOperatorNotSupported,
-        },
-      );
+      expect(typeErrors.map((diagnostic) => diagnostic.code).toSet(), {
+        StoryDiagnosticCode.typeConditionOperandMismatch,
+        StoryDiagnosticCode.typeConditionOperatorNotSupported,
+      });
       final operatorError = typeErrors.singleWhere(
         (diagnostic) =>
             diagnostic.code ==
@@ -226,13 +219,10 @@ void main() {
           .toList();
 
       expect(targetErrors, hasLength(2));
-      expect(
-        targetErrors.map((diagnostic) => diagnostic.location.pathString),
-        [
-          'events[0].choices[0].effects[0].variableId',
-          'events[0].entryEffects[0].variableId',
-        ],
-      );
+      expect(targetErrors.map((diagnostic) => diagnostic.location.pathString), [
+        'events[0].choices[0].effects[0].variableId',
+        'events[0].entryEffects[0].variableId',
+      ]);
       expect(
         targetErrors.every(
           (diagnostic) =>
@@ -292,13 +282,10 @@ void main() {
           .toList();
 
       expect(amountErrors, hasLength(2));
-      expect(
-        amountErrors.map((diagnostic) => diagnostic.location.pathString),
-        [
-          'events[0].entryEffects[0].amount',
-          'events[0].entryEffects[1].amount',
-        ],
-      );
+      expect(amountErrors.map((diagnostic) => diagnostic.location.pathString), [
+        'events[0].entryEffects[0].amount',
+        'events[0].entryEffects[1].amount',
+      ]);
     });
 
     test('semantic validation traverses nested transition conditions', () {
@@ -354,10 +341,7 @@ void main() {
       final report = StoryValidator.validate(project);
       final diagnostic = report.errors.single;
 
-      expect(
-        diagnostic.code,
-        StoryDiagnosticCode.typeConditionOperandMismatch,
-      );
+      expect(diagnostic.code, StoryDiagnosticCode.typeConditionOperandMismatch);
       expect(
         diagnostic.location.pathString,
         'events[0].choices[0].transition.options[0].transition.branches[0].'
@@ -395,13 +379,10 @@ void main() {
       final report = StoryValidator.validate(project);
 
       expect(report.errors, hasLength(2));
-      expect(
-        report.errors.map((diagnostic) => diagnostic.code).toSet(),
-        {
-          StoryDiagnosticCode.referenceUndeclaredConditionVariable,
-          StoryDiagnosticCode.referenceUndeclaredEffectVariable,
-        },
-      );
+      expect(report.errors.map((diagnostic) => diagnostic.code).toSet(), {
+        StoryDiagnosticCode.referenceUndeclaredConditionVariable,
+        StoryDiagnosticCode.referenceUndeclaredEffectVariable,
+      });
     });
 
     test('valid scalar condition/effect semantics pass Stage 3D', () {
@@ -484,7 +465,9 @@ void main() {
     });
 
     test('Lantern Mystery has no Stage 3D type/semantic errors', () {
-      final report = StoryValidator.validate(LanternMysteryFixture.buildProject());
+      final report = StoryValidator.validate(
+        LanternMysteryFixture.buildProject(),
+      );
 
       expect(report.errors, isEmpty);
     });

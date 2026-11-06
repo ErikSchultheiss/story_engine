@@ -1,7 +1,15 @@
 # story_engine Quick Start
 
-This guide takes the shortest supported path from authored Dart objects to a
-running story. It uses only:
+This guide is the first step in the package's canonical integration path. It
+takes the shortest supported route from authored Dart objects to a validated,
+running `StoryEngine`. Start here even if the eventual host will use
+`StoryNarrativeRuntime`; the orchestration layer builds on the same core runtime
+semantics rather than replacing them.
+
+For a passage-by-passage explanation of the executable core example, read
+[A lantern at the Forest Gate](NARRATIVE_WALKTHROUGH.md).
+
+It uses only:
 
 ```dart
 import 'package:story_engine/story_engine.dart';
@@ -12,11 +20,13 @@ detail.
 
 ## 1. Add the dependency
 
-For the public alpha release:
+For the 0.9.0 release, use the versioned dependency after publication. The
+package remains pre-1.0; use a local path while validating an unpublished
+candidate:
 
 ```yaml
 dependencies:
-  story_engine: 0.1.0-alpha.1
+  story_engine: 0.9.0
 ```
 
 For a repository checkout or local engine development, a path dependency is also supported:
@@ -108,7 +118,8 @@ engine.start();
 
 The default RNG seed is deterministic (`StoryEngine.defaultRandomSeed == 0`).
 Pass `randomSeed:` explicitly if a run needs a specific weighted-transition
-sequence.
+sequence. The exact cross-runtime algorithm and bounded-sampling contract is
+documented in [Deterministic Randomness — `story_engine.lcg32` Version 1](DETERMINISTIC_RANDOM_V1.md).
 
 After start, inspect the lifecycle state:
 
@@ -309,6 +320,13 @@ not replay entry effects or previous choices.
 database, preferences system, cloud service, or another host-owned persistence
 layer.
 
+This section is the standalone `StoryEngine` path. If your host uses
+`StoryNarrativeRuntime` for multiple/open-world sessions, save and resume the
+complete authority through `StoryNarrativeRuntime.createSnapshot()` and
+`StoryNarrativeRuntime.restore(...)`. Do not reconstruct an orchestration runtime by restoring
+retained sessions independently. See
+[Aggregate Narrative Save/Load Lifecycle — Revision 1](AGGREGATE_SAVE_LOAD_LIFECYCLE_V1.md).
+
 ## 9. Encode authored projects with Story Format v1
 
 For a project that needs only executable/validation semantics:
@@ -362,18 +380,46 @@ contract.
 
 ## Next steps
 
-- Run `dart run example/story_engine_example.dart` from the package root for the
-  complete scripted Pure-Dart walkthrough; see
-  [example/README.md](../example/README.md).
-- In a source-repository checkout, run the repository-only
-  `example/flutter_story_app/` host to see the same runtime mapped to widgets,
-  choice input, validation display, and host-owned snapshot persistence policy.
-  The nested Flutter app is intentionally excluded from the pub.dev archive.
-- Read [API_GUIDE.md](API_GUIDE.md) for the public concepts and complete
-  top-level API index.
-- Read [STORY_FORMAT_V1.md](STORY_FORMAT_V1.md) before implementing a
-  third-party Story Format reader/writer.
-- Use [PERFORMANCE_BASELINES.md](PERFORMANCE_BASELINES.md) when measuring
-  validation/runtime/persistence performance or running larger stress fixtures.
-- Use generated Dart API documentation for member-level signatures and Dartdoc.
-- Keep all consumer imports on `package:story_engine/story_engine.dart`.
+Continue in this order:
+
+1. Run `dart run example/story_engine_example.dart` from the package root for
+   the minimal branching core save/load walkthrough; see
+   [example/README.md](../example/README.md).
+2. Use [INTEGRATION_PATH.md](INTEGRATION_PATH.md) as the documentation map. If
+   you need to decide between overlapping concepts such as project/document/
+   bundle/module/entry point/session/capability/content release/host action, use
+   [ABSTRACTION_GUIDE.md](ABSTRACTION_GUIDE.md); then use
+   [API_GUIDE.md](API_GUIDE.md) for workflows and the complete top-level API
+   index.
+3. Stay on `StoryEngine` when one local narrative run is the execution
+   authority. Move up to `StoryNarrativeRuntime` when the host needs named or
+   resolved entry points, multiple unfinished sessions, shared persistent
+   narrative state, or suspendable host actions.
+4. If orchestration is needed, run the shared-state orchestration example with
+   `dart run example/story_narrative_shared_state_example.dart`. It demonstrates
+   two independent conversations, shared persistent state propagation, and
+   explicit input through one serialized narrative authority without yet adding
+   persistence or host actions.
+5. When `StoryNarrativeRuntime` owns execution, read
+   [AGGREGATE_SAVE_LOAD_LIFECYCLE_V1.md](AGGREGATE_SAVE_LOAD_LIFECYCLE_V1.md)
+   before implementing durable save/load. Do not restore retained sessions
+   independently and attempt to rebuild an aggregate runtime manually.
+6. Run the modular host-action restoration example with
+   `dart run example/story_narrative_modular_host_action_restore_example.dart`
+   to see `StoryModuleCache`, a pending stable host-action request, aggregate
+   snapshot JSON, and restore/reconciliation in one small integration. Restore
+   does not redispatch the external operation.
+7. In a source-repository checkout, use `example/flutter_story_app/` only to see
+   the core runtime mapped to widgets, choice input, validation display, and
+   host-owned snapshot persistence policy. The nested Flutter app is
+   intentionally excluded from the pub.dev archive and is not an orchestration
+   example.
+8. Read [STORY_FORMAT_V1.md](STORY_FORMAT_V1.md) before implementing a
+   third-party Story Format reader/writer, and use the narrower feature
+   contracts only when the integration needs those capabilities.
+9. Use [PERFORMANCE_BASELINES.md](PERFORMANCE_BASELINES.md) when measuring
+   validation/runtime/persistence performance or running larger stress fixtures.
+10. Use generated Dart API documentation for member-level signatures and
+    Dartdoc.
+
+Keep all consumer imports on `package:story_engine/story_engine.dart`.

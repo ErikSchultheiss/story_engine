@@ -32,7 +32,8 @@ final class StoryRuntimeSnapshotFormatException implements Exception {
   String get location => path;
 
   /// Generic recovery guidance for malformed persisted snapshot data.
-  String get suggestion => 'Inspect the persisted snapshot at $path and '
+  String get suggestion =>
+      'Inspect the persisted snapshot at $path and '
       'correct or discard the malformed value before restoring it.';
 
   @override
@@ -68,7 +69,8 @@ final class StoryRuntimeSnapshotCodec {
       throw StoryRuntimeSnapshotCompatibilityException(
         issue: StoryRuntimeSnapshotCompatibilityIssue.unsupportedFormatVersion,
         path: r'$.formatVersion',
-        message: 'The current codec emits only snapshot format version '
+        message:
+            'The current codec emits only snapshot format version '
             '${StoryRuntimeSnapshotMetadata.currentFormatVersion}.',
       );
     }
@@ -78,7 +80,8 @@ final class StoryRuntimeSnapshotCodec {
         issue: StoryRuntimeSnapshotCompatibilityIssue
             .unsupportedRuntimeContractVersion,
         path: r'$.runtimeContractVersion',
-        message: 'The current codec emits only runtime contract version '
+        message:
+            'The current codec emits only runtime contract version '
             '${StoryRuntimeSnapshotMetadata.currentRuntimeContractVersion}.',
       );
     }
@@ -97,7 +100,8 @@ final class StoryRuntimeSnapshotCodec {
   }
 
   /// Encodes [snapshot] as compact deterministic JSON.
-  String encodeJson(StoryRuntimeSnapshot snapshot) => jsonEncode(encode(snapshot));
+  String encodeJson(StoryRuntimeSnapshot snapshot) =>
+      jsonEncode(encode(snapshot));
 
   /// Decodes one runtime-snapshot data tree against [project].
   ///
@@ -169,7 +173,8 @@ final class StoryRuntimeSnapshotCodec {
       throw StoryRuntimeSnapshotCompatibilityException(
         issue: StoryRuntimeSnapshotCompatibilityIssue.unsupportedFormatVersion,
         path: r'$.formatVersion',
-        message: 'Snapshot format version $version is newer than supported '
+        message:
+            'Snapshot format version $version is newer than supported '
             'version $current.',
       );
     }
@@ -180,7 +185,8 @@ final class StoryRuntimeSnapshotCodec {
       throw StoryRuntimeSnapshotCompatibilityException(
         issue: StoryRuntimeSnapshotCompatibilityIssue.unsupportedFormatVersion,
         path: r'$.formatVersion',
-        message: 'No migration path exists from snapshot format version '
+        message:
+            'No migration path exists from snapshot format version '
             '$version to $current.',
       );
     }
@@ -203,24 +209,23 @@ final class StoryRuntimeSnapshotCodec {
     Map<String, Object?> root, {
     required StoryProject project,
   }) {
-    _allowOnly(
-      root,
-      const {
-        'documentType',
-        'formatVersion',
-        'runtimeContractVersion',
-        'projectId',
-        'status',
-        'state',
-        'currentEventId',
-        'history',
-        'randomState',
-        'maxAutomaticTransitions',
-      },
-      r'$',
-    );
+    _allowOnly(root, const {
+      'documentType',
+      'formatVersion',
+      'runtimeContractVersion',
+      'projectId',
+      'status',
+      'state',
+      'currentEventId',
+      'history',
+      'randomState',
+      'maxAutomaticTransitions',
+    }, r'$');
 
-    final type = _string(_required(root, 'documentType', r'$'), r'$.documentType');
+    final type = _string(
+      _required(root, 'documentType', r'$'),
+      r'$.documentType',
+    );
     if (type != documentType) {
       throw StoryRuntimeSnapshotFormatException(
         r'$.documentType',
@@ -242,7 +247,8 @@ final class StoryRuntimeSnapshotCodec {
         issue: StoryRuntimeSnapshotCompatibilityIssue
             .unsupportedRuntimeContractVersion,
         path: r'$.runtimeContractVersion',
-        message: 'Snapshot runtime contract version $runtimeContractVersion '
+        message:
+            'Snapshot runtime contract version $runtimeContractVersion '
             'is not supported by this engine runtime.',
       );
     }
@@ -255,15 +261,13 @@ final class StoryRuntimeSnapshotCodec {
       throw StoryRuntimeSnapshotCompatibilityException(
         issue: StoryRuntimeSnapshotCompatibilityIssue.projectIdMismatch,
         path: r'$.projectId',
-        message: 'Snapshot belongs to ${projectId.value}, but the supplied '
+        message:
+            'Snapshot belongs to ${projectId.value}, but the supplied '
             'project is ${project.id.value}.',
       );
     }
 
-    final status = _decodeStatus(
-      _required(root, 'status', r'$'),
-      r'$.status',
-    );
+    final status = _decodeStatus(_required(root, 'status', r'$'), r'$.status');
 
     final stateEncoded = _required(root, 'state', r'$');
     final state = stateEncoded == null
@@ -284,10 +288,7 @@ final class StoryRuntimeSnapshotCodec {
         status: status,
         state: state,
         currentEventId: currentEventId,
-        history: _decodeHistory(
-          _required(root, 'history', r'$'),
-          r'$.history',
-        ),
+        history: _decodeHistory(_required(root, 'history', r'$'), r'$.history'),
         randomState: _decodeRandomState(
           _required(root, 'randomState', r'$'),
           r'$.randomState',
@@ -353,7 +354,8 @@ StoryState _decodeState(
       throw StoryRuntimeSnapshotCompatibilityException(
         issue: StoryRuntimeSnapshotCompatibilityIssue.stateSchemaMismatch,
         path: '$entryPath.variableId',
-        message: 'Snapshot state references undeclared variable '
+        message:
+            'Snapshot state references undeclared variable '
             '${variableId.value}.',
       );
     }
@@ -365,7 +367,8 @@ StoryState _decodeState(
       throw StoryRuntimeSnapshotCompatibilityException(
         issue: StoryRuntimeSnapshotCompatibilityIssue.stateSchemaMismatch,
         path: '$entryPath.value',
-        message: 'Snapshot value for ${variableId.value} has type '
+        message:
+            'Snapshot value for ${variableId.value} has type '
             '${value.type.name}, but the project declares '
             '${definition.type.name}.',
       );
@@ -389,21 +392,23 @@ Map<String, Object?> _encodeHistory(StoryRuntimeHistory history) =>
       'steps': history.steps.map(_encodeHistoryStep).toList(growable: false),
     };
 
-Map<String, Object?> _encodeHistoryStep(StoryRuntimeStep step) => switch (step) {
-  StoryEventEnteredStep(:final eventId) => <String, Object?>{
-    'type': 'event_entered',
-    'eventId': eventId.value,
-  },
-  StoryChoiceSelectedStep(:final eventId, :final choiceId) => <String, Object?>{
-    'type': 'choice_selected',
-    'eventId': eventId.value,
-    'choiceId': choiceId.value,
-  },
-  StoryEventContinuedStep(:final eventId) => <String, Object?>{
-    'type': 'event_continued',
-    'eventId': eventId.value,
-  },
-};
+Map<String, Object?> _encodeHistoryStep(StoryRuntimeStep step) =>
+    switch (step) {
+      StoryEventEnteredStep(:final eventId) => <String, Object?>{
+        'type': 'event_entered',
+        'eventId': eventId.value,
+      },
+      StoryChoiceSelectedStep(:final eventId, :final choiceId) =>
+        <String, Object?>{
+          'type': 'choice_selected',
+          'eventId': eventId.value,
+          'choiceId': choiceId.value,
+        },
+      StoryEventContinuedStep(:final eventId) => <String, Object?>{
+        'type': 'event_continued',
+        'eventId': eventId.value,
+      },
+    };
 
 StoryRuntimeHistory _decodeHistory(Object? encoded, String path) {
   final map = _map(encoded, path);
@@ -453,24 +458,24 @@ Map<String, Object?> _encodeRandomState(StoryRuntimeRandomState state) =>
 
 StoryRuntimeRandomState _decodeRandomState(Object? encoded, String path) {
   final map = _map(encoded, path);
-  _allowOnly(
-    map,
-    const {'algorithmId', 'algorithmVersion', 'stateWords'},
-    path,
-  );
-  final words = _list(
-    _required(map, 'stateWords', path),
-    '$path.stateWords',
-  ).indexed.map((entry) {
-    final value = _integer(entry.$2, '$path.stateWords[${entry.$1}]');
-    if (value < 0 || value > StoryIntegerValue.maxPortableValue) {
-      throw StoryRuntimeSnapshotFormatException(
-        '$path.stateWords[${entry.$1}]',
-        'Random state word must be within the portable exact integer range.',
-      );
-    }
-    return value;
-  }).toList(growable: false);
+  _allowOnly(map, const {
+    'algorithmId',
+    'algorithmVersion',
+    'stateWords',
+  }, path);
+  final words = _list(_required(map, 'stateWords', path), '$path.stateWords')
+      .indexed
+      .map((entry) {
+        final value = _integer(entry.$2, '$path.stateWords[${entry.$1}]');
+        if (value < 0 || value > StoryIntegerValue.maxPortableValue) {
+          throw StoryRuntimeSnapshotFormatException(
+            '$path.stateWords[${entry.$1}]',
+            'Random state word must be within the portable exact integer range.',
+          );
+        }
+        return value;
+      })
+      .toList(growable: false);
 
   try {
     return StoryRuntimeRandomState(
@@ -670,7 +675,10 @@ double _number(Object? value, String path) {
   }
   final result = value.toDouble();
   if (!result.isFinite) {
-    throw StoryRuntimeSnapshotFormatException(path, 'Expected a finite number.');
+    throw StoryRuntimeSnapshotFormatException(
+      path,
+      'Expected a finite number.',
+    );
   }
   return result;
 }

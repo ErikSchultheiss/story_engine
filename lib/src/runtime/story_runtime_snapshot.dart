@@ -119,11 +119,8 @@ final class StoryRuntimeRandomState {
           _intListsEqual(other.stateWords, stateWords);
 
   @override
-  int get hashCode => Object.hash(
-    algorithmId,
-    algorithmVersion,
-    Object.hashAll(stateWords),
-  );
+  int get hashCode =>
+      Object.hash(algorithmId, algorithmVersion, Object.hashAll(stateWords));
 
   @override
   String toString() =>

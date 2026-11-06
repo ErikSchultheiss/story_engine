@@ -1,0 +1,33 @@
+{
+  "contract": "open_story.runtime_capability_profile",
+  "contractVersion": 1,
+  "profileId": "example_rpg",
+  "profileVersion": 1,
+  "requiredFeatures": [
+    {
+      "featureId": "content_versioning",
+      "minimumRevision": 1
+    },
+    {
+      "featureId": "host_actions",
+      "minimumRevision": 1,
+      "maximumRevision": 1
+    },
+    {
+      "featureId": "modular_loading",
+      "minimumRevision": 1,
+      "maximumRevision": 1
+    }
+  ],
+  "requiredExtensions": [
+    {
+      "namespace": "com.example.combat",
+      "minimumSchemaVersion": 2,
+      "maximumSchemaVersion": 4
+    },
+    {
+      "namespace": "com.example.quest",
+      "minimumSchemaVersion": 1
+    }
+  ]
+}

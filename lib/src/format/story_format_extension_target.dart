@@ -79,7 +79,8 @@ final class StoryFormatVariableExtensionTarget
           other.variableId == variableId;
 
   @override
-  int get hashCode => Object.hash(StoryFormatVariableExtensionTarget, variableId);
+  int get hashCode =>
+      Object.hash(StoryFormatVariableExtensionTarget, variableId);
 
   @override
   String toString() => 'StoryFormatVariableExtensionTarget($variableId)';

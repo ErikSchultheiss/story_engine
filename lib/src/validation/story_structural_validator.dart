@@ -6,6 +6,7 @@ import 'story_diagnostic_code.dart';
 import 'story_diagnostic_location.dart';
 import 'story_diagnostic_reference.dart';
 import 'story_diagnostic_severity.dart';
+import 'story_validation_context.dart';
 
 /// Stage 3B structural/identity validation over representable authored data.
 ///
@@ -14,10 +15,30 @@ import 'story_diagnostic_severity.dart';
 final class StoryStructuralValidator {
   const StoryStructuralValidator();
 
-  List<StoryDiagnostic> validate(StoryProject project) {
+  List<StoryDiagnostic> validate(
+    StoryProject project, {
+    required StoryValidationContext context,
+  }) {
     final diagnostics = <StoryDiagnostic>[];
 
-    _validateEntryEvent(project, diagnostics);
+    _validateEntryEvent(project, diagnostics, context);
+    final eventIds = project.events.map((event) => event.id).toSet();
+    for (final root in context.entryEventIds) {
+      if (root == project.entryEventId ||
+          eventIds.contains(root) ||
+          context.knownExternalEventIds.contains(root)) {
+        continue;
+      }
+      diagnostics.add(
+        StoryDiagnostic(
+          code: StoryDiagnosticCode.structureValidationEntryNotFound,
+          severity: StoryDiagnosticSeverity.error,
+          message: 'Validation entry event does not exist: ${root.value}.',
+          location: StoryDiagnosticLocation.project(projectId: project.id),
+          references: [StoryDiagnosticReference.event(root)],
+        ),
+      );
+    }
     _validateEventIdentityAndFlow(project, diagnostics);
     _validateChoiceIdentityAndCompleteness(project, diagnostics);
 
@@ -27,6 +48,7 @@ final class StoryStructuralValidator {
   void _validateEntryEvent(
     StoryProject project,
     List<StoryDiagnostic> diagnostics,
+    StoryValidationContext context,
   ) {
     final entryEventId = project.entryEventId;
     final location = StoryDiagnosticLocation.project(
@@ -35,6 +57,7 @@ final class StoryStructuralValidator {
     );
 
     if (entryEventId == null) {
+      if (!context.requiresDefaultEntry) return;
       diagnostics.add(
         StoryDiagnostic(
           code: StoryDiagnosticCode.structureMissingEntryEvent,
@@ -49,7 +72,8 @@ final class StoryStructuralValidator {
     final hasMatchingEvent = project.events.any(
       (event) => event.id == entryEventId,
     );
-    if (!hasMatchingEvent) {
+    if (!hasMatchingEvent &&
+        !context.knownExternalEventIds.contains(entryEventId)) {
       diagnostics.add(
         StoryDiagnostic(
           code: StoryDiagnosticCode.structureEntryEventNotFound,
@@ -105,7 +129,8 @@ final class StoryStructuralValidator {
           StoryDiagnostic(
             code: StoryDiagnosticCode.structureEventMissingFlow,
             severity: StoryDiagnosticSeverity.error,
-            message: 'Event has no flow. Add choices, a continuation '
+            message:
+                'Event has no flow. Add choices, a continuation '
                 'transition, or an automatic transition.',
             location: eventLocation,
             references: [StoryDiagnosticReference.event(event.id)],
@@ -121,7 +146,8 @@ final class StoryStructuralValidator {
           StoryDiagnostic(
             code: StoryDiagnosticCode.structureEventAmbiguousFlow,
             severity: StoryDiagnosticSeverity.error,
-            message: 'Event defines multiple flow modes: '
+            message:
+                'Event defines multiple flow modes: '
                 '${activeModes.join(', ')}. Exactly one is allowed.',
             location: eventLocation,
             references: [StoryDiagnosticReference.event(event.id)],
@@ -178,11 +204,7 @@ final class StoryStructuralValidator {
                 projectId: project.id,
                 eventId: event.id,
                 choiceId: choice.id,
-                path: _choicePath(
-                  eventIndex,
-                  choiceIndex,
-                  field: 'transition',
-                ),
+                path: _choicePath(eventIndex, choiceIndex, field: 'transition'),
               ),
               references: [StoryDiagnosticReference.choice(choice.id)],
             ),
@@ -193,14 +215,12 @@ final class StoryStructuralValidator {
   }
 }
 
-List<StoryDiagnosticPathSegment> _eventPath(
-  int eventIndex, {
-  String? field,
-}) => <StoryDiagnosticPathSegment>[
-  const StoryDiagnosticPathSegment.field('events'),
-  StoryDiagnosticPathSegment.index(eventIndex),
-  if (field != null) StoryDiagnosticPathSegment.field(field),
-];
+List<StoryDiagnosticPathSegment> _eventPath(int eventIndex, {String? field}) =>
+    <StoryDiagnosticPathSegment>[
+      const StoryDiagnosticPathSegment.field('events'),
+      StoryDiagnosticPathSegment.index(eventIndex),
+      if (field != null) StoryDiagnosticPathSegment.field(field),
+    ];
 
 List<StoryDiagnosticPathSegment> _choicePath(
   int eventIndex,

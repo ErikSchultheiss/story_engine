@@ -8,15 +8,7 @@ void main() {
       () {
         final project = _buildRandomLoopProject();
         final codec = StoryRuntimeSnapshotCodec();
-        final seeds = <int>[
-          0,
-          1,
-          2,
-          3,
-          42,
-          123456789,
-          4294967295,
-        ];
+        final seeds = <int>[0, 1, 2, 3, 42, 123456789, 4294967295];
         final checkpointDepths = <int>[0, 1, 2, 3, 5, 8, 13];
 
         for (final seed in seeds) {
@@ -97,8 +89,10 @@ void main() {
       () {
         final project = _buildRandomLoopProject();
         final codec = StoryRuntimeSnapshotCodec();
-        final valid = (StoryEngine(project: project, randomSeed: 89)..start())
-            .createSnapshot();
+        final valid = (StoryEngine(
+          project: project,
+          randomSeed: 89,
+        )..start()).createSnapshot();
 
         final wrongAlgorithm = _withRandomState(
           valid,

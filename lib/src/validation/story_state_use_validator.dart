@@ -14,6 +14,8 @@ import 'story_diagnostic_code.dart';
 import 'story_diagnostic_location.dart';
 import 'story_diagnostic_reference.dart';
 import 'story_diagnostic_severity.dart';
+import 'story_project_analysis.dart';
+import 'story_validation_context.dart';
 
 /// Stage 3E conservative initialization and state-use analysis.
 ///
@@ -25,22 +27,40 @@ import 'story_diagnostic_severity.dart';
 final class StoryStateUseValidator {
   const StoryStateUseValidator();
 
-  List<StoryDiagnostic> validate(StoryProject project) {
+  List<StoryDiagnostic> validate(
+    StoryProject project, {
+    required StoryProjectAnalysis analysis,
+    required StoryValidationContext context,
+  }) {
     final diagnostics = <StoryDiagnostic>[];
     final variableIndices = <StoryVariableId, int>{};
     for (var index = 0; index < project.stateSchema.variables.length; index++) {
       variableIndices[project.stateSchema.variables[index].id] = index;
     }
 
-    final usage = _collectUsage(project);
+    final usage = <StoryVariableId, _VariableUsage>{
+      for (final definition in project.stateSchema.variables)
+        definition.id: _VariableUsage(),
+    };
+    for (final use in analysis.variableUses) {
+      final variableUsage = usage[use.variableId];
+      if (variableUsage == null) continue;
+      variableUsage.references++;
+      if (use.writesValue) {
+        variableUsage.writes++;
+      } else {
+        variableUsage.reads++;
+      }
+    }
     _addUsageDiagnostics(
       project: project,
       variableIndices: variableIndices,
       usage: usage,
+      assumesInitialState: context.assumesInitialState,
       diagnostics: diagnostics,
     );
 
-    final incomingStates = _computeIncomingStates(project);
+    final incomingStates = _computeIncomingStates(project, context);
     if (incomingStates != null) {
       _addInitializationDiagnostics(
         project: project,
@@ -53,126 +73,11 @@ final class StoryStateUseValidator {
     return diagnostics;
   }
 
-  Map<StoryVariableId, _VariableUsage> _collectUsage(StoryProject project) {
-    final usage = <StoryVariableId, _VariableUsage>{
-      for (final definition in project.stateSchema.variables)
-        definition.id: _VariableUsage(),
-    };
-
-    for (final event in project.events) {
-      final availability = event.availabilityCondition;
-      if (availability != null) {
-        _collectConditionUsage(availability, usage);
-      }
-      for (final effect in event.entryEffects) {
-        _collectEffectUsage(effect, usage);
-      }
-      for (final choice in event.choices) {
-        final availability = choice.availabilityCondition;
-        if (availability != null) {
-          _collectConditionUsage(availability, usage);
-        }
-        for (final effect in choice.effects) {
-          _collectEffectUsage(effect, usage);
-        }
-        final transition = choice.transition;
-        if (transition != null) {
-          _collectTransitionUsage(transition, usage);
-        }
-      }
-      final continuation = event.continuationTransition;
-      if (continuation != null) {
-        _collectTransitionUsage(continuation, usage);
-      }
-      final automatic = event.automaticTransition;
-      if (automatic != null) {
-        _collectTransitionUsage(automatic, usage);
-      }
-    }
-
-    return usage;
-  }
-
-  void _collectConditionUsage(
-    StoryCondition condition,
-    Map<StoryVariableId, _VariableUsage> usage,
-  ) {
-    switch (condition) {
-      case StoryAllCondition(:final conditions):
-        for (final child in conditions) {
-          _collectConditionUsage(child, usage);
-        }
-      case StoryAnyCondition(:final conditions):
-        for (final child in conditions) {
-          _collectConditionUsage(child, usage);
-        }
-      case StoryNotCondition(:final condition):
-        _collectConditionUsage(condition, usage);
-      case StoryVariableIsSetCondition(:final variableId):
-        final variableUsage = usage[variableId];
-        if (variableUsage != null) {
-          variableUsage.references++;
-          variableUsage.reads++;
-        }
-      case StoryVariableIsUnsetCondition(:final variableId):
-        final variableUsage = usage[variableId];
-        if (variableUsage != null) {
-          variableUsage.references++;
-          variableUsage.reads++;
-        }
-      case StoryVariableComparisonCondition(:final variableId):
-        final variableUsage = usage[variableId];
-        if (variableUsage != null) {
-          variableUsage.references++;
-          variableUsage.reads++;
-        }
-    }
-  }
-
-  void _collectEffectUsage(
-    StoryEffect effect,
-    Map<StoryVariableId, _VariableUsage> usage,
-  ) {
-    final variableId = switch (effect) {
-      StorySetVariableEffect(:final variableId) => variableId,
-      StoryUnsetVariableEffect(:final variableId) => variableId,
-      StoryIncrementVariableEffect(:final variableId) => variableId,
-      StoryDecrementVariableEffect(:final variableId) => variableId,
-    };
-    final variableUsage = usage[variableId];
-    if (variableUsage == null) {
-      return;
-    }
-    variableUsage.references++;
-    variableUsage.writes++;
-  }
-
-  void _collectTransitionUsage(
-    StoryTransition transition,
-    Map<StoryVariableId, _VariableUsage> usage,
-  ) {
-    switch (transition) {
-      case StoryEventTransition():
-        return;
-      case StoryTerminalTransition():
-        return;
-      case StoryConditionalTransition(:final branches, :final fallback):
-        for (final branch in branches) {
-          _collectConditionUsage(branch.condition, usage);
-          _collectTransitionUsage(branch.transition, usage);
-        }
-        _collectTransitionUsage(fallback, usage);
-      case StoryWeightedTransition(:final options):
-        for (final option in options) {
-          _collectTransitionUsage(option.transition, usage);
-        }
-    }
-  }
-
   void _addUsageDiagnostics({
     required StoryProject project,
     required Map<StoryVariableId, int> variableIndices,
     required Map<StoryVariableId, _VariableUsage> usage,
+    required bool assumesInitialState,
     required List<StoryDiagnostic> diagnostics,
   }) {
     for (final definition in project.stateSchema.variables) {
@@ -189,7 +94,8 @@ final class StoryStateUseValidator {
           StoryDiagnostic(
             code: StoryDiagnosticCode.stateVariableNeverReferenced,
             severity: StoryDiagnosticSeverity.information,
-            message: 'Variable ${definition.id} is declared but never '
+            message:
+                'Variable ${definition.id} is declared but never '
                 'referenced by authored conditions or effects.',
             location: location,
             references: [reference],
@@ -203,7 +109,8 @@ final class StoryStateUseValidator {
           StoryDiagnostic(
             code: StoryDiagnosticCode.stateVariableWrittenNeverRead,
             severity: StoryDiagnosticSeverity.information,
-            message: 'Variable ${definition.id} is written but never read by '
+            message:
+                'Variable ${definition.id} is written but never read by '
                 'an authored condition.',
             location: location,
             references: [reference],
@@ -214,12 +121,14 @@ final class StoryStateUseValidator {
 
       if (variableUsage.reads > 0 &&
           variableUsage.writes == 0 &&
-          definition.initialValue == null) {
+          definition.initialValue == null &&
+          assumesInitialState) {
         diagnostics.add(
           StoryDiagnostic(
             code: StoryDiagnosticCode.stateVariableReadWithoutInitialization,
             severity: StoryDiagnosticSeverity.warning,
-            message: 'Variable ${definition.id} is read but has no initial '
+            message:
+                'Variable ${definition.id} is read but has no initial '
                 'value and is never assigned by an authored effect.',
             location: location,
             references: [reference],
@@ -231,11 +140,9 @@ final class StoryStateUseValidator {
 
   Map<StoryEventId, _PresenceState>? _computeIncomingStates(
     StoryProject project,
+    StoryValidationContext context,
   ) {
-    final entryEventId = project.entryEventId;
-    if (entryEventId == null) {
-      return null;
-    }
+    final roots = context.rootsFor(project);
 
     final indexedEvents = <StoryEventId, _IndexedEvent>{};
     for (var index = 0; index < project.events.length; index++) {
@@ -247,15 +154,16 @@ final class StoryStateUseValidator {
       }
       indexedEvents[event.id] = _IndexedEvent(index: index, event: event);
     }
-    if (!indexedEvents.containsKey(entryEventId)) {
-      return null;
-    }
-
-    final incoming = <StoryEventId, _PresenceState>{};
-    incoming[entryEventId] = _PresenceState.initial(project.stateSchema);
-
-    final queue = <StoryEventId>[entryEventId];
-    final queued = <StoryEventId>{entryEventId};
+    final localRoots = roots.where(indexedEvents.containsKey).toSet();
+    if (localRoots.isEmpty) return null;
+    final seed = context.assumesInitialState
+        ? _PresenceState.initial(project.stateSchema)
+        : _PresenceState.unknown(project.stateSchema);
+    final incoming = <StoryEventId, _PresenceState>{
+      for (final root in localRoots) root: seed,
+    };
+    final queue = <StoryEventId>[...localRoots];
+    final queued = <StoryEventId>{...localRoots};
     var cursor = 0;
 
     while (cursor < queue.length) {
@@ -331,7 +239,8 @@ final class StoryStateUseValidator {
     required void Function(
       StoryEventId destinationEventId,
       _PresenceState state,
-    ) onDestination,
+    )
+    onDestination,
   }) {
     final flowModeCount =
         (event.choices.isNotEmpty ? 1 : 0) +
@@ -384,7 +293,11 @@ final class StoryStateUseValidator {
     }
 
     if (event.choices.isNotEmpty) {
-      for (var choiceIndex = 0; choiceIndex < event.choices.length; choiceIndex++) {
+      for (
+        var choiceIndex = 0;
+        choiceIndex < event.choices.length;
+        choiceIndex++
+      ) {
         final choice = event.choices[choiceIndex];
         _walkChoice(
           project: project,
@@ -455,7 +368,8 @@ final class StoryStateUseValidator {
     required void Function(
       StoryEventId destinationEventId,
       _PresenceState state,
-    ) onDestination,
+    )
+    onDestination,
   }) {
     final choicePath = _choicePath(eventIndex, choiceIndex);
     var state = incomingState;
@@ -487,10 +401,7 @@ final class StoryStateUseValidator {
       project: project,
       eventId: eventId,
       choiceId: choice.id,
-      path: [
-        ...choicePath,
-        const StoryDiagnosticPathSegment.field('effects'),
-      ],
+      path: [...choicePath, const StoryDiagnosticPathSegment.field('effects')],
       variableIndices: variableIndices,
       emitDiagnostics: emitDiagnostics,
       diagnostics: diagnostics,
@@ -619,9 +530,9 @@ final class StoryStateUseValidator {
               : StoryDiagnosticSeverity.warning,
           message: definitelyUnset
               ? 'Numeric adjustment targets $variableId, which is definitely '
-                  'unset at this reachable effect.'
+                    'unset at this reachable effect.'
               : 'Numeric adjustment targets $variableId, which may be unset '
-                  'on a reachable path.',
+                    'on a reachable path.',
           location: StoryDiagnosticLocation.effect(
             projectId: project.id,
             eventId: eventId,
@@ -724,10 +635,7 @@ final class StoryStateUseValidator {
           project: project,
           eventId: eventId,
           choiceId: choiceId,
-          path: [
-            ...path,
-            const StoryDiagnosticPathSegment.field('condition'),
-          ],
+          path: [...path, const StoryDiagnosticPathSegment.field('condition')],
           variableIndices: variableIndices,
           emitDiagnostics: emitDiagnostics,
           diagnostics: diagnostics,
@@ -752,72 +660,95 @@ final class StoryStateUseValidator {
           whenTrue: state.narrow(variableId, _PresenceState.unset),
           whenFalse: state.narrow(variableId, _PresenceState.set),
         );
-      case StoryVariableComparisonCondition(
-          :final variableId,
-          :final operator,
-          :final value,
-        ):
-        final definition = project.stateSchema.definitionFor(variableId);
-        if (definition == null || definition.type != value.type) {
-          return const _ConditionOutcome.unreachable();
-        }
-        final isOrdering = switch (operator) {
-          StoryComparisonOperator.lessThan ||
-          StoryComparisonOperator.lessThanOrEqual ||
-          StoryComparisonOperator.greaterThan ||
-          StoryComparisonOperator.greaterThanOrEqual => true,
-          StoryComparisonOperator.equal || StoryComparisonOperator.notEqual =>
-            false,
-        };
-        if (isOrdering &&
-            definition.type != StoryValueType.integer &&
-            definition.type != StoryValueType.number) {
-          return const _ConditionOutcome.unreachable();
-        }
-
-        final presence = state.presenceOf(variableId);
-        if (emitDiagnostics && (presence & _PresenceState.unset) != 0) {
-          diagnostics!.add(
-            StoryDiagnostic(
-              code: StoryDiagnosticCode.stateReadMayBeUnset,
-              severity: StoryDiagnosticSeverity.warning,
-              message: (presence & _PresenceState.set) == 0
-                  ? 'Comparison reads $variableId, which is definitely unset '
-                      'at this reachable condition. Unset comparisons evaluate '
-                      'to false; use an explicit is-set/is-unset predicate when '
-                      'that distinction is intentional.'
-                  : 'Comparison reads $variableId, which may be unset on a '
-                      'reachable path. Unset comparisons evaluate to false; '
-                      'guard the value read explicitly when needed.',
-              location: StoryDiagnosticLocation.condition(
-                projectId: project.id,
-                eventId: eventId,
-                choiceId: choiceId,
-                path: [
-                  ...path,
-                  const StoryDiagnosticPathSegment.field('variableId'),
-                ],
-              ),
-              references: [StoryDiagnosticReference.variable(variableId)],
-              relatedLocations: [
-                _variableLocation(
-                  project: project,
-                  variableId: variableId,
-                  variableIndices: variableIndices,
-                ),
-              ],
-            ),
-          );
-        }
-
-        // Unset is not a scalar value and therefore can never satisfy a scalar
-        // comparison. A true comparison proves the variable is set; a false
-        // result may still come from either a set value or an unset variable.
-        return _ConditionOutcome(
-          whenTrue: state.narrow(variableId, _PresenceState.set),
-          whenFalse: state,
+      case StoryVariableComparisonCondition():
+        return _analyzeComparisonCondition(
+          condition: condition,
+          state: state,
+          project: project,
+          eventId: eventId,
+          choiceId: choiceId,
+          path: path,
+          variableIndices: variableIndices,
+          emitDiagnostics: emitDiagnostics,
+          diagnostics: diagnostics,
         );
     }
+  }
+
+  _ConditionOutcome _analyzeComparisonCondition({
+    required StoryVariableComparisonCondition condition,
+    required _PresenceState state,
+    required StoryProject project,
+    required StoryEventId eventId,
+    required StoryChoiceId? choiceId,
+    required List<StoryDiagnosticPathSegment> path,
+    required Map<StoryVariableId, int> variableIndices,
+    required bool emitDiagnostics,
+    required List<StoryDiagnostic>? diagnostics,
+  }) {
+    final variableId = condition.variableId;
+    final operator = condition.operator;
+    final value = condition.value;
+    final definition = project.stateSchema.definitionFor(variableId);
+    if (definition == null || definition.type != value.type) {
+      return const _ConditionOutcome.unreachable();
+    }
+    final isOrdering = switch (operator) {
+      StoryComparisonOperator.lessThan ||
+      StoryComparisonOperator.lessThanOrEqual ||
+      StoryComparisonOperator.greaterThan ||
+      StoryComparisonOperator.greaterThanOrEqual => true,
+      StoryComparisonOperator.equal ||
+      StoryComparisonOperator.notEqual => false,
+    };
+    if (isOrdering &&
+        definition.type != StoryValueType.integer &&
+        definition.type != StoryValueType.number) {
+      return const _ConditionOutcome.unreachable();
+    }
+
+    final presence = state.presenceOf(variableId);
+    if (emitDiagnostics && (presence & _PresenceState.unset) != 0) {
+      diagnostics!.add(
+        StoryDiagnostic(
+          code: StoryDiagnosticCode.stateReadMayBeUnset,
+          severity: StoryDiagnosticSeverity.warning,
+          message: (presence & _PresenceState.set) == 0
+              ? 'Comparison reads $variableId, which is definitely unset '
+                    'at this reachable condition. Unset comparisons evaluate '
+                    'to false; use an explicit is-set/is-unset predicate when '
+                    'that distinction is intentional.'
+              : 'Comparison reads $variableId, which may be unset on a '
+                    'reachable path. Unset comparisons evaluate to false; '
+                    'guard the value read explicitly when needed.',
+          location: StoryDiagnosticLocation.condition(
+            projectId: project.id,
+            eventId: eventId,
+            choiceId: choiceId,
+            path: [
+              ...path,
+              const StoryDiagnosticPathSegment.field('variableId'),
+            ],
+          ),
+          references: [StoryDiagnosticReference.variable(variableId)],
+          relatedLocations: [
+            _variableLocation(
+              project: project,
+              variableId: variableId,
+              variableIndices: variableIndices,
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Unset is not a scalar value and therefore can never satisfy a scalar
+    // comparison. A true comparison proves the variable is set; a false
+    // result may still come from either a set value or an unset variable.
+    return _ConditionOutcome(
+      whenTrue: state.narrow(variableId, _PresenceState.set),
+      whenFalse: state,
+    );
   }
 
   void _walkTransition({
@@ -833,7 +764,8 @@ final class StoryStateUseValidator {
     required void Function(
       StoryEventId destinationEventId,
       _PresenceState state,
-    ) onDestination,
+    )
+    onDestination,
   }) {
     if (!state.reachable) {
       return;
@@ -914,10 +846,7 @@ final class StoryStateUseValidator {
           project: project,
           eventId: eventId,
           choiceId: choiceId,
-          path: [
-            ...path,
-            const StoryDiagnosticPathSegment.field('fallback'),
-          ],
+          path: [...path, const StoryDiagnosticPathSegment.field('fallback')],
           variableIndices: variableIndices,
           emitDiagnostics: emitDiagnostics,
           diagnostics: diagnostics,
@@ -967,8 +896,8 @@ final class _ConditionOutcome {
   const _ConditionOutcome({required this.whenTrue, required this.whenFalse});
 
   const _ConditionOutcome.unreachable()
-      : whenTrue = const _PresenceState._(reachable: false, presence: {}),
-        whenFalse = const _PresenceState._(reachable: false, presence: {});
+    : whenTrue = const _PresenceState._(reachable: false, presence: {}),
+      whenFalse = const _PresenceState._(reachable: false, presence: {});
 
   final _PresenceState whenTrue;
   final _PresenceState whenFalse;
@@ -986,6 +915,13 @@ final class _PresenceState {
       }),
     );
   }
+
+  factory _PresenceState.unknown(StoryStateSchema schema) => _PresenceState._(
+    reachable: true,
+    presence: Map.unmodifiable({
+      for (final definition in schema.variables) definition.id: set | unset,
+    }),
+  );
 
   factory _PresenceState.unreachable() =>
       const _PresenceState._(reachable: false, presence: {});
@@ -1060,12 +996,12 @@ final class _PresenceState {
 
   @override
   int get hashCode => Object.hash(
-        _PresenceState,
-        reachable,
-        Object.hashAll(
-          presence.entries.map((entry) => Object.hash(entry.key, entry.value)),
-        ),
-      );
+    _PresenceState,
+    reachable,
+    Object.hashAll(
+      presence.entries.map((entry) => Object.hash(entry.key, entry.value)),
+    ),
+  );
 }
 
 bool _presenceMapsEqual(
@@ -1087,14 +1023,11 @@ bool _presenceMapsEqual(
 }
 
 List<StoryDiagnosticPathSegment> _eventPath(int eventIndex) => [
-      const StoryDiagnosticPathSegment.field('events'),
-      StoryDiagnosticPathSegment.index(eventIndex),
-    ];
+  const StoryDiagnosticPathSegment.field('events'),
+  StoryDiagnosticPathSegment.index(eventIndex),
+];
 
-List<StoryDiagnosticPathSegment> _choicePath(
-  int eventIndex,
-  int choiceIndex,
-) =>
+List<StoryDiagnosticPathSegment> _choicePath(int eventIndex, int choiceIndex) =>
     [
       ..._eventPath(eventIndex),
       const StoryDiagnosticPathSegment.field('choices'),

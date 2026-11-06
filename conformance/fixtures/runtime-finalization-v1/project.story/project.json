@@ -1,0 +1,36 @@
+{
+  "formatId": "story_engine.story_format",
+  "formatVersion": 1,
+  "project": {
+    "id": "runtime_finalization_v1",
+    "stateSchema": {
+      "variables": [
+        {
+          "id": "score",
+          "type": "integer",
+          "initialValue": {
+            "type": "integer",
+            "value": 0
+          }
+        },
+        {
+          "id": "flag",
+          "type": "boolean",
+          "initialValue": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ]
+    },
+    "entryEventId": "root",
+    "eventIds": [
+      "root",
+      "done_a",
+      "done_b",
+      "reject",
+      "guarded",
+      "loop"
+    ]
+  }
+}

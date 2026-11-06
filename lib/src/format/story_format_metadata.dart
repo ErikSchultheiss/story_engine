@@ -7,8 +7,8 @@ final class StoryFormatMetadata {
   /// Creates metadata for the only Story Format version this package currently
   /// understands as a public authored-format document.
   const StoryFormatMetadata.current()
-      : formatId = currentFormatId,
-        formatVersion = currentFormatVersion;
+    : formatId = currentFormatId,
+      formatVersion = currentFormatVersion;
 
   /// Stable authored-format identity.
   static const String currentFormatId = 'story_engine.story_format';

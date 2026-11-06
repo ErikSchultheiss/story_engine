@@ -1,0 +1,144 @@
+{
+  "id": "evt_0004",
+  "alias": "corridor",
+  "presentation": {
+    "title": "Main Corridor",
+    "body": "The corridor splits between a cellar stairway and a reinforced archive door. An alarm control box hangs beside the wall."
+  },
+  "entryEffects": [],
+  "choices": [
+    {
+      "id": "ch_0011",
+      "presentation": {
+        "text": "Enter the cellar"
+      },
+      "availabilityCondition": {
+        "kind": "all",
+        "conditions": [
+          {
+            "kind": "variable_comparison",
+            "variableId": "var_0001",
+            "operator": "equal",
+            "value": {
+              "type": "boolean",
+              "value": true
+            }
+          },
+          {
+            "kind": "not",
+            "condition": {
+              "kind": "variable_comparison",
+              "variableId": "var_0005",
+              "operator": "equal",
+              "value": {
+                "type": "boolean",
+                "value": true
+              }
+            }
+          }
+        ]
+      },
+      "effects": [],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0006"
+      }
+    },
+    {
+      "id": "ch_0012",
+      "presentation": {
+        "text": "Reset the alarm wiring"
+      },
+      "availabilityCondition": {
+        "kind": "variable_comparison",
+        "variableId": "var_0005",
+        "operator": "equal",
+        "value": {
+          "type": "boolean",
+          "value": true
+        }
+      },
+      "effects": [
+        {
+          "kind": "unset_variable",
+          "variableId": "var_0005"
+        }
+      ],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0004"
+      }
+    },
+    {
+      "id": "ch_0013",
+      "presentation": {
+        "text": "Open the archive door"
+      },
+      "availabilityCondition": {
+        "kind": "all",
+        "conditions": [
+          {
+            "kind": "variable_comparison",
+            "variableId": "var_0001",
+            "operator": "equal",
+            "value": {
+              "type": "boolean",
+              "value": true
+            }
+          },
+          {
+            "kind": "any",
+            "conditions": [
+              {
+                "kind": "variable_comparison",
+                "variableId": "var_0002",
+                "operator": "greater_than_or_equal",
+                "value": {
+                  "type": "integer",
+                  "value": 60
+                }
+              },
+              {
+                "kind": "variable_comparison",
+                "variableId": "var_0004",
+                "operator": "equal",
+                "value": {
+                  "type": "string",
+                  "value": "Rook"
+                }
+              }
+            ]
+          },
+          {
+            "kind": "not",
+            "condition": {
+              "kind": "variable_comparison",
+              "variableId": "var_0005",
+              "operator": "equal",
+              "value": {
+                "type": "boolean",
+                "value": true
+              }
+            }
+          }
+        ]
+      },
+      "effects": [],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0007"
+      }
+    },
+    {
+      "id": "ch_0014",
+      "presentation": {
+        "text": "Give up and leave"
+      },
+      "effects": [],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0011"
+      }
+    }
+  ]
+}

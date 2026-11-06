@@ -10,37 +10,43 @@ void main() {
       expect(StoryFormatBundleLayout.extensionsPath, 'extensions.json');
     });
 
-    test('event filename token is lowercase RFC 4648 Base32 without padding', () {
-      expect(
-        StoryFormatBundleLayout.eventFileToken(StoryEventId('event_intro')),
-        'mv3gk3tul5uw45dsn4',
-      );
-      expect(
-        StoryFormatBundleLayout.eventFileToken(StoryEventId('Event.Intro:1')),
-        'iv3gk3tufzew45dsn45dc',
-      );
-      expect(
-        StoryFormatBundleLayout.eventPath(StoryEventId('event_intro')),
-        'events/mv3gk3tul5uw45dsn4.json',
-      );
-    });
+    test(
+      'event filename token is lowercase RFC 4648 Base32 without padding',
+      () {
+        expect(
+          StoryFormatBundleLayout.eventFileToken(StoryEventId('event_intro')),
+          'mv3gk3tul5uw45dsn4',
+        );
+        expect(
+          StoryFormatBundleLayout.eventFileToken(StoryEventId('Event.Intro:1')),
+          'iv3gk3tufzew45dsn45dc',
+        );
+        expect(
+          StoryFormatBundleLayout.eventPath(StoryEventId('event_intro')),
+          'events/mv3gk3tul5uw45dsn4.json',
+        );
+      },
+    );
 
-    test('portable tokens avoid filesystem-sensitive ID spelling collisions', () {
-      final lower = StoryFormatBundleLayout.eventFileToken(
-        StoryEventId('event.a:1'),
-      );
-      final upper = StoryFormatBundleLayout.eventFileToken(
-        StoryEventId('Event.A:1'),
-      );
+    test(
+      'portable tokens avoid filesystem-sensitive ID spelling collisions',
+      () {
+        final lower = StoryFormatBundleLayout.eventFileToken(
+          StoryEventId('event.a:1'),
+        );
+        final upper = StoryFormatBundleLayout.eventFileToken(
+          StoryEventId('Event.A:1'),
+        );
 
-      expect(lower, isNot(upper));
-      expect(lower, matches(RegExp(r'^[a-z2-7]+$')));
-      expect(upper, matches(RegExp(r'^[a-z2-7]+$')));
-      expect(lower, isNot(contains('.')));
-      expect(lower, isNot(contains(':')));
-      expect(lower, isNot(contains('/')));
-      expect(lower, isNot(contains('\\')));
-    });
+        expect(lower, isNot(upper));
+        expect(lower, matches(RegExp(r'^[a-z2-7]+$')));
+        expect(upper, matches(RegExp(r'^[a-z2-7]+$')));
+        expect(lower, isNot(contains('.')));
+        expect(lower, isNot(contains(':')));
+        expect(lower, isNot(contains('/')));
+        expect(lower, isNot(contains('\\')));
+      },
+    );
 
     test('maximum machine ID stays below common filename component limit', () {
       final eventId = StoryEventId(List.filled(128, 'z').join());
@@ -56,10 +62,9 @@ void main() {
         project: StoryProject(id: StoryProjectId('project_layout_empty')),
       );
 
-      expect(
-        StoryFormatBundleLayout.canonicalFilePaths(document),
-        [StoryFormatBundleLayout.projectPath],
-      );
+      expect(StoryFormatBundleLayout.canonicalFilePaths(document), [
+        StoryFormatBundleLayout.projectPath,
+      ]);
     });
 
     test('canonical file set isolates optional metadata and event files', () {
@@ -68,7 +73,10 @@ void main() {
       final document = StoryFormatDocument(
         project: StoryProject(
           id: StoryProjectId('project_layout_full'),
-          events: [StoryEvent(id: eventB), StoryEvent(id: eventA)],
+          events: [
+            StoryEvent(id: eventB),
+            StoryEvent(id: eventA),
+          ],
         ),
         organization: StoryFormatOrganization(
           groups: [
@@ -92,15 +100,12 @@ void main() {
         StoryFormatBundleLayout.eventPath(eventB),
       ]..sort();
 
-      expect(
-        StoryFormatBundleLayout.canonicalFilePaths(document),
-        [
-          'project.json',
-          'organization.json',
-          'extensions.json',
-          ...expectedEventPaths,
-        ],
-      );
+      expect(StoryFormatBundleLayout.canonicalFilePaths(document), [
+        'project.json',
+        'organization.json',
+        'extensions.json',
+        ...expectedEventPaths,
+      ]);
     });
 
     test('event authored order does not change physical event paths', () {
@@ -116,24 +121,23 @@ void main() {
           );
 
       expect(
-        StoryFormatBundleLayout.canonicalFilePaths(
-          build([eventA, eventB]),
-        ),
-        StoryFormatBundleLayout.canonicalFilePaths(
-          build([eventB, eventA]),
-        ),
+        StoryFormatBundleLayout.canonicalFilePaths(build([eventA, eventB])),
+        StoryFormatBundleLayout.canonicalFilePaths(build([eventB, eventA])),
       );
     });
 
-    test('renaming presentation/organization never changes event storage path', () {
-      final eventId = StoryEventId('event_layout_stable');
-      final before = StoryFormatBundleLayout.eventPath(eventId);
-      final afterTitleRename = StoryFormatBundleLayout.eventPath(eventId);
-      final afterGroupMove = StoryFormatBundleLayout.eventPath(eventId);
+    test(
+      'renaming presentation/organization never changes event storage path',
+      () {
+        final eventId = StoryEventId('event_layout_stable');
+        final before = StoryFormatBundleLayout.eventPath(eventId);
+        final afterTitleRename = StoryFormatBundleLayout.eventPath(eventId);
+        final afterGroupMove = StoryFormatBundleLayout.eventPath(eventId);
 
-      expect(afterTitleRename, before);
-      expect(afterGroupMove, before);
-    });
+        expect(afterTitleRename, before);
+        expect(afterGroupMove, before);
+      },
+    );
 
     test('duplicate event identity cannot own two physical event files', () {
       final duplicateId = StoryEventId('event_layout_duplicate');

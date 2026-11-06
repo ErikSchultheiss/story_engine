@@ -1,0 +1,13 @@
+{
+  "id": "evt_0012",
+  "alias": "bad_outcome",
+  "presentation": {
+    "title": "Collapse",
+    "body": "The unstable passage gives way. Your exploration ends beneath a pile of fallen stone."
+  },
+  "entryEffects": [],
+  "choices": [],
+  "continuationTransition": {
+    "kind": "terminal"
+  }
+}

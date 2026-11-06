@@ -1,6 +1,11 @@
 import '../condition/story_condition_context.dart';
 import '../condition/story_condition_evaluator.dart';
+import '../effect/story_effect.dart';
 import '../effect/story_effect_executor.dart';
+import '../explainability/story_decision_explanation.dart';
+import '../explainability/story_runtime_execution_explanation.dart';
+import '../validation/story_diagnostic_location.dart';
+import '../explainability/story_effect_explanation.dart';
 import '../identity/story_choice_id.dart';
 import '../identity/story_event_id.dart';
 import '../model/story_choice.dart';
@@ -43,12 +48,11 @@ final class StoryEngine {
     required this.project,
     required StoryRuntimeSnapshot snapshot,
     required StorySeededRandomSource restoredRandomSource,
+    required Map<StoryEventId, StoryEvent> eventIndex,
   }) : randomSeed = restoredRandomSource.initialSeed,
        maxAutomaticTransitions = snapshot.maxAutomaticTransitions,
-       _eventIndex = _buildEventIndex(project),
+       _eventIndex = eventIndex,
        _initialRandomSource = restoredRandomSource.copy() {
-    _validateChoiceIdentity(project);
-
     _status = snapshot.status;
     final snapshotState = snapshot.state;
     _state = snapshotState == null
@@ -80,16 +84,18 @@ final class StoryEngine {
     required StoryProject project,
     required StoryRuntimeSnapshot snapshot,
   }) {
-    const StoryRuntimeSnapshotValidator().validate(
-      snapshot: snapshot,
+    final preparation = StoryRuntimeProjectPreparation.prepareForSnapshot(
       project: project,
+      snapshot: snapshot,
     );
-
-    final restoredRandomSource = _restoreRandomSource(snapshot.randomState);
-    return StoryEngine._restored(
+    preparation.validateSnapshotAfterPreflight(
       project: project,
       snapshot: snapshot,
-      restoredRandomSource: restoredRandomSource,
+    );
+    return _restoreStoryEngineFromValidatedPreparation(
+      project: project,
+      snapshot: snapshot,
+      preparation: preparation,
     );
   }
 
@@ -131,6 +137,8 @@ final class StoryEngine {
   StoryEvent? _currentEvent;
   StorySeededRandomSource? _randomSource;
   final List<StoryRuntimeStep> _historySteps = <StoryRuntimeStep>[];
+  List<StoryEffectExplanation> _lastEffectExplanations =
+      const <StoryEffectExplanation>[];
 
   /// Current lifecycle status.
   StoryEngineStatus get status => _status;
@@ -151,6 +159,18 @@ final class StoryEngine {
   /// was reached, which is useful to presentation/debugging layers.
   StoryEvent? get currentEvent => _currentEvent;
 
+  /// Effect explanations from the most recent diagnostics-enabled runtime
+  /// operation.
+  ///
+  /// Successful diagnostic operations expose committed/no-op effects. If that
+  /// operation throws after one or more effect attempts, this list remains
+  /// available after the exception and marks earlier successful attempts as
+  /// rolled back while preserving the failing effect as rejected. Ordinary
+  /// [start], [startAt], [choose], and [continueStory] clear this value and do
+  /// not allocate effect explanations.
+  List<StoryEffectExplanation> get lastEffectExplanations =>
+      _lastEffectExplanations;
+
   /// Captures the current committed runtime state as an immutable snapshot.
   ///
   /// Public runtime operations are synchronous and transactional, so callers
@@ -165,7 +185,8 @@ final class StoryEngine {
       throw const StoryEngineExecutionException(
         message: 'Started StoryEngine random state is internally incomplete.',
         operation: 'createSnapshot',
-        suggestion: 'Recreate the engine from the last committed snapshot or '
+        suggestion:
+            'Recreate the engine from the last committed snapshot or '
             'restart the run; this state indicates an internal invariant '
             'failure.',
       );
@@ -199,7 +220,8 @@ final class StoryEngine {
       throw const StoryEngineExecutionException(
         message: 'Engine awaiting-choice state is internally incomplete.',
         operation: 'availableChoices',
-        suggestion: 'Recreate the engine from the last committed snapshot or '
+        suggestion:
+            'Recreate the engine from the last committed snapshot or '
             'restart the run; this state indicates an internal invariant '
             'failure.',
       );
@@ -218,25 +240,183 @@ final class StoryEngine {
         cause: error,
         operation: 'availableChoices',
         eventId: event.id,
-        suggestion: 'Validate the project and repair the failing choice '
+        suggestion:
+            'Validate the project and repair the failing choice '
             'condition before evaluating available choices.',
       );
     }
   }
 
+  /// Structured availability explanations for every authored choice in order.
+  ///
+  /// Before start, while awaiting continue, and after termination this returns
+  /// an empty immutable list, matching [availableChoices]. Unconditional
+  /// choices are represented as available with a null condition explanation.
+  /// Conditioned choices are evaluated exactly once for this diagnostic pass
+  /// through [StoryConditionEvaluator.evaluateWithExplanation].
+  ///
+  /// This getter is observational only: it does not mutate story state, history,
+  /// lifecycle status, or deterministic RNG state.
+  List<StoryChoiceExplanation> get choiceExplanations {
+    if (_status != StoryEngineStatus.awaitingChoice) {
+      return const [];
+    }
+
+    final event = _currentEvent;
+    final state = _state;
+    if (event == null || state == null) {
+      throw const StoryEngineExecutionException(
+        message: 'Engine awaiting-choice state is internally incomplete.',
+        operation: 'choiceExplanations',
+        suggestion:
+            'Recreate the engine from the last committed snapshot or '
+            'restart the run; this state indicates an internal invariant '
+            'failure.',
+      );
+    }
+
+    try {
+      return List<StoryChoiceExplanation>.unmodifiable(
+        event.choices.map(
+          (choice) => _explainChoiceAvailability(
+            eventId: event.id,
+            choice: choice,
+            state: state,
+          ),
+        ),
+      );
+    } catch (error) {
+      if (error is StoryEngineException) {
+        rethrow;
+      }
+      throw StoryEngineExecutionException(
+        message: 'Failed to explain available choices for ${event.id}.',
+        cause: error,
+        operation: 'choiceExplanations',
+        eventId: event.id,
+        suggestion:
+            'Validate the project and repair the failing choice '
+            'condition before requesting choice explanations.',
+      );
+    }
+  }
+
+  /// Last opt-in execution attempt, or null after ordinary/effect-only input.
+  /// Restore starts without an explanation; saved execution is never replayed.
+  StoryRuntimeExecutionExplanation? get lastExecutionExplanation =>
+      _lastExecutionExplanation;
+
+  StoryRuntimeExecutionExplanation? _lastExecutionExplanation;
+
+  /// Executes start once and returns its causal trace.
+  StoryRuntimeExecutionExplanation startWithExplanations({
+    StoryState? initialState,
+  }) => _captureRuntimeExecution(
+    'start',
+    (steps) => _startFromProjectEntry(
+      initialState: initialState,
+      collectEffectExplanations: true,
+      explanationSteps: steps,
+    ),
+  );
+
+  /// Executes an explicit start once and returns its causal trace.
+  StoryRuntimeExecutionExplanation startAtWithExplanations(
+    StoryEventId entryEventId, {
+    StoryState? initialState,
+  }) => _captureRuntimeExecution(
+    'startAt',
+    (steps) => _startAt(
+      entryEventId: entryEventId,
+      initialState: initialState,
+      operation: 'startAt',
+      collectEffectExplanations: true,
+      explanationSteps: steps,
+    ),
+  );
+
+  /// Selects a choice once and returns its causal trace.
+  StoryRuntimeExecutionExplanation chooseWithExplanations(
+    StoryChoiceId choiceId,
+  ) => _captureRuntimeExecution(
+    'choose',
+    (steps) => _choose(
+      choiceId,
+      collectEffectExplanations: true,
+      explanationSteps: steps,
+    ),
+  );
+
+  /// Continues once and returns its causal trace.
+  StoryRuntimeExecutionExplanation continueStoryWithExplanations() =>
+      _captureRuntimeExecution(
+        'continueStory',
+        (steps) => _continueStory(
+          collectEffectExplanations: true,
+          explanationSteps: steps,
+        ),
+      );
+
+  StoryRuntimeExecutionExplanation _captureRuntimeExecution(
+    String operation,
+    List<StoryEffectExplanation> Function(List<StoryRuntimeExplanationStep>)
+    action,
+  ) {
+    final steps = <StoryRuntimeExplanationStep>[];
+    try {
+      action(steps);
+      return _lastExecutionExplanation = StoryRuntimeExecutionExplanation(
+        operation: operation,
+        outcome: StoryRuntimeExecutionOutcome.committed,
+        steps: steps,
+      );
+    } on Object {
+      _lastExecutionExplanation = StoryRuntimeExecutionExplanation(
+        operation: operation,
+        outcome: StoryRuntimeExecutionOutcome.rolledBack,
+        steps: steps,
+      );
+      rethrow;
+    }
+  }
+
   /// Starts traversal at [StoryProject.entryEventId].
   ///
-  /// If [initialState] is omitted, the project's declared initial scalar state
-  /// is used. The supplied state must use exactly the project's state schema.
-  /// Start is transactional for the current scalar-only runtime: if any entry
-  /// effect, condition, transition, or automatic-flow step fails, this engine
-  /// remains not started and its random stream remains untouched.
+  /// This preserves the original single-run contract. Host-driven systems that
+  /// already resolved a local narrative entry may instead call [startAt].
   void start({StoryState? initialState}) {
+    _startFromProjectEntry(
+      initialState: initialState,
+      collectEffectExplanations: false,
+    );
+  }
+
+  /// Starts traversal while returning explanations for effects actually run.
+  ///
+  /// This executes the same transaction as [start]. The returned explanations
+  /// are committed/no-op outcomes from that transaction. If the operation
+  /// throws, inspect [lastEffectExplanations] for rejected/rolled-back attempts;
+  /// the authoritative exception itself is unchanged.
+  List<StoryEffectExplanation> startWithEffectExplanations({
+    StoryState? initialState,
+  }) => _startFromProjectEntry(
+    initialState: initialState,
+    collectEffectExplanations: true,
+  );
+
+  List<StoryEffectExplanation> _startFromProjectEntry({
+    required StoryState? initialState,
+    required bool collectEffectExplanations,
+    List<StoryRuntimeExplanationStep>? explanationSteps,
+  }) {
+    _lastExecutionExplanation = null;
+    _lastEffectExplanations = const <StoryEffectExplanation>[];
     if (_status != StoryEngineStatus.notStarted) {
       throw const StoryEngineOperationException(
         message: 'StoryEngine.start may only be called once.',
         operation: 'start',
-        suggestion: 'Create a new StoryEngine for a fresh run, or restore a '
+        suggestion:
+            'Create a new StoryEngine for a fresh run, or restore a '
             'saved snapshot instead of starting this instance again.',
       );
     }
@@ -246,26 +426,101 @@ final class StoryEngine {
       throw const StoryEngineConfigurationException(
         message: 'StoryProject has no entryEventId and cannot be started.',
         operation: 'start',
-        suggestion: 'Run StoryValidator.validate(project) and set entryEventId '
+        suggestion:
+            'Run StoryValidator.validate(project) and set entryEventId '
             'to an authored event before starting.',
       );
     }
+    return _startAt(
+      entryEventId: entryEventId,
+      initialState: initialState,
+      operation: 'start',
+      collectEffectExplanations: collectEffectExplanations,
+      explanationSteps: explanationSteps,
+      resetEffectExplanations: false,
+    );
+  }
+
+  /// Starts one fresh run at an explicitly host-selected [entryEventId].
+  ///
+  /// Stage 8G adds this minimal activation primitive so a higher-level
+  /// narrative-session runtime can begin unrelated local dialogue/event flows
+  /// without cloning the authored project or requiring a graph edge from the
+  /// previously executed event. It does not alter [StoryProject.entryEventId]
+  /// and may still be called only while this engine is `notStarted`.
+  ///
+  /// If [initialState] is omitted, the project's declared initial scalar state
+  /// is used. The supplied state must use exactly the project's state schema.
+  /// Start is transactional: if event availability, entry effects, transition
+  /// resolution, or automatic flow fails, this engine remains not started and
+  /// its deterministic random stream remains untouched.
+  void startAt(StoryEventId entryEventId, {StoryState? initialState}) {
+    _startAt(
+      entryEventId: entryEventId,
+      initialState: initialState,
+      operation: 'startAt',
+      collectEffectExplanations: false,
+    );
+  }
+
+  /// Starts at [entryEventId] while returning actual effect explanations.
+  ///
+  /// This is the diagnostics-enabled counterpart to [startAt]. It performs one
+  /// authoritative transaction and never replays effects merely to explain
+  /// them. Failure details remain available through [lastEffectExplanations].
+  List<StoryEffectExplanation> startAtWithEffectExplanations(
+    StoryEventId entryEventId, {
+    StoryState? initialState,
+  }) => _startAt(
+    entryEventId: entryEventId,
+    initialState: initialState,
+    operation: 'startAt',
+    collectEffectExplanations: true,
+  );
+
+  List<StoryEffectExplanation> _startAt({
+    required StoryEventId entryEventId,
+    required StoryState? initialState,
+    required String operation,
+    required bool collectEffectExplanations,
+    List<StoryRuntimeExplanationStep>? explanationSteps,
+    bool resetEffectExplanations = true,
+  }) {
+    _lastExecutionExplanation = null;
+    if (resetEffectExplanations) {
+      _lastEffectExplanations = const <StoryEffectExplanation>[];
+    }
+    if (_status != StoryEngineStatus.notStarted) {
+      throw StoryEngineOperationException(
+        message: 'StoryEngine.$operation may only be called once.',
+        operation: operation,
+        eventId: entryEventId,
+        suggestion:
+            'Create a new StoryEngine for a fresh run, or restore a '
+            'saved snapshot instead of starting this instance again.',
+      );
+    }
+
     if (!_eventIndex.containsKey(entryEventId)) {
       throw StoryEngineConfigurationException(
         message: 'StoryProject entry event does not exist: $entryEventId.',
-        operation: 'start',
+        operation: operation,
         eventId: entryEventId,
-        suggestion: 'Run StoryValidator.validate(project) and point '
-            'entryEventId at an existing event.',
+        suggestion:
+            'Run StoryValidator.validate(project) and activate an '
+            'existing event.',
       );
     }
 
     final startState = initialState ?? StoryState.initial(project.stateSchema);
     if (startState.schema != project.stateSchema) {
-      throw const StoryEngineOperationException(
-        message: 'Initial StoryState schema does not match StoryProject schema.',
-        operation: 'start',
-        suggestion: 'Create the initial state from project.stateSchema, for '
+      throw StoryEngineOperationException(
+        message:
+            'Initial StoryState schema does not match StoryProject schema.',
+        operation: operation,
+        eventId: entryEventId,
+        suggestion:
+            'Create the initial state from project.stateSchema, for '
             'example with StoryState.initial or StoryState.fromRawValues.',
       );
     }
@@ -275,7 +530,9 @@ final class StoryEngine {
       status: StoryEngineStatus.notStarted,
       currentEvent: null,
       randomSource: _initialRandomSource.copy(),
-      operation: 'start',
+      operation: operation,
+      collectEffectExplanations: collectEffectExplanations,
+      explanationSteps: explanationSteps,
     );
 
     _runTransaction(transaction, () {
@@ -283,6 +540,7 @@ final class StoryEngine {
     });
 
     _commit(transaction);
+    return _completeEffectExplanationCapture(transaction);
   }
 
   /// Selects one currently available choice by stable machine ID.
@@ -292,6 +550,25 @@ final class StoryEngine {
   /// against that post-effect state before the destination event is entered.
   /// The operation is transactional for the current scalar-only runtime.
   void choose(StoryChoiceId choiceId) {
+    _choose(choiceId, collectEffectExplanations: false);
+  }
+
+  /// Selects [choiceId] and returns explanations for every effect actually run.
+  ///
+  /// The diagnostic path shares the authoritative transaction with [choose].
+  /// If later execution fails, the same exception is thrown and
+  /// [lastEffectExplanations] records rejected/rolled-back effect attempts.
+  List<StoryEffectExplanation> chooseWithEffectExplanations(
+    StoryChoiceId choiceId,
+  ) => _choose(choiceId, collectEffectExplanations: true);
+
+  List<StoryEffectExplanation> _choose(
+    StoryChoiceId choiceId, {
+    required bool collectEffectExplanations,
+    List<StoryRuntimeExplanationStep>? explanationSteps,
+  }) {
+    _lastExecutionExplanation = null;
+    _lastEffectExplanations = const <StoryEffectExplanation>[];
     if (_status == StoryEngineStatus.notStarted) {
       throw StoryEngineOperationException(
         message: 'Cannot choose before StoryEngine.start succeeds.',
@@ -314,7 +591,8 @@ final class StoryEngine {
         operation: 'choose',
         eventId: _currentEvent?.id,
         choiceId: choiceId,
-        suggestion: 'Inspect status/availableChoices and only call choose() '
+        suggestion:
+            'Inspect status/availableChoices and only call choose() '
             'while status is awaitingChoice.',
       );
     }
@@ -328,7 +606,8 @@ final class StoryEngine {
         operation: 'choose',
         eventId: event?.id,
         choiceId: choiceId,
-        suggestion: 'Recreate the engine from the last committed snapshot or '
+        suggestion:
+            'Recreate the engine from the last committed snapshot or '
             'restart the run; this state indicates an internal invariant '
             'failure.',
       );
@@ -343,11 +622,13 @@ final class StoryEngine {
     }
     if (selected == null) {
       throw StoryEngineOperationException(
-        message: 'Choice $choiceId does not belong to current event ${event.id}.',
+        message:
+            'Choice $choiceId does not belong to current event ${event.id}.',
         operation: 'choose',
         eventId: event.id,
         choiceId: choiceId,
-        suggestion: 'Choose one of the IDs returned by availableChoices for '
+        suggestion:
+            'Choose one of the IDs returned by availableChoices for '
             'the current event.',
       );
     }
@@ -355,7 +636,29 @@ final class StoryEngine {
     final choice = selected;
     bool isAvailable;
     try {
-      isAvailable = _isChoiceAvailable(choice, state);
+      if (explanationSteps == null) {
+        isAvailable = _isChoiceAvailable(choice, state);
+      } else {
+        final condition = choice.availabilityCondition;
+        final evaluation = condition == null
+            ? null
+            : evaluateStoryConditionWithExplanationResult(
+                _conditionEvaluator,
+                condition,
+                StoryConditionContext(state: state),
+              );
+        isAvailable = evaluation?.result ?? true;
+        explanationSteps.add(
+          StoryRuntimeChoiceExplanation(
+            StoryChoiceExplanation(
+              eventId: event.id,
+              choiceId: choice.id,
+              available: isAvailable,
+              condition: evaluation?.explanation,
+            ),
+          ),
+        );
+      }
     } catch (error) {
       if (error is StoryEngineException) {
         rethrow;
@@ -366,7 +669,8 @@ final class StoryEngine {
         operation: 'choose',
         eventId: event.id,
         choiceId: choice.id,
-        suggestion: 'Validate the project and repair this choice condition '
+        suggestion:
+            'Validate the project and repair this choice condition '
             'before selecting it.',
       );
     }
@@ -376,7 +680,8 @@ final class StoryEngine {
         operation: 'choose',
         eventId: event.id,
         choiceId: choice.id,
-        suggestion: 'Re-read availableChoices after state changes and only '
+        suggestion:
+            'Re-read availableChoices after state changes and only '
             'select a currently available choice.',
       );
     }
@@ -388,7 +693,8 @@ final class StoryEngine {
         operation: 'choose',
         eventId: event.id,
         choiceId: choice.id,
-        suggestion: 'Run StoryValidator.validate(project) and add a transition '
+        suggestion:
+            'Run StoryValidator.validate(project) and add a transition '
             'to this choice.',
       );
     }
@@ -400,20 +706,27 @@ final class StoryEngine {
       randomSource: randomSource.copy(),
       operation: 'choose',
       choiceId: choice.id,
+      collectEffectExplanations: collectEffectExplanations,
+      explanationSteps: explanationSteps,
     );
 
     _runTransaction(transaction, () {
       transaction.pendingHistorySteps.add(
         StoryChoiceSelectedStep(eventId: event.id, choiceId: choice.id),
       );
-      transaction.state = _effectExecutor.applyAll(
-        choice.effects,
-        transaction.state,
+      transaction.state = _applyEffects(
+        transaction: transaction,
+        effects: choice.effects,
+        source: StoryEffectSource.choice(
+          eventId: event.id,
+          choiceId: choice.id,
+        ),
       );
       _resolveAndAdvance(transaction, transition);
     });
 
     _commit(transaction);
+    return _completeEffectExplanationCapture(transaction);
   }
 
   /// Continues from the current host-visible no-choice event.
@@ -423,6 +736,23 @@ final class StoryEngine {
   /// transition or destination traversal fails, the engine remains on the
   /// current continuation event and no continue-history step is committed.
   void continueStory() {
+    _continueStory(collectEffectExplanations: false);
+  }
+
+  /// Continues and returns explanations for destination entry effects run by
+  /// the authoritative transaction.
+  ///
+  /// If execution fails after any effect attempt, the same exception is thrown
+  /// and [lastEffectExplanations] retains rejected/rolled-back diagnostics.
+  List<StoryEffectExplanation> continueStoryWithEffectExplanations() =>
+      _continueStory(collectEffectExplanations: true);
+
+  List<StoryEffectExplanation> _continueStory({
+    required bool collectEffectExplanations,
+    List<StoryRuntimeExplanationStep>? explanationSteps,
+  }) {
+    _lastExecutionExplanation = null;
+    _lastEffectExplanations = const <StoryEffectExplanation>[];
     if (_status == StoryEngineStatus.notStarted) {
       throw const StoryEngineOperationException(
         message: 'Cannot continue before StoryEngine.start succeeds.',
@@ -442,7 +772,8 @@ final class StoryEngine {
         message: 'Current event is not waiting for a continue action.',
         operation: 'continueStory',
         eventId: _currentEvent?.id,
-        suggestion: 'Inspect status and only call continueStory() while status '
+        suggestion:
+            'Inspect status and only call continueStory() while status '
             'is awaitingContinue.',
       );
     }
@@ -452,10 +783,12 @@ final class StoryEngine {
     final randomSource = _randomSource;
     if (event == null || state == null || randomSource == null) {
       throw StoryEngineExecutionException(
-        message: 'Awaiting-continue StoryEngine state is internally incomplete.',
+        message:
+            'Awaiting-continue StoryEngine state is internally incomplete.',
         operation: 'continueStory',
         eventId: event?.id,
-        suggestion: 'Recreate the engine from the last committed snapshot or '
+        suggestion:
+            'Recreate the engine from the last committed snapshot or '
             'restart the run; this state indicates an internal invariant '
             'failure.',
       );
@@ -467,7 +800,8 @@ final class StoryEngine {
         message: 'Event ${event.id} has no continuation transition.',
         operation: 'continueStory',
         eventId: event.id,
-        suggestion: 'Run StoryValidator.validate(project) and add the missing '
+        suggestion:
+            'Run StoryValidator.validate(project) and add the missing '
             'continuation transition.',
       );
     }
@@ -478,6 +812,8 @@ final class StoryEngine {
       currentEvent: event,
       randomSource: randomSource.copy(),
       operation: 'continueStory',
+      collectEffectExplanations: collectEffectExplanations,
+      explanationSteps: explanationSteps,
     );
 
     _runTransaction(transaction, () {
@@ -488,6 +824,7 @@ final class StoryEngine {
     });
 
     _commit(transaction);
+    return _completeEffectExplanationCapture(transaction);
   }
 
   bool _isChoiceAvailable(StoryChoice choice, StoryState state) {
@@ -498,6 +835,32 @@ final class StoryEngine {
     return _conditionEvaluator.evaluate(
       condition,
       StoryConditionContext(state: state),
+    );
+  }
+
+  StoryChoiceExplanation _explainChoiceAvailability({
+    required StoryEventId eventId,
+    required StoryChoice choice,
+    required StoryState state,
+  }) {
+    final condition = choice.availabilityCondition;
+    if (condition == null) {
+      return StoryChoiceExplanation(
+        eventId: eventId,
+        choiceId: choice.id,
+        available: true,
+      );
+    }
+
+    final explanation = _conditionEvaluator.evaluateWithExplanation(
+      condition,
+      StoryConditionContext(state: state),
+    );
+    return StoryChoiceExplanation(
+      eventId: eventId,
+      choiceId: choice.id,
+      available: explanation.result,
+      condition: explanation,
     );
   }
 
@@ -512,7 +875,8 @@ final class StoryEngine {
           operation: transaction.operation,
           eventId: nextEventId,
           choiceId: transaction.choiceId,
-          suggestion: 'Run StoryValidator.validate(project) and repair the '
+          suggestion:
+              'Run StoryValidator.validate(project) and repair the '
               'missing transition destination.',
         );
       }
@@ -535,23 +899,44 @@ final class StoryEngine {
           operation: transaction.operation,
           eventId: event.id,
           choiceId: transaction.choiceId,
-          suggestion: 'Run StoryValidator.validate(project) and keep exactly '
+          suggestion:
+              'Run StoryValidator.validate(project) and keep exactly '
               'one valid flow mode for this event.',
         );
       }
 
       final eventCondition = event.availabilityCondition;
-      if (eventCondition != null &&
-          !_conditionEvaluator.evaluate(
-            eventCondition,
-            StoryConditionContext(state: transaction.state),
-          )) {
+      bool available;
+      if (transaction.explanationSteps == null) {
+        available =
+            eventCondition == null ||
+            _conditionEvaluator.evaluate(
+              eventCondition,
+              StoryConditionContext(state: transaction.state),
+            );
+      } else {
+        final condition = eventCondition == null
+            ? null
+            : evaluateStoryConditionWithExplanationResult(
+                _conditionEvaluator,
+                eventCondition,
+                StoryConditionContext(state: transaction.state),
+              );
+        final explanation = StoryEventAvailabilityExplanation(
+          eventId: event.id,
+          condition: condition?.explanation,
+        );
+        transaction.explanationSteps!.add(explanation);
+        available = condition?.result ?? true;
+      }
+      if (!available) {
         throw StoryEngineExecutionException(
           message: 'Event ${event.id} is not available in the incoming state.',
           operation: transaction.operation,
           eventId: event.id,
           choiceId: transaction.choiceId,
-          suggestion: 'Check the transition/condition design or incoming state '
+          suggestion:
+              'Check the transition/condition design or incoming state '
               'so runtime flow does not enter an unavailable event.',
         );
       }
@@ -560,9 +945,21 @@ final class StoryEngine {
         StoryEventEnteredStep(eventId: event.id),
       );
       transaction.currentEvent = event;
-      transaction.state = _effectExecutor.applyAll(
-        event.entryEffects,
-        transaction.state,
+      transaction.state = _applyEffects(
+        transaction: transaction,
+        effects: event.entryEffects,
+        source: StoryEffectSource.eventEntry(eventId: event.id),
+      );
+
+      transaction.explanationSteps?.add(
+        StoryEventTraversalExplanation(
+          eventId: event.id,
+          flow: hasChoices
+              ? StoryRuntimeEventFlow.choice
+              : hasContinuationTransition
+              ? StoryRuntimeEventFlow.continuation
+              : StoryRuntimeEventFlow.automatic,
+        ),
       );
 
       if (hasChoices) {
@@ -578,15 +975,24 @@ final class StoryEngine {
 
       final automaticTransition = event.automaticTransition!;
       transaction.automaticTransitions++;
+      transaction.explanationSteps?.add(
+        StoryAutomaticTraversalExplanation(
+          eventId: event.id,
+          transitionNumber: transaction.automaticTransitions,
+          maximumTransitions: maxAutomaticTransitions,
+        ),
+      );
       if (transaction.automaticTransitions > maxAutomaticTransitions) {
         throw StoryEngineExecutionException(
-          message: 'Automatic flow exceeded the configured limit of '
+          message:
+              'Automatic flow exceeded the configured limit of '
               '$maxAutomaticTransitions transitions. This usually indicates '
               'an accidental non-interactive cycle.',
           operation: transaction.operation,
           eventId: event.id,
           choiceId: transaction.choiceId,
-          suggestion: 'Run StoryValidator.validate(project) and break the '
+          suggestion:
+              'Run StoryValidator.validate(project) and break the '
               'automatic cycle, rather than only increasing the guard limit.',
         );
       }
@@ -594,6 +1000,7 @@ final class StoryEngine {
       final resolution = _resolveTransition(
         transition: automaticTransition,
         transaction: transaction,
+        transitionField: 'automaticTransition',
       );
       switch (resolution) {
         case StoryTerminalTransitionResolution():
@@ -613,6 +1020,9 @@ final class StoryEngine {
     final resolution = _resolveTransition(
       transition: transition,
       transaction: transaction,
+      transitionField: transaction.choiceId == null
+          ? 'continuationTransition'
+          : 'transition',
     );
 
     switch (resolution) {
@@ -628,11 +1038,115 @@ final class StoryEngine {
   StoryTransitionResolution _resolveTransition({
     required StoryTransition transition,
     required _RuntimeTransaction transaction,
+    required String transitionField,
   }) => _transitionResolver.resolve(
     transition: transition,
     context: StoryConditionContext(state: transaction.state),
     randomSource: transaction.randomSource,
+    onExplanation: transaction.explanationSteps?.add,
+    explanationLocation: transaction.explanationSteps == null
+        ? null
+        : _transitionLocation(transaction, transitionField),
   );
+
+  StoryDiagnosticLocation _transitionLocation(
+    _RuntimeTransaction transaction,
+    String transitionField,
+  ) {
+    final event = transaction.currentEvent!;
+    final choiceId = transitionField == 'transition'
+        ? transaction.choiceId
+        : null;
+    return StoryDiagnosticLocation.transition(
+      projectId: project.id,
+      eventId: event.id,
+      choiceId: choiceId,
+      path: [
+        const StoryDiagnosticPathSegment.field('events'),
+        StoryDiagnosticPathSegment.index(project.events.indexOf(event)),
+        if (choiceId != null) ...[
+          const StoryDiagnosticPathSegment.field('choices'),
+          StoryDiagnosticPathSegment.index(
+            event.choices.indexWhere((choice) => choice.id == choiceId),
+          ),
+        ],
+        StoryDiagnosticPathSegment.field(transitionField),
+      ],
+    );
+  }
+
+  StoryState _applyEffects({
+    required _RuntimeTransaction transaction,
+    required Iterable<StoryEffect> effects,
+    required StoryEffectSource source,
+  }) {
+    if (!transaction.collectEffectExplanations) {
+      return _effectExecutor.applyAll(effects, transaction.state);
+    }
+    final firstEffect = transaction.pendingEffectExplanations.length;
+    try {
+      return _effectExecutor.applyAllWithExplanations(
+        effects: effects,
+        state: transaction.state,
+        source: source,
+        explanations: transaction.pendingEffectExplanations,
+      );
+    } finally {
+      final steps = transaction.explanationSteps;
+      if (steps != null) {
+        for (
+          var index = firstEffect;
+          index < transaction.pendingEffectExplanations.length;
+          index++
+        ) {
+          steps.add(
+            StoryRuntimeEffectExplanation(
+              transaction.pendingEffectExplanations[index],
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  List<StoryEffectExplanation> _completeEffectExplanationCapture(
+    _RuntimeTransaction transaction,
+  ) {
+    if (!transaction.collectEffectExplanations) {
+      _lastEffectExplanations = const <StoryEffectExplanation>[];
+      return const <StoryEffectExplanation>[];
+    }
+    final completed = List<StoryEffectExplanation>.unmodifiable(
+      transaction.pendingEffectExplanations,
+    );
+    _lastEffectExplanations = completed;
+    return completed;
+  }
+
+  void _retainRolledBackEffectExplanations(_RuntimeTransaction transaction) {
+    if (!transaction.collectEffectExplanations ||
+        transaction.pendingEffectExplanations.isEmpty) {
+      _lastEffectExplanations = const <StoryEffectExplanation>[];
+      return;
+    }
+
+    final failed = <StoryEffectExplanation>[
+      for (final explanation in transaction.pendingEffectExplanations)
+        explanation.outcome == StoryEffectOutcome.rejected
+            ? explanation
+            : StoryEffectExplanation(
+                source: explanation.source,
+                authoredIndex: explanation.authoredIndex,
+                variableId: explanation.variableId,
+                operation: explanation.operation,
+                operand: explanation.operand,
+                beforeValue: explanation.beforeValue,
+                afterValue: explanation.afterValue,
+                outcome: StoryEffectOutcome.rolledBack,
+              ),
+    ];
+    _lastEffectExplanations = List<StoryEffectExplanation>.unmodifiable(failed);
+  }
 
   void _runTransaction(
     _RuntimeTransaction transaction,
@@ -641,6 +1155,7 @@ final class StoryEngine {
     try {
       action();
     } catch (error) {
+      _retainRolledBackEffectExplanations(transaction);
       if (error is StoryEngineException) {
         rethrow;
       }
@@ -650,7 +1165,8 @@ final class StoryEngine {
         operation: transaction.operation,
         eventId: transaction.currentEvent?.id,
         choiceId: transaction.choiceId,
-        suggestion: 'Inspect the underlying cause and run '
+        suggestion:
+            'Inspect the underlying cause and run '
             'StoryValidator.validate(project) to locate authored logic errors.',
       );
     }
@@ -665,6 +1181,147 @@ final class StoryEngine {
   }
 }
 
+/// Internal O(1) checkpoint for one orchestration-owned core mutation.
+///
+/// This is deliberately not exported from the package root. It retains only
+/// immutable/reference-stable committed fields plus the pre-operation history
+/// length. If orchestration rollback is ever required, a normal immutable
+/// [StoryRuntimeSnapshot] is materialized lazily from the retained prefix and
+/// then restored through the validated public restore path.
+final class StoryEngineMutationCheckpoint {
+  StoryEngineMutationCheckpoint._({
+    required StoryEngine engine,
+    required StoryEngineStatus status,
+    required StoryState? state,
+    required StoryEvent? currentEvent,
+    required StorySeededRandomSource? randomSource,
+    required this.historyLength,
+  }) : _engine = engine,
+       _status = status,
+       _state = state,
+       _currentEvent = currentEvent,
+       _randomSource = randomSource;
+
+  final StoryEngine _engine;
+  final StoryEngineStatus _status;
+  final StoryState? _state;
+  final StoryEvent? _currentEvent;
+  final StorySeededRandomSource? _randomSource;
+
+  /// Number of committed history steps before the guarded mutation.
+  final int historyLength;
+}
+
+/// Captures the constant-size committed fields required to reconstruct the
+/// pre-operation snapshot if orchestration propagation later fails.
+///
+/// The core engine itself is transactional: choose/continue run against copied
+/// RNG/state and append history only on commit. Consequently the references
+/// stored here remain valid representations of the previous committed state.
+StoryEngineMutationCheckpoint captureStoryEngineMutationCheckpoint(
+  StoryEngine engine,
+) => StoryEngineMutationCheckpoint._(
+  engine: engine,
+  status: engine._status,
+  state: engine._state,
+  currentEvent: engine._currentEvent,
+  randomSource: engine._randomSource,
+  historyLength: engine._historySteps.length,
+);
+
+/// Materializes the pre-operation immutable snapshot represented by
+/// [checkpoint].
+///
+/// This copies the retained history prefix only on the exceptional rollback
+/// path. Ordinary successful orchestration operations therefore avoid copying
+/// the entire committed history solely for rollback preparedness.
+StoryRuntimeSnapshot materializeStoryEngineMutationCheckpoint(
+  StoryEngine engine,
+  StoryEngineMutationCheckpoint checkpoint,
+) {
+  if (!identical(engine, checkpoint._engine)) {
+    throw StateError(
+      'A StoryEngine mutation checkpoint may only be materialized for the '
+      'engine instance that created it.',
+    );
+  }
+  if (checkpoint.historyLength < 0 ||
+      checkpoint.historyLength > engine._historySteps.length) {
+    throw StateError(
+      'StoryEngine history no longer contains the checkpoint prefix.',
+    );
+  }
+
+  final randomSource = checkpoint._status == StoryEngineStatus.notStarted
+      ? engine._initialRandomSource
+      : checkpoint._randomSource;
+  if (randomSource == null) {
+    throw StateError(
+      'A started StoryEngine mutation checkpoint has no committed RNG state.',
+    );
+  }
+
+  return StoryRuntimeSnapshot(
+    projectId: engine.project.id,
+    status: checkpoint._status,
+    state: checkpoint._state,
+    currentEventId: checkpoint._currentEvent?.id,
+    history: StoryRuntimeHistory(
+      steps: engine._historySteps.getRange(0, checkpoint.historyLength),
+    ),
+    randomState: randomSource.createRuntimeState(),
+    maxAutomaticTransitions: engine.maxAutomaticTransitions,
+  );
+}
+
+/// Internal committed-history length without allocating a public history
+/// snapshot.
+int storyEngineCommittedHistoryLength(StoryEngine engine) =>
+    engine._historySteps.length;
+
+/// Internal indexed access to one immutable committed history step.
+///
+/// Narrative observation delivery is serialized and re-entry is rejected, so
+/// the engine cannot mutate the history list while orchestration walks the
+/// newly committed suffix.
+StoryRuntimeStep storyEngineCommittedHistoryStepAt(
+  StoryEngine engine,
+  int index,
+) => engine._historySteps[index];
+
+/// Internal restore path that reuses project-derived immutable lookup data.
+///
+/// The preparation is bound to the exact supplied [StoryProject] instance.
+/// Snapshot-specific lifecycle, state, history, RNG, and current-event
+/// validation still runs for every restore. This helper is intentionally not
+/// exported from the package root.
+StoryEngine restoreStoryEngineWithProjectPreparation({
+  required StoryProject project,
+  required StoryRuntimeSnapshot snapshot,
+  required StoryRuntimeProjectPreparation preparation,
+}) {
+  preparation.validateSnapshot(project: project, snapshot: snapshot);
+  return _restoreStoryEngineFromValidatedPreparation(
+    project: project,
+    snapshot: snapshot,
+    preparation: preparation,
+  );
+}
+
+StoryEngine _restoreStoryEngineFromValidatedPreparation({
+  required StoryProject project,
+  required StoryRuntimeSnapshot snapshot,
+  required StoryRuntimeProjectPreparation preparation,
+}) {
+  final restoredRandomSource = _restoreRandomSource(snapshot.randomState);
+  return StoryEngine._restored(
+    project: project,
+    snapshot: snapshot,
+    restoredRandomSource: restoredRandomSource,
+    eventIndex: preparation.eventLookup,
+  );
+}
+
 StorySeededRandomSource _restoreRandomSource(
   StoryRuntimeRandomState randomState,
 ) {
@@ -673,7 +1330,8 @@ StorySeededRandomSource _restoreRandomSource(
     throw StoryRuntimeSnapshotCompatibilityException(
       issue: StoryRuntimeSnapshotCompatibilityIssue.unsupportedRandomAlgorithm,
       path: r'$.randomState.algorithmId',
-      message: 'Snapshot random algorithm ${randomState.algorithmId} is not '
+      message:
+          'Snapshot random algorithm ${randomState.algorithmId} is not '
           'supported by the current StoryEngine runtime.',
     );
   }
@@ -683,7 +1341,8 @@ StorySeededRandomSource _restoreRandomSource(
       issue: StoryRuntimeSnapshotCompatibilityIssue
           .unsupportedRandomAlgorithmVersion,
       path: r'$.randomState.algorithmVersion',
-      message: 'Snapshot random algorithm version '
+      message:
+          'Snapshot random algorithm version '
           '${randomState.algorithmVersion} is not supported for '
           '${randomState.algorithmId}.',
     );
@@ -708,7 +1367,8 @@ Map<StoryEventId, StoryEvent> _buildEventIndex(StoryProject project) {
         message: 'StoryProject contains duplicate event ID ${event.id}.',
         operation: 'construct',
         eventId: event.id,
-        suggestion: 'Run StoryValidator.validate(project) and assign every '
+        suggestion:
+            'Run StoryValidator.validate(project) and assign every '
             'event a unique stable ID.',
       );
     }
@@ -727,7 +1387,8 @@ void _validateChoiceIdentity(StoryProject project) {
           operation: 'construct',
           eventId: event.id,
           choiceId: choice.id,
-          suggestion: 'Run StoryValidator.validate(project) and assign every '
+          suggestion:
+              'Run StoryValidator.validate(project) and assign every '
               'choice a unique stable ID across the project.',
         );
       }
@@ -742,7 +1403,9 @@ final class _RuntimeTransaction {
     required this.currentEvent,
     required this.randomSource,
     required this.operation,
+    required this.collectEffectExplanations,
     this.choiceId,
+    this.explanationSteps,
   });
 
   StoryState state;
@@ -750,8 +1413,12 @@ final class _RuntimeTransaction {
   StoryEvent? currentEvent;
   StorySeededRandomSource randomSource;
   final String operation;
+  final bool collectEffectExplanations;
+  final List<StoryRuntimeExplanationStep>? explanationSteps;
   final StoryChoiceId? choiceId;
   final List<StoryRuntimeStep> pendingHistorySteps = <StoryRuntimeStep>[];
+  final List<StoryEffectExplanation> pendingEffectExplanations =
+      <StoryEffectExplanation>[];
   int automaticTransitions = 0;
 }
 
@@ -775,8 +1442,9 @@ sealed class StoryEngineException implements Exception {
 
   /// Public engine operation being attempted, when known.
   ///
-  /// Current engine-owned values include `construct`, `start`, `choose`,
-  /// `continueStory`, `availableChoices`, and `createSnapshot`. Consumers should
+  /// Current engine-owned values include `construct`, `start`, `startAt`,
+  /// `choose`, `continueStory`, `availableChoices`, and `createSnapshot`.
+  /// Consumers should
   /// present this as context rather than using it as a compatibility enum.
   final String? operation;
 

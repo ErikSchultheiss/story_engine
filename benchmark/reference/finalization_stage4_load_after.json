@@ -1,0 +1,192 @@
+{
+  "schema": "story_engine.aggregate_load_path.v1",
+  "dartVersion": "3.13.1 (stable) (Tue Aug 18 01:00:59 2026 -0700) on \"linux_x64\"",
+  "platform": "linux",
+  "samples": 5,
+  "warmups": 2,
+  "timingUnit": "microseconds",
+  "timingGate": false,
+  "scope": "Already available immutable project/configuration; JSON parse, typed decode/validation and aggregate restore. Fixture creation, fingerprint checks, content preflight, storage I/O and observer dispatch excluded.",
+  "results": [
+    {
+      "id": "compact",
+      "retainedSessions": 10,
+      "repeatsPerSession": 8,
+      "authoredEvents": 1,
+      "stateVariables": 8,
+      "retainedHistorySteps": 175,
+      "jsonUtf8Bytes": 25737,
+      "semanticFingerprint": "1b47e7ed53400b70d875b1c31031dd12de2ab5c7c64678ed5ba0d0ad3e9cca44",
+      "timings": {
+        "jsonParse": {
+          "samplesMicros": [
+            2095,
+            1184,
+            1633,
+            1229,
+            1024
+          ],
+          "medianMicros": 1229,
+          "p25Micros": 1184,
+          "p75Micros": 1633
+        },
+        "typedDecodeAndValidation": {
+          "samplesMicros": [
+            5655,
+            5416,
+            4685,
+            6836,
+            5955
+          ],
+          "medianMicros": 5655,
+          "p25Micros": 5416,
+          "p75Micros": 5955
+        },
+        "restoreDecoded": {
+          "samplesMicros": [
+            1549,
+            1531,
+            493,
+            1133,
+            558
+          ],
+          "medianMicros": 1133,
+          "p25Micros": 558,
+          "p75Micros": 1531
+        },
+        "jsonDecodeToAggregateRestore": {
+          "samplesMicros": [
+            4527,
+            3071,
+            3163,
+            2888,
+            2171
+          ],
+          "medianMicros": 3071,
+          "p25Micros": 2888,
+          "p75Micros": 3163
+        }
+      }
+    },
+    {
+      "id": "retained_history",
+      "retainedSessions": 50,
+      "repeatsPerSession": 128,
+      "authoredEvents": 513,
+      "stateVariables": 32,
+      "retainedHistorySteps": 12865,
+      "jsonUtf8Bytes": 916729,
+      "semanticFingerprint": "4de61a71e087d833c9a05b4ed24a22993d94ed0963d786f293e5c0ba7204bc77",
+      "timings": {
+        "jsonParse": {
+          "samplesMicros": [
+            7341,
+            7851,
+            18737,
+            7044,
+            6743
+          ],
+          "medianMicros": 7341,
+          "p25Micros": 7044,
+          "p75Micros": 7851
+        },
+        "typedDecodeAndValidation": {
+          "samplesMicros": [
+            42471,
+            44283,
+            43106,
+            44631,
+            60062
+          ],
+          "medianMicros": 44283,
+          "p25Micros": 43106,
+          "p75Micros": 44631
+        },
+        "restoreDecoded": {
+          "samplesMicros": [
+            9442,
+            10972,
+            13198,
+            10964,
+            10688
+          ],
+          "medianMicros": 10964,
+          "p25Micros": 10688,
+          "p75Micros": 10972
+        },
+        "jsonDecodeToAggregateRestore": {
+          "samplesMicros": [
+            68395,
+            74256,
+            70299,
+            71814,
+            73533
+          ],
+          "medianMicros": 71814,
+          "p25Micros": 70299,
+          "p75Micros": 73533
+        }
+      }
+    },
+    {
+      "id": "large_retained_history",
+      "retainedSessions": 200,
+      "repeatsPerSession": 256,
+      "authoredEvents": 2049,
+      "stateVariables": 128,
+      "retainedHistorySteps": 102652,
+      "jsonUtf8Bytes": 8727548,
+      "semanticFingerprint": "bdb07f9d4d010a8f8976b0af030072948071870f16824a0e45e110045c1963bf",
+      "timings": {
+        "jsonParse": {
+          "samplesMicros": [
+            92753,
+            216438,
+            147031,
+            157411,
+            198463
+          ],
+          "medianMicros": 157411,
+          "p25Micros": 147031,
+          "p75Micros": 198463
+        },
+        "typedDecodeAndValidation": {
+          "samplesMicros": [
+            500215,
+            494560,
+            480445,
+            525608,
+            479821
+          ],
+          "medianMicros": 494560,
+          "p25Micros": 480445,
+          "p75Micros": 500215
+        },
+        "restoreDecoded": {
+          "samplesMicros": [
+            102807,
+            141122,
+            123248,
+            91112,
+            112964
+          ],
+          "medianMicros": 112964,
+          "p25Micros": 102807,
+          "p75Micros": 123248
+        },
+        "jsonDecodeToAggregateRestore": {
+          "samplesMicros": [
+            772503,
+            775175,
+            731875,
+            725639,
+            796567
+          ],
+          "medianMicros": 772503,
+          "p25Micros": 731875,
+          "p75Micros": 775175
+        }
+      }
+    }
+  ]
+}

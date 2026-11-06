@@ -6,23 +6,20 @@ import '../support/synthetic_story_project_generator.dart';
 void main() {
   group('Stage 3H deterministic malformed-project generation', () {
     test('fault metadata tokens stay stable and representable-only', () {
-      expect(
-        SyntheticStoryFault.values.map((fault) => fault.token).toList(),
-        [
-          'missing_destination',
-          'duplicate_event_id',
-          'duplicate_choice_id',
-          'undeclared_variable_reference',
-          'wrong_condition_value_type',
-          'wrong_effect_value_type',
-          'missing_entry_event',
-          'ambiguous_event_flow',
-          'incomplete_choice',
-          'automatic_cycle',
-          'unreachable_event',
-          'potentially_uninitialized_variable',
-        ],
-      );
+      expect(SyntheticStoryFault.values.map((fault) => fault.token).toList(), [
+        'missing_destination',
+        'duplicate_event_id',
+        'duplicate_choice_id',
+        'undeclared_variable_reference',
+        'wrong_condition_value_type',
+        'wrong_effect_value_type',
+        'missing_entry_event',
+        'ambiguous_event_flow',
+        'incomplete_choice',
+        'automatic_cycle',
+        'unreachable_event',
+        'potentially_uninitialized_variable',
+      ]);
     });
 
     test('randomized base fixtures remain validator-error free', () {
@@ -50,9 +47,8 @@ void main() {
           eventCount: 64,
           variableCount: 16,
         );
-        final expectedFault = SyntheticStoryFault.values[
-          seed % SyntheticStoryFault.values.length
-        ];
+        final expectedFault = SyntheticStoryFault
+            .values[seed % SyntheticStoryFault.values.length];
         final metadata = fixture.faults.single;
         final report = StoryValidator.validate(fixture.project);
         final matching = report.diagnostics
@@ -67,11 +63,16 @@ void main() {
         observedFaults.add(metadata.fault);
         expect(metadata.fault, expectedFault, reason: 'Generator seed $seed');
         expect(metadata.targetPath, isNotEmpty, reason: 'Generator seed $seed');
-        expect(metadata.description, isNotEmpty, reason: 'Generator seed $seed');
+        expect(
+          metadata.description,
+          isNotEmpty,
+          reason: 'Generator seed $seed',
+        );
         expect(
           matching,
           isNotEmpty,
-          reason: 'Seed $seed injected ${metadata.fault.token}; expected '
+          reason:
+              'Seed $seed injected ${metadata.fault.token}; expected '
               '${metadata.expectedDiagnosticCode.value} '
               '(${metadata.expectedSeverity.name}).',
         );
@@ -80,54 +81,55 @@ void main() {
       expect(observedFaults, SyntheticStoryFault.values.toSet());
     });
 
-    test('same seed and explicit fault set reproduce byte-for-byte signature', () {
-      const faults = [
-        SyntheticStoryFault.missingDestination,
-        SyntheticStoryFault.wrongEffectValueType,
-        SyntheticStoryFault.incompleteChoice,
-        SyntheticStoryFault.potentiallyUninitializedVariable,
-      ];
-      final first = SyntheticStoryProjectGenerator.invalid(
-        seed: 42,
-        faults: faults,
-        eventCount: 64,
-        variableCount: 16,
-      );
-      final second = SyntheticStoryProjectGenerator.invalid(
-        seed: 42,
-        faults: faults.reversed,
-        eventCount: 64,
-        variableCount: 16,
-      );
-
-      expect(first.baseSignature, second.baseSignature);
-      expect(first.signature, second.signature);
-      expect(first.faults, second.faults);
-      expect(
-        first.faults.map((metadata) => metadata.fault).toList(),
-        [
+    test(
+      'same seed and explicit fault set reproduce byte-for-byte signature',
+      () {
+        const faults = [
           SyntheticStoryFault.missingDestination,
           SyntheticStoryFault.wrongEffectValueType,
           SyntheticStoryFault.incompleteChoice,
           SyntheticStoryFault.potentiallyUninitializedVariable,
-        ],
-      );
-
-      final report = StoryValidator.validate(first.project);
-      for (final metadata in first.faults) {
-        expect(
-          report.diagnostics.any(
-            (diagnostic) =>
-                diagnostic.code == metadata.expectedDiagnosticCode &&
-                diagnostic.severity == metadata.expectedSeverity &&
-                diagnostic.location.pathString == metadata.targetPath,
-          ),
-          isTrue,
-          reason: 'Missing expected multi-fault diagnostic '
-              '${metadata.expectedDiagnosticCode.value}.',
+        ];
+        final first = SyntheticStoryProjectGenerator.invalid(
+          seed: 42,
+          faults: faults,
+          eventCount: 64,
+          variableCount: 16,
         );
-      }
-    });
+        final second = SyntheticStoryProjectGenerator.invalid(
+          seed: 42,
+          faults: faults.reversed,
+          eventCount: 64,
+          variableCount: 16,
+        );
+
+        expect(first.baseSignature, second.baseSignature);
+        expect(first.signature, second.signature);
+        expect(first.faults, second.faults);
+        expect(first.faults.map((metadata) => metadata.fault).toList(), [
+          SyntheticStoryFault.missingDestination,
+          SyntheticStoryFault.wrongEffectValueType,
+          SyntheticStoryFault.incompleteChoice,
+          SyntheticStoryFault.potentiallyUninitializedVariable,
+        ]);
+
+        final report = StoryValidator.validate(first.project);
+        for (final metadata in first.faults) {
+          expect(
+            report.diagnostics.any(
+              (diagnostic) =>
+                  diagnostic.code == metadata.expectedDiagnosticCode &&
+                  diagnostic.severity == metadata.expectedSeverity &&
+                  diagnostic.location.pathString == metadata.targetPath,
+            ),
+            isTrue,
+            reason:
+                'Missing expected multi-fault diagnostic '
+                '${metadata.expectedDiagnosticCode.value}.',
+          );
+        }
+      },
+    );
 
     test('fault injection changes the valid base signature', () {
       for (final fault in SyntheticStoryFault.values) {
@@ -186,41 +188,45 @@ void main() {
       );
     });
 
-    test('empty, duplicate, and diagnostic-suppressing fault sets are rejected', () {
-      expect(
-        () => SyntheticStoryProjectGenerator.invalid(seed: 1, faults: const []),
-        throwsArgumentError,
-      );
-      expect(
-        () => SyntheticStoryProjectGenerator.invalid(
-          seed: 1,
-          faults: const [
-            SyntheticStoryFault.missingDestination,
-            SyntheticStoryFault.missingDestination,
-          ],
-        ),
-        throwsArgumentError,
-      );
-      expect(
-        () => SyntheticStoryProjectGenerator.invalid(
-          seed: 1,
-          faults: const [
-            SyntheticStoryFault.missingEntryEvent,
-            SyntheticStoryFault.automaticCycle,
-          ],
-        ),
-        throwsArgumentError,
-      );
-      expect(
-        () => SyntheticStoryProjectGenerator.invalid(
-          seed: 1,
-          faults: const [
-            SyntheticStoryFault.duplicateEventId,
-            SyntheticStoryFault.unreachableEvent,
-          ],
-        ),
-        throwsArgumentError,
-      );
-    });
+    test(
+      'empty, duplicate, and diagnostic-suppressing fault sets are rejected',
+      () {
+        expect(
+          () =>
+              SyntheticStoryProjectGenerator.invalid(seed: 1, faults: const []),
+          throwsArgumentError,
+        );
+        expect(
+          () => SyntheticStoryProjectGenerator.invalid(
+            seed: 1,
+            faults: const [
+              SyntheticStoryFault.missingDestination,
+              SyntheticStoryFault.missingDestination,
+            ],
+          ),
+          throwsArgumentError,
+        );
+        expect(
+          () => SyntheticStoryProjectGenerator.invalid(
+            seed: 1,
+            faults: const [
+              SyntheticStoryFault.missingEntryEvent,
+              SyntheticStoryFault.automaticCycle,
+            ],
+          ),
+          throwsArgumentError,
+        );
+        expect(
+          () => SyntheticStoryProjectGenerator.invalid(
+            seed: 1,
+            faults: const [
+              SyntheticStoryFault.duplicateEventId,
+              SyntheticStoryFault.unreachableEvent,
+            ],
+          ),
+          throwsArgumentError,
+        );
+      },
+    );
   });
 }

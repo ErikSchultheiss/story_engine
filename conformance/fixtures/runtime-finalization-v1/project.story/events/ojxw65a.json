@@ -1,0 +1,209 @@
+{
+  "id": "root",
+  "entryEffects": [],
+  "choices": [
+    {
+      "id": "safe",
+      "presentation": {
+        "text": "safe"
+      },
+      "effects": [
+        {
+          "kind": "increment_variable",
+          "variableId": "score",
+          "amount": {
+            "type": "integer",
+            "value": 1
+          }
+        }
+      ],
+      "transition": {
+        "kind": "conditional",
+        "branches": [
+          {
+            "condition": {
+              "kind": "variable_comparison",
+              "variableId": "score",
+              "operator": "greater_than_or_equal",
+              "value": {
+                "type": "integer",
+                "value": 1
+              }
+            },
+            "transition": {
+              "kind": "weighted",
+              "options": [
+                {
+                  "weight": 1,
+                  "transition": {
+                    "kind": "conditional",
+                    "branches": [
+                      {
+                        "condition": {
+                          "kind": "variable_is_set",
+                          "variableId": "flag"
+                        },
+                        "transition": {
+                          "kind": "event",
+                          "destinationEventId": "done_a"
+                        }
+                      }
+                    ],
+                    "fallback": {
+                      "kind": "event",
+                      "destinationEventId": "done_b"
+                    }
+                  }
+                },
+                {
+                  "weight": 4,
+                  "transition": {
+                    "kind": "event",
+                    "destinationEventId": "done_b"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "fallback": {
+          "kind": "event",
+          "destinationEventId": "done_a"
+        }
+      }
+    },
+    {
+      "id": "fail",
+      "presentation": {
+        "text": "fail"
+      },
+      "effects": [
+        {
+          "kind": "increment_variable",
+          "variableId": "score",
+          "amount": {
+            "type": "integer",
+            "value": 1
+          }
+        }
+      ],
+      "transition": {
+        "kind": "weighted",
+        "options": [
+          {
+            "weight": 1,
+            "transition": {
+              "kind": "event",
+              "destinationEventId": "reject"
+            }
+          },
+          {
+            "weight": 4,
+            "transition": {
+              "kind": "event",
+              "destinationEventId": "reject"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "bad_branch",
+      "presentation": {
+        "text": "bad_branch"
+      },
+      "effects": [
+        {
+          "kind": "increment_variable",
+          "variableId": "score",
+          "amount": {
+            "type": "integer",
+            "value": 1
+          }
+        }
+      ],
+      "transition": {
+        "kind": "conditional",
+        "branches": [
+          {
+            "condition": {
+              "kind": "variable_comparison",
+              "variableId": "score",
+              "operator": "equal",
+              "value": {
+                "type": "string",
+                "value": "malformed"
+              }
+            },
+            "transition": {
+              "kind": "event",
+              "destinationEventId": "done_a"
+            }
+          }
+        ],
+        "fallback": {
+          "kind": "event",
+          "destinationEventId": "done_b"
+        }
+      }
+    },
+    {
+      "id": "short",
+      "presentation": {
+        "text": "short"
+      },
+      "effects": [],
+      "transition": {
+        "kind": "terminal"
+      },
+      "availabilityCondition": {
+        "kind": "any",
+        "conditions": [
+          {
+            "kind": "variable_is_set",
+            "variableId": "flag"
+          },
+          {
+            "kind": "variable_comparison",
+            "variableId": "score",
+            "operator": "equal",
+            "value": {
+              "type": "string",
+              "value": "malformed"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "bump",
+      "presentation": {
+        "text": "bump"
+      },
+      "effects": [
+        {
+          "kind": "increment_variable",
+          "variableId": "score",
+          "amount": {
+            "type": "integer",
+            "value": 1
+          }
+        }
+      ],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "root"
+      }
+    },
+    {
+      "id": "finish",
+      "presentation": {
+        "text": "finish"
+      },
+      "effects": [],
+      "transition": {
+        "kind": "terminal"
+      }
+    }
+  ]
+}

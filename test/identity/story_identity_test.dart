@@ -81,7 +81,10 @@ void main() {
     test('changing an alias does not require changing machine identity', () {
       final id = StoryEventId('event_001');
       final before = StoryEvent(id: id, alias: StoryAlias('forest_gate'));
-      final after = StoryEvent(id: id, alias: StoryAlias('ancient_forest_gate'));
+      final after = StoryEvent(
+        id: id,
+        alias: StoryAlias('ancient_forest_gate'),
+      );
 
       expect(before.id, equals(after.id));
       expect(before.alias, isNot(equals(after.alias)));

@@ -1,0 +1,10 @@
+{
+  "fixtureId": "stage8h-large-index-v1",
+  "moduleCount": 100,
+  "dialoguesPerModule": 50,
+  "eventsPerDialogue": 2,
+  "expectedEventCount": 10000,
+  "expectedEntryPointCount": 5000,
+  "targetModuleIndex": 73,
+  "targetDialogueIndex": 17
+}

@@ -302,37 +302,26 @@ void main() {
       },
     );
 
-    test('history must begin at the supplied project entry event', () {
+    test('history may begin at a valid host-selected startAt event', () {
       final entryId = StoryEventId('event_entry');
       final otherId = StoryEventId('event_other');
-      final choiceId = StoryChoiceId('choice_finish');
       final project = StoryProject(
         id: StoryProjectId('project_entry_history'),
         entryEventId: entryId,
         events: [
           StoryEvent(
             id: entryId,
-            choices: [
-              StoryChoice(
-                id: choiceId,
-                transition: const StoryTerminalTransition(),
-              ),
-            ],
+            continuationTransition: const StoryTerminalTransition(),
           ),
           StoryEvent(
             id: otherId,
-            choices: [
-              StoryChoice(
-                id: StoryChoiceId('choice_other_finish'),
-                transition: const StoryTerminalTransition(),
-              ),
-            ],
+            continuationTransition: const StoryTerminalTransition(),
           ),
         ],
       );
       final snapshot = StoryRuntimeSnapshot(
         projectId: project.id,
-        status: StoryEngineStatus.awaitingChoice,
+        status: StoryEngineStatus.awaitingContinue,
         state: StoryState.initial(project.stateSchema),
         currentEventId: otherId,
         history: StoryRuntimeHistory(
@@ -344,11 +333,7 @@ void main() {
 
       expect(
         () => validator.validate(snapshot: snapshot, project: project),
-        throwsA(
-          _issue(
-            StoryRuntimeSnapshotCompatibilityIssue.historyTransitionMismatch,
-          ),
-        ),
+        returnsNormally,
       );
     });
 

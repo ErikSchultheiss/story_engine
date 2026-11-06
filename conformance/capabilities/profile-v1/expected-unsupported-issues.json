@@ -1,0 +1,7 @@
+[
+  "missingFeature:content_versioning",
+  "missingFeature:host_actions",
+  "featureRevisionAboveMaximum:modular_loading",
+  "extensionVersionAboveMaximum:com.example.combat",
+  "missingExtension:com.example.quest"
+]

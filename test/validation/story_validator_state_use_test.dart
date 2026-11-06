@@ -62,10 +62,9 @@ void main() {
         diagnostic.location.pathString,
         'events[0].availabilityCondition.variableId',
       );
-      expect(
-        diagnostic.references,
-        [StoryDiagnosticReference.variable(variableId)],
-      );
+      expect(diagnostic.references, [
+        StoryDiagnosticReference.variable(variableId),
+      ]);
       expect(
         diagnostic.relatedLocations.single.pathString,
         'stateSchema.variables[0]',
@@ -250,55 +249,58 @@ void main() {
       );
     });
 
-    test('prior assignment propagated through a transition prevents warning', () {
-      final variableId = StoryVariableId('variable_prior_assignment');
-      final sourceId = StoryEventId('event_assignment_source');
-      final destinationId = StoryEventId('event_assignment_destination');
-      final project = StoryProject(
-        id: StoryProjectId('project_prior_assignment'),
-        stateSchema: StoryStateSchema(
-          variables: [
-            StoryVariableDefinition(
-              id: variableId,
-              type: StoryValueType.boolean,
-            ),
-          ],
-        ),
-        entryEventId: sourceId,
-        events: [
-          StoryEvent(
-            id: sourceId,
-            entryEffects: [
-              StorySetVariableEffect(
-                variableId: variableId,
-                value: const StoryBooleanValue(true),
+    test(
+      'prior assignment propagated through a transition prevents warning',
+      () {
+        final variableId = StoryVariableId('variable_prior_assignment');
+        final sourceId = StoryEventId('event_assignment_source');
+        final destinationId = StoryEventId('event_assignment_destination');
+        final project = StoryProject(
+          id: StoryProjectId('project_prior_assignment'),
+          stateSchema: StoryStateSchema(
+            variables: [
+              StoryVariableDefinition(
+                id: variableId,
+                type: StoryValueType.boolean,
               ),
             ],
-            automaticTransition: StoryEventTransition(
-              destinationEventId: destinationId,
-            ),
           ),
-          StoryEvent(
-            id: destinationId,
-            availabilityCondition: StoryVariableComparisonCondition(
-              variableId: variableId,
-              operator: StoryComparisonOperator.equal,
-              value: const StoryBooleanValue(true),
+          entryEventId: sourceId,
+          events: [
+            StoryEvent(
+              id: sourceId,
+              entryEffects: [
+                StorySetVariableEffect(
+                  variableId: variableId,
+                  value: const StoryBooleanValue(true),
+                ),
+              ],
+              automaticTransition: StoryEventTransition(
+                destinationEventId: destinationId,
+              ),
             ),
-            automaticTransition: const StoryTerminalTransition(),
+            StoryEvent(
+              id: destinationId,
+              availabilityCondition: StoryVariableComparisonCondition(
+                variableId: variableId,
+                operator: StoryComparisonOperator.equal,
+                value: const StoryBooleanValue(true),
+              ),
+              automaticTransition: const StoryTerminalTransition(),
+            ),
+          ],
+        );
+
+        final report = StoryValidator.validate(project);
+
+        expect(
+          report.diagnostics.where(
+            (item) => item.code == StoryDiagnosticCode.stateReadMayBeUnset,
           ),
-        ],
-      );
-
-      final report = StoryValidator.validate(project);
-
-      expect(
-        report.diagnostics.where(
-          (item) => item.code == StoryDiagnosticCode.stateReadMayBeUnset,
-        ),
-        isEmpty,
-      );
-    });
+          isEmpty,
+        );
+      },
+    );
 
     test('merged paths report a variable that may still be unset', () {
       final variableId = StoryVariableId('variable_path_dependent');
@@ -392,166 +394,196 @@ void main() {
 
       final report = StoryValidator.validate(project);
       final error = report.errors.singleWhere(
-        (item) => item.code == StoryDiagnosticCode.stateNumericEffectTargetUnset,
+        (item) =>
+            item.code == StoryDiagnosticCode.stateNumericEffectTargetUnset,
       );
 
       expect(error.location.pathString, 'events[0].entryEffects[0].variableId');
     });
 
-    test('numeric adjustment after merged paths reports path-dependent warning', () {
-      final variableId = StoryVariableId('variable_maybe_unset_number');
-      final sourceId = StoryEventId('event_maybe_unset_source');
-      final destinationId = StoryEventId('event_maybe_unset_destination');
-      final project = StoryProject(
-        id: StoryProjectId('project_maybe_unset_number'),
-        stateSchema: StoryStateSchema(
-          variables: [
-            StoryVariableDefinition(
-              id: variableId,
-              type: StoryValueType.integer,
-            ),
-          ],
-        ),
-        entryEventId: sourceId,
-        events: [
-          StoryEvent(
-            id: sourceId,
-            choices: [
-              StoryChoice(
-                id: StoryChoiceId('choice_initializes_number'),
-                effects: [
-                  StorySetVariableEffect(
-                    variableId: variableId,
-                    value: StoryIntegerValue(0),
+    test(
+      'numeric adjustment after merged paths reports path-dependent warning',
+      () {
+        final variableId = StoryVariableId('variable_maybe_unset_number');
+        final sourceId = StoryEventId('event_maybe_unset_source');
+        final destinationId = StoryEventId('event_maybe_unset_destination');
+        final project = StoryProject(
+          id: StoryProjectId('project_maybe_unset_number'),
+          stateSchema: StoryStateSchema(
+            variables: [
+              StoryVariableDefinition(
+                id: variableId,
+                type: StoryValueType.integer,
+              ),
+            ],
+          ),
+          entryEventId: sourceId,
+          events: [
+            StoryEvent(
+              id: sourceId,
+              choices: [
+                StoryChoice(
+                  id: StoryChoiceId('choice_initializes_number'),
+                  effects: [
+                    StorySetVariableEffect(
+                      variableId: variableId,
+                      value: StoryIntegerValue(0),
+                    ),
+                  ],
+                  transition: StoryEventTransition(
+                    destinationEventId: destinationId,
                   ),
-                ],
-                transition: StoryEventTransition(
-                  destinationEventId: destinationId,
                 ),
-              ),
-              StoryChoice(
-                id: StoryChoiceId('choice_skips_number'),
-                transition: StoryEventTransition(
-                  destinationEventId: destinationId,
+                StoryChoice(
+                  id: StoryChoiceId('choice_skips_number'),
+                  transition: StoryEventTransition(
+                    destinationEventId: destinationId,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          StoryEvent(
-            id: destinationId,
-            entryEffects: [
-              StoryIncrementVariableEffect(
-                variableId: variableId,
-                amount: StoryIntegerValue(1),
-              ),
-            ],
-            automaticTransition: const StoryTerminalTransition(),
-          ),
-        ],
-      );
-
-      final report = StoryValidator.validate(project);
-      final warning = report.warnings.singleWhere(
-        (item) =>
-            item.code == StoryDiagnosticCode.stateNumericEffectTargetMayBeUnset,
-      );
-
-      expect(warning.location.pathString, 'events[1].entryEffects[0].variableId');
-    });
-
-    test('usage diagnostics distinguish unused, write-only, and uninitialized read', () {
-      final unusedId = StoryVariableId('variable_unused');
-      final writeOnlyId = StoryVariableId('variable_write_only');
-      final readOnlyUnsetId = StoryVariableId('variable_read_only_unset');
-      final eventId = StoryEventId('event_usage_quality');
-      final project = StoryProject(
-        id: StoryProjectId('project_usage_quality'),
-        stateSchema: StoryStateSchema(
-          variables: [
-            StoryVariableDefinition(
-              id: unusedId,
-              type: StoryValueType.boolean,
+              ],
             ),
-            StoryVariableDefinition(
-              id: writeOnlyId,
-              type: StoryValueType.boolean,
-            ),
-            StoryVariableDefinition(
-              id: readOnlyUnsetId,
-              type: StoryValueType.boolean,
+            StoryEvent(
+              id: destinationId,
+              entryEffects: [
+                StoryIncrementVariableEffect(
+                  variableId: variableId,
+                  amount: StoryIntegerValue(1),
+                ),
+              ],
+              automaticTransition: const StoryTerminalTransition(),
             ),
           ],
-        ),
-        entryEventId: eventId,
-        events: [
-          StoryEvent(
-            id: eventId,
-            availabilityCondition: StoryVariableIsUnsetCondition(
-              variableId: readOnlyUnsetId,
-            ),
-            entryEffects: [
-              StorySetVariableEffect(
-                variableId: writeOnlyId,
-                value: const StoryBooleanValue(true),
-              ),
-            ],
-            automaticTransition: const StoryTerminalTransition(),
-          ),
-        ],
-      );
+        );
 
-      final report = StoryValidator.validate(project);
-
-      expect(
-        report.information.singleWhere(
-          (item) => item.code == StoryDiagnosticCode.stateVariableNeverReferenced,
-        ).references,
-        [StoryDiagnosticReference.variable(unusedId)],
-      );
-      expect(
-        report.information.singleWhere(
-          (item) => item.code == StoryDiagnosticCode.stateVariableWrittenNeverRead,
-        ).references,
-        [StoryDiagnosticReference.variable(writeOnlyId)],
-      );
-      expect(
-        report.warnings.singleWhere(
+        final report = StoryValidator.validate(project);
+        final warning = report.warnings.singleWhere(
           (item) =>
               item.code ==
-              StoryDiagnosticCode.stateVariableReadWithoutInitialization,
-        ).references,
-        [StoryDiagnosticReference.variable(readOnlyUnsetId)],
-      );
-    });
+              StoryDiagnosticCode.stateNumericEffectTargetMayBeUnset,
+        );
 
-    test('Lantern Mystery surfaces unset-capable alarm reads without errors', () {
-      final report = StoryValidator.validate(LanternMysteryFixture.buildProject());
+        expect(
+          warning.location.pathString,
+          'events[1].entryEffects[0].variableId',
+        );
+      },
+    );
 
-      expect(report.errors, isEmpty);
-      final stateWarnings = report.warnings
-          .where((item) => item.code == StoryDiagnosticCode.stateReadMayBeUnset)
-          .toList();
-      expect(stateWarnings, isNotEmpty);
-      expect(
-        stateWarnings.every(
-          (item) =>
-              item.references.contains(
-                StoryDiagnosticReference.variable(
-                  LanternMysteryFixture.alarmTriggeredId,
-                ),
+    test(
+      'usage diagnostics distinguish unused, write-only, and uninitialized read',
+      () {
+        final unusedId = StoryVariableId('variable_unused');
+        final writeOnlyId = StoryVariableId('variable_write_only');
+        final readOnlyUnsetId = StoryVariableId('variable_read_only_unset');
+        final eventId = StoryEventId('event_usage_quality');
+        final project = StoryProject(
+          id: StoryProjectId('project_usage_quality'),
+          stateSchema: StoryStateSchema(
+            variables: [
+              StoryVariableDefinition(
+                id: unusedId,
+                type: StoryValueType.boolean,
               ),
-        ),
-        isTrue,
-      );
-    });
+              StoryVariableDefinition(
+                id: writeOnlyId,
+                type: StoryValueType.boolean,
+              ),
+              StoryVariableDefinition(
+                id: readOnlyUnsetId,
+                type: StoryValueType.boolean,
+              ),
+            ],
+          ),
+          entryEventId: eventId,
+          events: [
+            StoryEvent(
+              id: eventId,
+              availabilityCondition: StoryVariableIsUnsetCondition(
+                variableId: readOnlyUnsetId,
+              ),
+              entryEffects: [
+                StorySetVariableEffect(
+                  variableId: writeOnlyId,
+                  value: const StoryBooleanValue(true),
+                ),
+              ],
+              automaticTransition: const StoryTerminalTransition(),
+            ),
+          ],
+        );
 
-    test('Stage 3E diagnostics remain deterministic across repeated validation', () {
-      final project = LanternMysteryFixture.buildProject();
+        final report = StoryValidator.validate(project);
 
-      final first = StoryValidator.validate(project);
-      final second = StoryValidator.validate(project);
+        expect(
+          report.information
+              .singleWhere(
+                (item) =>
+                    item.code ==
+                    StoryDiagnosticCode.stateVariableNeverReferenced,
+              )
+              .references,
+          [StoryDiagnosticReference.variable(unusedId)],
+        );
+        expect(
+          report.information
+              .singleWhere(
+                (item) =>
+                    item.code ==
+                    StoryDiagnosticCode.stateVariableWrittenNeverRead,
+              )
+              .references,
+          [StoryDiagnosticReference.variable(writeOnlyId)],
+        );
+        expect(
+          report.warnings
+              .singleWhere(
+                (item) =>
+                    item.code ==
+                    StoryDiagnosticCode.stateVariableReadWithoutInitialization,
+              )
+              .references,
+          [StoryDiagnosticReference.variable(readOnlyUnsetId)],
+        );
+      },
+    );
 
-      expect(second.diagnostics, first.diagnostics);
-    });
+    test(
+      'Lantern Mystery surfaces unset-capable alarm reads without errors',
+      () {
+        final report = StoryValidator.validate(
+          LanternMysteryFixture.buildProject(),
+        );
+
+        expect(report.errors, isEmpty);
+        final stateWarnings = report.warnings
+            .where(
+              (item) => item.code == StoryDiagnosticCode.stateReadMayBeUnset,
+            )
+            .toList();
+        expect(stateWarnings, isNotEmpty);
+        expect(
+          stateWarnings.every(
+            (item) => item.references.contains(
+              StoryDiagnosticReference.variable(
+                LanternMysteryFixture.alarmTriggeredId,
+              ),
+            ),
+          ),
+          isTrue,
+        );
+      },
+    );
+
+    test(
+      'Stage 3E diagnostics remain deterministic across repeated validation',
+      () {
+        final project = LanternMysteryFixture.buildProject();
+
+        final first = StoryValidator.validate(project);
+        final second = StoryValidator.validate(project);
+
+        expect(second.diagnostics, first.diagnostics);
+      },
+    );
   });
 }

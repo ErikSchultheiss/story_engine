@@ -59,7 +59,11 @@ void _validatePath(String path) {
       path.startsWith('/') ||
       path.endsWith('/') ||
       path.contains('\\') ||
-      path.split('/').any((segment) => segment.isEmpty || segment == '.' || segment == '..')) {
+      path
+          .split('/')
+          .any(
+            (segment) => segment.isEmpty || segment == '.' || segment == '..',
+          )) {
     throw ArgumentError.value(
       path,
       'files',

@@ -24,10 +24,7 @@ void main() {
     });
 
     test('terminal transition is explicit value data', () {
-      expect(
-        const StoryTerminalTransition(),
-        const StoryTerminalTransition(),
-      );
+      expect(const StoryTerminalTransition(), const StoryTerminalTransition());
     });
   });
 

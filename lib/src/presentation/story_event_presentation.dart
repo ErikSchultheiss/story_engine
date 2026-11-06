@@ -37,6 +37,5 @@ final class StoryEventPresentation {
   int get hashCode => Object.hash(StoryEventPresentation, title, body);
 
   @override
-  String toString() =>
-      'StoryEventPresentation(title: $title, body: $body)';
+  String toString() => 'StoryEventPresentation(title: $title, body: $body)';
 }

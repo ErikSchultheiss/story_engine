@@ -69,8 +69,7 @@ final class StoryPresentationValidator {
       final hasChoices = event.choices.isNotEmpty;
       final hasContinuation = event.continuationTransition != null;
       final hasAutomatic = event.automaticTransition != null;
-      final validContinuation =
-          !hasChoices && hasContinuation && !hasAutomatic;
+      final validContinuation = !hasChoices && hasContinuation && !hasAutomatic;
       final validAutomatic = !hasChoices && !hasContinuation && hasAutomatic;
 
       if (validContinuation && !_eventHasMeaningfulPresentation(event)) {
@@ -79,7 +78,8 @@ final class StoryPresentationValidator {
             code: StoryDiagnosticCode
                 .presentationContinuationWithoutMeaningfulPresentation,
             severity: StoryDiagnosticSeverity.warning,
-            message: 'Continuation event pauses for the host but has no '
+            message:
+                'Continuation event pauses for the host but has no '
                 'meaningful presentation title or body.',
             location: StoryDiagnosticLocation.event(
               projectId: project.id,
@@ -100,7 +100,8 @@ final class StoryPresentationValidator {
             code: StoryDiagnosticCode
                 .presentationAutomaticEventPresentationNotHostVisible,
             severity: StoryDiagnosticSeverity.warning,
-            message: 'Automatic event presentation is never host-visible '
+            message:
+                'Automatic event presentation is never host-visible '
                 'because automatic flow resolves synchronously.',
             location: StoryDiagnosticLocation.event(
               projectId: project.id,
@@ -134,7 +135,7 @@ final class StoryPresentationValidator {
             message: choicePresentation == null
                 ? 'Interactive choice has no default presentation text.'
                 : 'Interactive choice presentation text is empty or '
-                    'whitespace only.',
+                      'whitespace only.',
             location: StoryDiagnosticLocation.choice(
               projectId: project.id,
               eventId: event.id,
@@ -175,12 +176,10 @@ List<StoryDiagnosticPathSegment> _eventPath(int eventIndex) =>
       StoryDiagnosticPathSegment.index(eventIndex),
     ];
 
-List<StoryDiagnosticPathSegment> _choicePath(
-  int eventIndex,
-  int choiceIndex,
-) => <StoryDiagnosticPathSegment>[
-  const StoryDiagnosticPathSegment.field('events'),
-  StoryDiagnosticPathSegment.index(eventIndex),
-  const StoryDiagnosticPathSegment.field('choices'),
-  StoryDiagnosticPathSegment.index(choiceIndex),
-];
+List<StoryDiagnosticPathSegment> _choicePath(int eventIndex, int choiceIndex) =>
+    <StoryDiagnosticPathSegment>[
+      const StoryDiagnosticPathSegment.field('events'),
+      StoryDiagnosticPathSegment.index(eventIndex),
+      const StoryDiagnosticPathSegment.field('choices'),
+      StoryDiagnosticPathSegment.index(choiceIndex),
+    ];

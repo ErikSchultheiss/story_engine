@@ -56,9 +56,11 @@ void main() {
         ];
 
         for (final scenario in scenarios) {
-          for (var checkpoint = 0;
-              checkpoint <= scenario.actions.length;
-              checkpoint++) {
+          for (
+            var checkpoint = 0;
+            checkpoint <= scenario.actions.length;
+            checkpoint++
+          ) {
             _expectParityFromCheckpoint(
               project: project,
               randomSeed: scenario.randomSeed,
@@ -71,52 +73,55 @@ void main() {
       },
     );
 
-    test('notStarted round-trip preserves the complete future Lantern route', () {
-      final project = LanternMysteryFixture.buildProject();
-      final uninterrupted = StoryEngine(
-        project: project,
-        randomSeed: LanternMysteryFixture.safeSeed,
-        maxAutomaticTransitions: 43,
-      );
-      final restored = _roundTrip(project, uninterrupted);
+    test(
+      'notStarted round-trip preserves the complete future Lantern route',
+      () {
+        final project = LanternMysteryFixture.buildProject();
+        final uninterrupted = StoryEngine(
+          project: project,
+          randomSeed: LanternMysteryFixture.safeSeed,
+          maxAutomaticTransitions: 43,
+        );
+        final restored = _roundTrip(project, uninterrupted);
 
-      _expectSameCommittedRuntime(
-        restored,
-        uninterrupted,
-        reason: 'before start',
-      );
-
-      uninterrupted.start();
-      restored.start();
-      _expectSameCommittedRuntime(
-        restored,
-        uninterrupted,
-        reason: 'after start',
-      );
-
-      final actions = <_HostAction>[
-        _choose(LanternMysteryFixture.inspectAlarmId),
-        _choose(LanternMysteryFixture.openServiceDrawerId),
-        _choose(LanternMysteryFixture.enterCorridorId),
-        _choose(LanternMysteryFixture.enterCellarId),
-        _choose(LanternMysteryFixture.enterUnstablePassageId),
-        _choose(LanternMysteryFixture.takeNearestExitId),
-        const _ContinueAction(),
-      ];
-
-      for (var index = 0; index < actions.length; index++) {
-        _apply(uninterrupted, actions[index]);
-        _apply(restored, actions[index]);
         _expectSameCommittedRuntime(
           restored,
           uninterrupted,
-          reason: 'future action $index after notStarted restore',
+          reason: 'before start',
         );
-      }
 
-      expect(uninterrupted.status, StoryEngineStatus.terminated);
-      expect(restored.status, StoryEngineStatus.terminated);
-    });
+        uninterrupted.start();
+        restored.start();
+        _expectSameCommittedRuntime(
+          restored,
+          uninterrupted,
+          reason: 'after start',
+        );
+
+        final actions = <_HostAction>[
+          _choose(LanternMysteryFixture.inspectAlarmId),
+          _choose(LanternMysteryFixture.openServiceDrawerId),
+          _choose(LanternMysteryFixture.enterCorridorId),
+          _choose(LanternMysteryFixture.enterCellarId),
+          _choose(LanternMysteryFixture.enterUnstablePassageId),
+          _choose(LanternMysteryFixture.takeNearestExitId),
+          const _ContinueAction(),
+        ];
+
+        for (var index = 0; index < actions.length; index++) {
+          _apply(uninterrupted, actions[index]);
+          _apply(restored, actions[index]);
+          _expectSameCommittedRuntime(
+            restored,
+            uninterrupted,
+            reason: 'future action $index after notStarted restore',
+          );
+        }
+
+        expect(uninterrupted.status, StoryEngineStatus.terminated);
+        expect(restored.status, StoryEngineStatus.terminated);
+      },
+    );
 
     test(
       'awaitingContinue immediately before termination remains paused after restore',
@@ -129,10 +134,7 @@ void main() {
 
         source.choose(LanternMysteryFixture.leaveFoyerId);
         expect(source.status, StoryEngineStatus.awaitingContinue);
-        expect(
-          source.currentEvent?.id,
-          LanternMysteryFixture.neutralOutcomeId,
-        );
+        expect(source.currentEvent?.id, LanternMysteryFixture.neutralOutcomeId);
 
         final restored = _roundTrip(project, source);
         _expectSameCommittedRuntime(
@@ -367,9 +369,9 @@ Iterable<int> _representativeCheckpoints(int actionCount) {
     actionCount - 1,
     actionCount,
   };
-  final sorted = candidates.where((value) => value >= 0 && value <= actionCount)
-      .toList()
-    ..sort();
+  final sorted =
+      candidates.where((value) => value >= 0 && value <= actionCount).toList()
+        ..sort();
   return sorted;
 }
 

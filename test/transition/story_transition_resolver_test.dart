@@ -301,8 +301,7 @@ final class _FixedRandomSource implements StoryRandomSource {
 }
 
 final class _SequenceRandomSource implements StoryRandomSource {
-  _SequenceRandomSource(Iterable<int> values)
-    : _values = List<int>.of(values);
+  _SequenceRandomSource(Iterable<int> values) : _values = List<int>.of(values);
 
   final List<int> _values;
   var _index = 0;

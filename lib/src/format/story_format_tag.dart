@@ -66,17 +66,11 @@ final class StoryFormatTag {
           _orderedEventIdsEqual(eventIds, other.eventIds);
 
   @override
-  int get hashCode => Object.hash(
-    StoryFormatTag,
-    id,
-    alias,
-    label,
-    Object.hashAll(eventIds),
-  );
+  int get hashCode =>
+      Object.hash(StoryFormatTag, id, alias, label, Object.hashAll(eventIds));
 
   @override
-  String toString() =>
-      'StoryFormatTag(id: $id, events: ${eventIds.length})';
+  String toString() => 'StoryFormatTag(id: $id, events: ${eventIds.length})';
 }
 
 bool _orderedEventIdsEqual(List<StoryEventId> left, List<StoryEventId> right) {

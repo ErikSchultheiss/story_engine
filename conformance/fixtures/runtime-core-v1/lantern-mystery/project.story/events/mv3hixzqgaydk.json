@@ -1,0 +1,23 @@
+{
+  "id": "evt_0005",
+  "alias": "cold_chamber",
+  "presentation": {
+    "title": "Cold Chamber",
+    "body": "The stairway passes through a freezing service chamber before reaching the cellar."
+  },
+  "entryEffects": [
+    {
+      "kind": "decrement_variable",
+      "variableId": "var_0003",
+      "amount": {
+        "type": "number",
+        "value": 2.5
+      }
+    }
+  ],
+  "choices": [],
+  "continuationTransition": {
+    "kind": "event",
+    "destinationEventId": "evt_0006"
+  }
+}

@@ -118,6 +118,84 @@ final class StoryRuntimeSnapshotCompatibilityException implements Exception {
       '${issue.name}) at $path: $message';
 }
 
+/// Immutable project-derived lookup data reused by internal restore paths.
+///
+/// This type is intentionally not exported from the package root. A preparation
+/// is bound to one exact immutable [StoryProject] instance so projects or
+/// materialized revisions that happen to share an ID cannot share validation
+/// indexes accidentally. Snapshot-specific state, lifecycle, history, RNG, and
+/// current-event validation still runs for every restore.
+final class StoryRuntimeProjectPreparation {
+  StoryRuntimeProjectPreparation._({
+    required this.project,
+    required this.eventLookup,
+    required this.choiceLookup,
+  });
+
+  factory StoryRuntimeProjectPreparation.prepare(StoryProject project) =>
+      _prepare(project);
+
+  factory StoryRuntimeProjectPreparation.prepareForSnapshot({
+    required StoryProject project,
+    required StoryRuntimeSnapshot snapshot,
+  }) {
+    const validator = StoryRuntimeSnapshotValidator();
+    validator._validateVersions(snapshot);
+    validator._validateRandomState(snapshot.randomState);
+    validator._validateProjectIdentity(snapshot, project);
+    return _prepare(project);
+  }
+
+  static StoryRuntimeProjectPreparation _prepare(StoryProject project) {
+    const validator = StoryRuntimeSnapshotValidator();
+    return StoryRuntimeProjectPreparation._(
+      project: project,
+      eventLookup: Map<StoryEventId, StoryEvent>.unmodifiable(
+        validator._buildEventLookup(project),
+      ),
+      choiceLookup: Map<StoryChoiceId, StoryEventId>.unmodifiable(
+        validator._buildChoiceLookup(project),
+      ),
+    );
+  }
+
+  final StoryProject project;
+  final Map<StoryEventId, StoryEvent> eventLookup;
+  final Map<StoryChoiceId, StoryEventId> choiceLookup;
+
+  void validateSnapshot({
+    required StoryProject project,
+    required StoryRuntimeSnapshot snapshot,
+  }) {
+    _requireExactProject(project);
+    const validator = StoryRuntimeSnapshotValidator();
+    validator._validateVersions(snapshot);
+    validator._validateRandomState(snapshot.randomState);
+    validator._validateProjectIdentity(snapshot, project);
+    validator._validatePreparedBody(snapshot: snapshot, preparation: this);
+  }
+
+  void validateSnapshotAfterPreflight({
+    required StoryProject project,
+    required StoryRuntimeSnapshot snapshot,
+  }) {
+    _requireExactProject(project);
+    const StoryRuntimeSnapshotValidator()._validatePreparedBody(
+      snapshot: snapshot,
+      preparation: this,
+    );
+  }
+
+  void _requireExactProject(StoryProject project) {
+    if (!identical(this.project, project)) {
+      throw ArgumentError(
+        'StoryRuntimeProjectPreparation is bound to a different StoryProject '
+        'instance.',
+      );
+    }
+  }
+}
+
 /// Validates one committed snapshot against the project/runtime contract that
 /// would be used to resume it.
 ///
@@ -125,7 +203,9 @@ final class StoryRuntimeSnapshotCompatibilityException implements Exception {
 /// reusable by both the Stage 4B codec and `StoryEngine.restore`. Stage 4D also
 /// makes versioned RNG compatibility part of this common validation pass, and
 /// Stage 4F validates the persisted history as a structurally possible authored
-/// trace without replaying conditions, effects, or random choices.
+/// trace without replaying conditions, effects, or random choices. Stage 8I
+/// generalizes the first history entry for Stage 8G `startAt` runs: any existing
+/// project event may be the legitimate run root.
 /// It does not execute the story or invoke `StoryValidator`.
 final class StoryRuntimeSnapshotValidator {
   const StoryRuntimeSnapshotValidator();
@@ -134,22 +214,29 @@ final class StoryRuntimeSnapshotValidator {
     required StoryRuntimeSnapshot snapshot,
     required StoryProject project,
   }) {
-    _validateVersions(snapshot);
-    _validateRandomState(snapshot.randomState);
-    _validateProjectIdentity(snapshot, project);
+    final preparation = StoryRuntimeProjectPreparation.prepareForSnapshot(
+      project: project,
+      snapshot: snapshot,
+    );
+    preparation.validateSnapshotAfterPreflight(
+      project: project,
+      snapshot: snapshot,
+    );
+  }
 
-    final eventLookup = _buildEventLookup(project);
-    final choiceLookup = _buildChoiceLookup(project);
-
+  void _validatePreparedBody({
+    required StoryRuntimeSnapshot snapshot,
+    required StoryRuntimeProjectPreparation preparation,
+  }) {
+    final project = preparation.project;
     _validateStateValues(snapshot, project.stateSchema);
-    _validateCurrentEvent(snapshot, eventLookup);
+    _validateCurrentEvent(snapshot, preparation.eventLookup);
     _validateHistory(
       snapshot,
-      eventLookup,
-      choiceLookup,
-      project.entryEventId,
+      preparation.eventLookup,
+      preparation.choiceLookup,
     );
-    _validateAwaitingMode(snapshot, eventLookup);
+    _validateAwaitingMode(snapshot, preparation.eventLookup);
   }
 
   void _validateVersions(StoryRuntimeSnapshot snapshot) {
@@ -158,7 +245,8 @@ final class StoryRuntimeSnapshotValidator {
       throw StoryRuntimeSnapshotCompatibilityException(
         issue: StoryRuntimeSnapshotCompatibilityIssue.unsupportedFormatVersion,
         path: r'$.formatVersion',
-        message: 'Snapshot format version '
+        message:
+            'Snapshot format version '
             '${snapshot.metadata.formatVersion} is not supported by the '
             'current runtime snapshot model.',
       );
@@ -169,7 +257,8 @@ final class StoryRuntimeSnapshotValidator {
         issue: StoryRuntimeSnapshotCompatibilityIssue
             .unsupportedRuntimeContractVersion,
         path: r'$.runtimeContractVersion',
-        message: 'Snapshot runtime contract version '
+        message:
+            'Snapshot runtime contract version '
             '${snapshot.metadata.runtimeContractVersion} is not supported by '
             'this engine runtime.',
       );
@@ -180,9 +269,11 @@ final class StoryRuntimeSnapshotValidator {
     if (randomState.algorithmId !=
         StorySeededRandomSource.runtimeStateAlgorithmId) {
       throw StoryRuntimeSnapshotCompatibilityException(
-        issue: StoryRuntimeSnapshotCompatibilityIssue.unsupportedRandomAlgorithm,
+        issue:
+            StoryRuntimeSnapshotCompatibilityIssue.unsupportedRandomAlgorithm,
         path: r'$.randomState.algorithmId',
-        message: 'Snapshot random algorithm ${randomState.algorithmId} is not '
+        message:
+            'Snapshot random algorithm ${randomState.algorithmId} is not '
             'supported by the current StoryEngine runtime.',
       );
     }
@@ -192,7 +283,8 @@ final class StoryRuntimeSnapshotValidator {
         issue: StoryRuntimeSnapshotCompatibilityIssue
             .unsupportedRandomAlgorithmVersion,
         path: r'$.randomState.algorithmVersion',
-        message: 'Snapshot random algorithm version '
+        message:
+            'Snapshot random algorithm version '
             '${randomState.algorithmVersion} is not supported for '
             '${randomState.algorithmId}.',
       );
@@ -217,7 +309,8 @@ final class StoryRuntimeSnapshotValidator {
       throw StoryRuntimeSnapshotCompatibilityException(
         issue: StoryRuntimeSnapshotCompatibilityIssue.projectIdMismatch,
         path: r'$.projectId',
-        message: 'Snapshot belongs to ${snapshot.projectId.value}, but the '
+        message:
+            'Snapshot belongs to ${snapshot.projectId.value}, but the '
             'supplied project is ${project.id.value}.',
       );
     }
@@ -230,7 +323,8 @@ final class StoryRuntimeSnapshotValidator {
         throw StoryRuntimeSnapshotCompatibilityException(
           issue: StoryRuntimeSnapshotCompatibilityIssue.duplicateProjectEventId,
           path: r'$.project.events',
-          message: 'Project event ID ${event.id.value} is duplicated, so '
+          message:
+              'Project event ID ${event.id.value} is duplicated, so '
               'persisted event references are ambiguous.',
         );
       }
@@ -248,7 +342,8 @@ final class StoryRuntimeSnapshotValidator {
             issue:
                 StoryRuntimeSnapshotCompatibilityIssue.duplicateProjectChoiceId,
             path: r'$.project.events',
-            message: 'Project choice ID ${choice.id.value} is duplicated, so '
+            message:
+                'Project choice ID ${choice.id.value} is duplicated, so '
                 'persisted choice references are ambiguous.',
           );
         }
@@ -294,7 +389,8 @@ final class StoryRuntimeSnapshotValidator {
       throw StoryRuntimeSnapshotCompatibilityException(
         issue: StoryRuntimeSnapshotCompatibilityIssue.missingEvent,
         path: r'$.currentEventId',
-        message: 'Current event ${currentEventId.value} no longer exists in '
+        message:
+            'Current event ${currentEventId.value} no longer exists in '
             'the supplied project.',
       );
     }
@@ -304,7 +400,6 @@ final class StoryRuntimeSnapshotValidator {
     StoryRuntimeSnapshot snapshot,
     Map<StoryEventId, StoryEvent> events,
     Map<StoryChoiceId, StoryEventId> choiceLookup,
-    StoryEventId? projectEntryEventId,
   ) {
     final steps = snapshot.history.steps;
     if (steps.isEmpty) {
@@ -323,18 +418,7 @@ final class StoryRuntimeSnapshotValidator {
         case StoryEventEnteredStep(:final eventId):
           final event = _requireEvent(events, eventId, '$path.eventId');
 
-          if (index == 0) {
-            if (projectEntryEventId == null || projectEntryEventId != eventId) {
-              throw StoryRuntimeSnapshotCompatibilityException(
-                issue: StoryRuntimeSnapshotCompatibilityIssue
-                    .historyTransitionMismatch,
-                path: '$path.eventId',
-                message: 'History starts at event ${eventId.value}, but the '
-                    'supplied project entry event is '
-                    '${projectEntryEventId?.value ?? 'unset'}.',
-              );
-            }
-          } else {
+          if (index != 0) {
             final transition = pendingTransition;
             if (transition == null ||
                 !_transitionCanReachEvent(transition, eventId)) {
@@ -342,7 +426,8 @@ final class StoryRuntimeSnapshotValidator {
                 issue: StoryRuntimeSnapshotCompatibilityIssue
                     .historyTransitionMismatch,
                 path: '$path.eventId',
-                message: 'History enters event ${eventId.value}, but the '
+                message:
+                    'History enters event ${eventId.value}, but the '
                     'preceding committed transition cannot structurally reach '
                     'that event.',
               );
@@ -362,91 +447,142 @@ final class StoryRuntimeSnapshotValidator {
               issue: StoryRuntimeSnapshotCompatibilityIssue
                   .historyActionModeMismatch,
               path: '$path.eventId',
-              message: 'History entered event ${eventId.value}, but that '
+              message:
+                  'History entered event ${eventId.value}, but that '
                   'event no longer has one valid runtime flow mode.',
             );
           }
 
         case StoryChoiceSelectedStep(:final eventId, :final choiceId):
-          if (pendingTransition != null) {
-            throw StoryRuntimeSnapshotCompatibilityException(
-              issue: StoryRuntimeSnapshotCompatibilityIssue
-                  .invalidHistorySequence,
-              path: path,
-              message: 'An explicit choice cannot occur before the preceding '
-                  'synchronous transition has entered another event or '
-                  'terminated.',
-            );
-          }
-          _requireActiveEvent(activeEvent?.id, eventId, path);
-          final event = _requireEvent(events, eventId, '$path.eventId');
-          if (!_isInteractiveEvent(event)) {
-            throw StoryRuntimeSnapshotCompatibilityException(
-              issue: StoryRuntimeSnapshotCompatibilityIssue
-                  .historyActionModeMismatch,
-              path: '$path.eventId',
-              message: 'History selects a choice from event ${eventId.value}, '
-                  'but that event is no longer a valid interactive event.',
-            );
-          }
-          final owner = choiceLookup[choiceId];
-          if (owner != eventId || !_eventContainsChoice(event, choiceId)) {
-            throw StoryRuntimeSnapshotCompatibilityException(
-              issue: StoryRuntimeSnapshotCompatibilityIssue.missingChoice,
-              path: '$path.choiceId',
-              message: 'Choice ${choiceId.value} no longer belongs to event '
-                  '${eventId.value}.',
-            );
-          }
-          final choice = event.choices.firstWhere((item) => item.id == choiceId);
-          final transition = choice.transition;
-          if (transition == null) {
-            throw StoryRuntimeSnapshotCompatibilityException(
-              issue: StoryRuntimeSnapshotCompatibilityIssue
-                  .historyTransitionMismatch,
-              path: '$path.choiceId',
-              message: 'Choice ${choiceId.value} no longer has a transition '
-                  'that could have produced the persisted history.',
-            );
-          }
-          pendingTransition = transition;
+          pendingTransition = _historyChoiceTransition(
+            events,
+            choiceLookup,
+            activeEvent?.id,
+            pendingTransition,
+            eventId,
+            choiceId,
+            path,
+          );
           pendingTransitionPath = '$path.choiceId';
 
         case StoryEventContinuedStep(:final eventId):
-          if (pendingTransition != null) {
-            throw StoryRuntimeSnapshotCompatibilityException(
-              issue: StoryRuntimeSnapshotCompatibilityIssue
-                  .invalidHistorySequence,
-              path: path,
-              message: 'An explicit continue cannot occur before the preceding '
-                  'synchronous transition has entered another event or '
-                  'terminated.',
-            );
-          }
-          _requireActiveEvent(activeEvent?.id, eventId, path);
-          final event = _requireEvent(events, eventId, '$path.eventId');
-          if (!_isContinuationEvent(event)) {
-            throw StoryRuntimeSnapshotCompatibilityException(
-              issue: StoryRuntimeSnapshotCompatibilityIssue
-                  .historyActionModeMismatch,
-              path: '$path.eventId',
-              message: 'History continues event ${eventId.value}, but that '
-                  'event is no longer a valid continuation event.',
-            );
-          }
-          pendingTransition = event.continuationTransition;
+          pendingTransition = _historyContinueTransition(
+            events,
+            activeEvent?.id,
+            pendingTransition,
+            eventId,
+            path,
+          );
           pendingTransitionPath = '$path.eventId';
       }
     }
 
-    if (snapshot.status == StoryEngineStatus.terminated) {
+    _validateHistoryCompletion(
+      snapshot.status,
+      pendingTransition,
+      pendingTransitionPath,
+    );
+  }
+
+  StoryTransition _historyChoiceTransition(
+    Map<StoryEventId, StoryEvent> events,
+    Map<StoryChoiceId, StoryEventId> choiceLookup,
+    StoryEventId? activeEventId,
+    StoryTransition? pendingTransition,
+    StoryEventId eventId,
+    StoryChoiceId choiceId,
+    String path,
+  ) {
+    if (pendingTransition != null) {
+      throw StoryRuntimeSnapshotCompatibilityException(
+        issue: StoryRuntimeSnapshotCompatibilityIssue.invalidHistorySequence,
+        path: path,
+        message:
+            'An explicit choice cannot occur before the preceding '
+            'synchronous transition has entered another event or '
+            'terminated.',
+      );
+    }
+    _requireActiveEvent(activeEventId, eventId, path);
+    final event = _requireEvent(events, eventId, '$path.eventId');
+    if (!_isInteractiveEvent(event)) {
+      throw StoryRuntimeSnapshotCompatibilityException(
+        issue: StoryRuntimeSnapshotCompatibilityIssue.historyActionModeMismatch,
+        path: '$path.eventId',
+        message:
+            'History selects a choice from event ${eventId.value}, '
+            'but that event is no longer a valid interactive event.',
+      );
+    }
+    final owner = choiceLookup[choiceId];
+    if (owner != eventId || !_eventContainsChoice(event, choiceId)) {
+      throw StoryRuntimeSnapshotCompatibilityException(
+        issue: StoryRuntimeSnapshotCompatibilityIssue.missingChoice,
+        path: '$path.choiceId',
+        message:
+            'Choice ${choiceId.value} no longer belongs to event '
+            '${eventId.value}.',
+      );
+    }
+    final choice = event.choices.firstWhere((item) => item.id == choiceId);
+    final transition = choice.transition;
+    if (transition == null) {
+      throw StoryRuntimeSnapshotCompatibilityException(
+        issue: StoryRuntimeSnapshotCompatibilityIssue.historyTransitionMismatch,
+        path: '$path.choiceId',
+        message:
+            'Choice ${choiceId.value} no longer has a transition '
+            'that could have produced the persisted history.',
+      );
+    }
+    return transition;
+  }
+
+  StoryTransition? _historyContinueTransition(
+    Map<StoryEventId, StoryEvent> events,
+    StoryEventId? activeEventId,
+    StoryTransition? pendingTransition,
+    StoryEventId eventId,
+    String path,
+  ) {
+    if (pendingTransition != null) {
+      throw StoryRuntimeSnapshotCompatibilityException(
+        issue: StoryRuntimeSnapshotCompatibilityIssue.invalidHistorySequence,
+        path: path,
+        message:
+            'An explicit continue cannot occur before the preceding '
+            'synchronous transition has entered another event or '
+            'terminated.',
+      );
+    }
+    _requireActiveEvent(activeEventId, eventId, path);
+    final event = _requireEvent(events, eventId, '$path.eventId');
+    if (!_isContinuationEvent(event)) {
+      throw StoryRuntimeSnapshotCompatibilityException(
+        issue: StoryRuntimeSnapshotCompatibilityIssue.historyActionModeMismatch,
+        path: '$path.eventId',
+        message:
+            'History continues event ${eventId.value}, but that '
+            'event is no longer a valid continuation event.',
+      );
+    }
+    return event.continuationTransition;
+  }
+
+  void _validateHistoryCompletion(
+    StoryEngineStatus status,
+    StoryTransition? pendingTransition,
+    String? pendingTransitionPath,
+  ) {
+    if (status == StoryEngineStatus.terminated) {
       final transition = pendingTransition;
       if (transition == null || !_transitionCanTerminate(transition)) {
         throw StoryRuntimeSnapshotCompatibilityException(
-          issue: StoryRuntimeSnapshotCompatibilityIssue
-              .historyTransitionMismatch,
+          issue:
+              StoryRuntimeSnapshotCompatibilityIssue.historyTransitionMismatch,
           path: pendingTransitionPath ?? r'$.status',
-          message: 'Snapshot is terminated, but the final committed history '
+          message:
+              'Snapshot is terminated, but the final committed history '
               'position has no authored transition that can structurally '
               'terminate.',
         );
@@ -458,7 +594,8 @@ final class StoryRuntimeSnapshotValidator {
       throw const StoryRuntimeSnapshotCompatibilityException(
         issue: StoryRuntimeSnapshotCompatibilityIssue.invalidHistorySequence,
         path: r'$.history',
-        message: 'A non-terminated snapshot cannot end while a synchronous '
+        message:
+            'A non-terminated snapshot cannot end while a synchronous '
             'transition still requires an event entry or terminal result.',
       );
     }
@@ -488,7 +625,8 @@ final class StoryRuntimeSnapshotValidator {
       throw StoryRuntimeSnapshotCompatibilityException(
         issue: StoryRuntimeSnapshotCompatibilityIssue.statusEventModeMismatch,
         path: r'$.status',
-        message: 'Snapshot status ${snapshot.status.name} no longer matches '
+        message:
+            'Snapshot status ${snapshot.status.name} no longer matches '
             'the authored flow mode of event ${currentEventId.value}.',
       );
     }
@@ -504,7 +642,8 @@ final class StoryRuntimeSnapshotValidator {
       throw StoryRuntimeSnapshotCompatibilityException(
         issue: StoryRuntimeSnapshotCompatibilityIssue.missingEvent,
         path: path,
-        message: 'Persisted event ${eventId.value} no longer exists in the '
+        message:
+            'Persisted event ${eventId.value} no longer exists in the '
             'supplied project.',
       );
     }
@@ -520,7 +659,8 @@ final class StoryRuntimeSnapshotValidator {
       throw StoryRuntimeSnapshotCompatibilityException(
         issue: StoryRuntimeSnapshotCompatibilityIssue.invalidHistorySequence,
         path: path,
-        message: 'Runtime action for ${actionEventId.value} does not follow '
+        message:
+            'Runtime action for ${actionEventId.value} does not follow '
             'that event as the latest committed event entry.',
       );
     }
@@ -544,15 +684,17 @@ bool _transitionCanReachEvent(
   StoryTerminalTransition() => false,
 };
 
-bool _transitionCanTerminate(StoryTransition transition) => switch (transition) {
-  StoryEventTransition() => false,
-  StoryConditionalTransition(:final branches, :final fallback) =>
-    branches.any((branch) => _transitionCanTerminate(branch.transition)) ||
-        _transitionCanTerminate(fallback),
-  StoryWeightedTransition(:final options) =>
-    options.any((option) => _transitionCanTerminate(option.transition)),
-  StoryTerminalTransition() => true,
-};
+bool _transitionCanTerminate(StoryTransition transition) =>
+    switch (transition) {
+      StoryEventTransition() => false,
+      StoryConditionalTransition(:final branches, :final fallback) =>
+        branches.any((branch) => _transitionCanTerminate(branch.transition)) ||
+            _transitionCanTerminate(fallback),
+      StoryWeightedTransition(:final options) => options.any(
+        (option) => _transitionCanTerminate(option.transition),
+      ),
+      StoryTerminalTransition() => true,
+    };
 
 bool _eventContainsChoice(StoryEvent event, StoryChoiceId id) =>
     event.choices.any((choice) => choice.id == id);

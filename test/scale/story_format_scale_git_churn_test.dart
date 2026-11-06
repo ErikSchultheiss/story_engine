@@ -106,40 +106,41 @@ void main() {
         ]),
       );
 
-      expect(
-        _changedPaths(before, after),
-        {StoryFormatBundleLayout.eventPath(middle.id)},
-      );
+      expect(_changedPaths(before, after), {
+        StoryFormatBundleLayout.eventPath(middle.id),
+      });
     });
 
-    test('editing one choice presentation changes only its owning event file', () {
-      final beforeDocument = _churnBaseline();
-      final before = codec.encode(beforeDocument);
-      final first = beforeDocument.project.events.first;
-      final choice = first.choices.single;
-      final editedChoice = StoryChoice(
-        id: choice.id,
-        alias: choice.alias,
-        presentation: const StoryChoicePresentation(
-          text: StoryText('Continue through the renamed door'),
-        ),
-        availabilityCondition: choice.availabilityCondition,
-        effects: choice.effects,
-        transition: choice.transition,
-      );
-      final editedFirst = _copyEvent(first, choices: [editedChoice]);
-      final after = codec.encode(
-        _withEvents(beforeDocument, [
-          editedFirst,
-          ...beforeDocument.project.events.skip(1),
-        ]),
-      );
+    test(
+      'editing one choice presentation changes only its owning event file',
+      () {
+        final beforeDocument = _churnBaseline();
+        final before = codec.encode(beforeDocument);
+        final first = beforeDocument.project.events.first;
+        final choice = first.choices.single;
+        final editedChoice = StoryChoice(
+          id: choice.id,
+          alias: choice.alias,
+          presentation: const StoryChoicePresentation(
+            text: StoryText('Continue through the renamed door'),
+          ),
+          availabilityCondition: choice.availabilityCondition,
+          effects: choice.effects,
+          transition: choice.transition,
+        );
+        final editedFirst = _copyEvent(first, choices: [editedChoice]);
+        final after = codec.encode(
+          _withEvents(beforeDocument, [
+            editedFirst,
+            ...beforeDocument.project.events.skip(1),
+          ]),
+        );
 
-      expect(
-        _changedPaths(before, after),
-        {StoryFormatBundleLayout.eventPath(first.id)},
-      );
-    });
+        expect(_changedPaths(before, after), {
+          StoryFormatBundleLayout.eventPath(first.id),
+        });
+      },
+    );
 
     test('reordering events changes only project.json', () {
       final beforeDocument = _churnBaseline();
@@ -149,7 +150,9 @@ void main() {
         _withEvents(beforeDocument, [events[2], events[0], events[1]]),
       );
 
-      expect(_changedPaths(before, after), {StoryFormatBundleLayout.projectPath});
+      expect(_changedPaths(before, after), {
+        StoryFormatBundleLayout.projectPath,
+      });
     });
 
     test('renaming project alias changes only project.json', () {
@@ -169,13 +172,17 @@ void main() {
         ),
       );
 
-      expect(_changedPaths(before, after), {StoryFormatBundleLayout.projectPath});
+      expect(_changedPaths(before, after), {
+        StoryFormatBundleLayout.projectPath,
+      });
     });
 
     test('moving and renaming groups changes only organization.json', () {
       final beforeDocument = _churnBaseline();
       final before = codec.encode(beforeDocument);
-      final ids = beforeDocument.project.events.map((event) => event.id).toList();
+      final ids = beforeDocument.project.events
+          .map((event) => event.id)
+          .toList();
       final tag = beforeDocument.organization.tags.single;
       final after = codec.encode(
         StoryFormatDocument(
@@ -203,10 +210,9 @@ void main() {
         ),
       );
 
-      expect(
-        _changedPaths(before, after),
-        {StoryFormatBundleLayout.organizationPath},
-      );
+      expect(_changedPaths(before, after), {
+        StoryFormatBundleLayout.organizationPath,
+      });
       for (final event in beforeDocument.project.events) {
         expect(
           StoryFormatBundleLayout.eventPath(event.id),
@@ -220,7 +226,9 @@ void main() {
     test('changing tag membership changes only organization.json', () {
       final beforeDocument = _churnBaseline();
       final before = codec.encode(beforeDocument);
-      final ids = beforeDocument.project.events.map((event) => event.id).toList();
+      final ids = beforeDocument.project.events
+          .map((event) => event.id)
+          .toList();
       final after = codec.encode(
         StoryFormatDocument(
           project: beforeDocument.project,
@@ -239,10 +247,9 @@ void main() {
         ),
       );
 
-      expect(
-        _changedPaths(before, after),
-        {StoryFormatBundleLayout.organizationPath},
-      );
+      expect(_changedPaths(before, after), {
+        StoryFormatBundleLayout.organizationPath,
+      });
     });
 
     test('changing opaque extension payload changes only extensions.json', () {
@@ -267,36 +274,38 @@ void main() {
         ),
       );
 
-      expect(
-        _changedPaths(before, after),
-        {StoryFormatBundleLayout.extensionsPath},
-      );
+      expect(_changedPaths(before, after), {
+        StoryFormatBundleLayout.extensionsPath,
+      });
     });
 
-    test('adding one event changes only project.json plus the new event file', () {
-      final beforeDocument = _churnBaseline();
-      final before = codec.encode(beforeDocument);
-      final added = StoryEvent(
-        id: StoryEventId('event_added'),
-        alias: StoryAlias('added_event'),
-        presentation: StoryEventPresentation(
-          title: const StoryText('Added'),
-          body: const StoryText('New independent authored event.'),
-        ),
-        continuationTransition: const StoryTerminalTransition(),
-      );
-      final after = codec.encode(
-        _withEvents(beforeDocument, [...beforeDocument.project.events, added]),
-      );
+    test(
+      'adding one event changes only project.json plus the new event file',
+      () {
+        final beforeDocument = _churnBaseline();
+        final before = codec.encode(beforeDocument);
+        final added = StoryEvent(
+          id: StoryEventId('event_added'),
+          alias: StoryAlias('added_event'),
+          presentation: StoryEventPresentation(
+            title: const StoryText('Added'),
+            body: const StoryText('New independent authored event.'),
+          ),
+          continuationTransition: const StoryTerminalTransition(),
+        );
+        final after = codec.encode(
+          _withEvents(beforeDocument, [
+            ...beforeDocument.project.events,
+            added,
+          ]),
+        );
 
-      expect(
-        _changedPaths(before, after),
-        {
+        expect(_changedPaths(before, after), {
           StoryFormatBundleLayout.projectPath,
           StoryFormatBundleLayout.eventPath(added.id),
-        },
-      );
-    });
+        });
+      },
+    );
   });
 }
 
@@ -336,7 +345,9 @@ StoryFormatDocument _churnBaseline() {
             title: const StoryText('Middle'),
             body: const StoryText('Middle body.'),
           ),
-          continuationTransition: StoryEventTransition(destinationEventId: endId),
+          continuationTransition: StoryEventTransition(
+            destinationEventId: endId,
+          ),
         ),
         StoryEvent(
           id: endId,

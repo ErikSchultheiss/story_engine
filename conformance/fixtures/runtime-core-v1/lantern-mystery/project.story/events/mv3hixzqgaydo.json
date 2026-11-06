@@ -1,0 +1,102 @@
+{
+  "id": "evt_0007",
+  "alias": "archive",
+  "presentation": {
+    "title": "Archive",
+    "body": "Inside the archive you find old maps of the underground tunnels and records describing a safe emergency exit."
+  },
+  "availabilityCondition": {
+    "kind": "all",
+    "conditions": [
+      {
+        "kind": "variable_comparison",
+        "variableId": "var_0001",
+        "operator": "equal",
+        "value": {
+          "type": "boolean",
+          "value": true
+        }
+      },
+      {
+        "kind": "any",
+        "conditions": [
+          {
+            "kind": "variable_comparison",
+            "variableId": "var_0002",
+            "operator": "greater_than_or_equal",
+            "value": {
+              "type": "integer",
+              "value": 60
+            }
+          },
+          {
+            "kind": "variable_comparison",
+            "variableId": "var_0004",
+            "operator": "equal",
+            "value": {
+              "type": "string",
+              "value": "Rook"
+            }
+          }
+        ]
+      },
+      {
+        "kind": "not",
+        "condition": {
+          "kind": "variable_comparison",
+          "variableId": "var_0005",
+          "operator": "equal",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+  "entryEffects": [],
+  "choices": [
+    {
+      "id": "ch_0018",
+      "presentation": {
+        "text": "Follow the marked safe route"
+      },
+      "availabilityCondition": {
+        "kind": "variable_comparison",
+        "variableId": "var_0006",
+        "operator": "equal",
+        "value": {
+          "type": "boolean",
+          "value": true
+        }
+      },
+      "effects": [],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0010"
+      }
+    },
+    {
+      "id": "ch_0019",
+      "presentation": {
+        "text": "Take the unmarked stairway"
+      },
+      "effects": [],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0008"
+      }
+    },
+    {
+      "id": "ch_0020",
+      "presentation": {
+        "text": "Return to the corridor"
+      },
+      "effects": [],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0004"
+      }
+    }
+  ]
+}

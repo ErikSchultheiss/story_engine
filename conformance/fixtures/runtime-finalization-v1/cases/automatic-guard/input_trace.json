@@ -1,0 +1,24 @@
+{
+  "formatId": "open_story.conformance_hardening_input_trace",
+  "formatVersion": 1,
+  "runtime": "core",
+  "random": {
+    "algorithmId": "story_engine.lcg32",
+    "algorithmVersion": 1,
+    "seed": 0
+  },
+  "maxAutomaticTransitions": 2,
+  "inputs": [
+    {
+      "kind": "startAt",
+      "eventId": "loop"
+    },
+    {
+      "kind": "start"
+    },
+    {
+      "kind": "choose",
+      "choiceId": "safe"
+    }
+  ]
+}

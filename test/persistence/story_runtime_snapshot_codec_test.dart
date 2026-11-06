@@ -20,31 +20,19 @@ void main() {
           'values': <Object?>[
             <String, Object?>{
               'variableId': 'var_bool',
-              'value': <String, Object?>{
-                'type': 'boolean',
-                'value': false,
-              },
+              'value': <String, Object?>{'type': 'boolean', 'value': false},
             },
             <String, Object?>{
               'variableId': 'var_int',
-              'value': <String, Object?>{
-                'type': 'integer',
-                'value': 9,
-              },
+              'value': <String, Object?>{'type': 'integer', 'value': 9},
             },
             <String, Object?>{
               'variableId': 'var_number',
-              'value': <String, Object?>{
-                'type': 'number',
-                'value': 3.75,
-              },
+              'value': <String, Object?>{'type': 'number', 'value': 3.75},
             },
             <String, Object?>{
               'variableId': 'var_string',
-              'value': <String, Object?>{
-                'type': 'string',
-                'value': 'restored',
-              },
+              'value': <String, Object?>{'type': 'string', 'value': 'restored'},
             },
           ],
         },
@@ -148,8 +136,11 @@ void main() {
       expect(
         () => codec.decode(encoded, project: fixture.project),
         throwsA(
-          isA<StoryRuntimeSnapshotFormatException>()
-              .having((error) => error.path, 'path', r'$.futureField'),
+          isA<StoryRuntimeSnapshotFormatException>().having(
+            (error) => error.path,
+            'path',
+            r'$.futureField',
+          ),
         ),
       );
     });
@@ -162,8 +153,11 @@ void main() {
       expect(
         () => codec.decode(encoded, project: fixture.project),
         throwsA(
-          isA<StoryRuntimeSnapshotFormatException>()
-              .having((error) => error.path, 'path', r'$.status'),
+          isA<StoryRuntimeSnapshotFormatException>().having(
+            (error) => error.path,
+            'path',
+            r'$.status',
+          ),
         ),
       );
     });
@@ -173,7 +167,9 @@ void main() {
       final encoded = codec.encode(fixture.snapshot);
       final state = encoded['state']! as Map<String, Object?>;
       final values = state['values']! as List<Object?>;
-      values.add(Map<String, Object?>.of(values.first! as Map<String, Object?>));
+      values.add(
+        Map<String, Object?>.of(values.first! as Map<String, Object?>),
+      );
 
       expect(
         () => codec.decode(encoded, project: fixture.project),
@@ -263,20 +259,24 @@ void main() {
       );
     });
 
-    test('JSON representation uses stable top-level compatibility metadata', () {
-      final encoded = jsonDecode(codec.encodeJson(_fixture().snapshot))
-          as Map<String, Object?>;
+    test(
+      'JSON representation uses stable top-level compatibility metadata',
+      () {
+        final encoded =
+            jsonDecode(codec.encodeJson(_fixture().snapshot))
+                as Map<String, Object?>;
 
-      expect(encoded['documentType'], StoryRuntimeSnapshotCodec.documentType);
-      expect(
-        encoded['formatVersion'],
-        StoryRuntimeSnapshotMetadata.currentFormatVersion,
-      );
-      expect(
-        encoded['runtimeContractVersion'],
-        StoryRuntimeSnapshotMetadata.currentRuntimeContractVersion,
-      );
-    });
+        expect(encoded['documentType'], StoryRuntimeSnapshotCodec.documentType);
+        expect(
+          encoded['formatVersion'],
+          StoryRuntimeSnapshotMetadata.currentFormatVersion,
+        );
+        expect(
+          encoded['runtimeContractVersion'],
+          StoryRuntimeSnapshotMetadata.currentRuntimeContractVersion,
+        );
+      },
+    );
   });
 }
 

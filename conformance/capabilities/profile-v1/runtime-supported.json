@@ -1,0 +1,30 @@
+{
+  "contract": "open_story.runtime_capabilities",
+  "contractVersion": 1,
+  "runtimeId": "example_runtime",
+  "runtimeVersion": "2.4.0",
+  "features": [
+    {
+      "featureId": "content_versioning",
+      "revision": 1
+    },
+    {
+      "featureId": "host_actions",
+      "revision": 1
+    },
+    {
+      "featureId": "modular_loading",
+      "revision": 1
+    }
+  ],
+  "extensions": [
+    {
+      "namespace": "com.example.combat",
+      "schemaVersion": 3
+    },
+    {
+      "namespace": "com.example.quest",
+      "schemaVersion": 2
+    }
+  ]
+}

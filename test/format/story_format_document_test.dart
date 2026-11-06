@@ -55,24 +55,27 @@ void main() {
       expect(plainEngine.createSnapshot(), organizedEngine.createSnapshot());
     });
 
-    test('retains incomplete runtime-authored project semantics losslessly', () {
-      final project = StoryProject(
-        id: StoryProjectId('project_format_incomplete'),
-        events: [
-          StoryEvent(
-            id: StoryEventId('event_format_incomplete'),
-            choices: [
-              StoryChoice(id: StoryChoiceId('choice_format_incomplete')),
-            ],
-          ),
-        ],
-      );
+    test(
+      'retains incomplete runtime-authored project semantics losslessly',
+      () {
+        final project = StoryProject(
+          id: StoryProjectId('project_format_incomplete'),
+          events: [
+            StoryEvent(
+              id: StoryEventId('event_format_incomplete'),
+              choices: [
+                StoryChoice(id: StoryChoiceId('choice_format_incomplete')),
+              ],
+            ),
+          ],
+        );
 
-      final document = StoryFormatDocument(project: project);
+        final document = StoryFormatDocument(project: project);
 
-      expect(document.toStoryProject(), same(project));
-      expect(StoryValidator.validate(project).errors, isNotEmpty);
-    });
+        expect(document.toStoryProject(), same(project));
+        expect(StoryValidator.validate(project).errors, isNotEmpty);
+      },
+    );
 
     test('rejects duplicate extension target/namespace pairs', () {
       final namespace = StoryFormatExtensionNamespace('com.example.notes');

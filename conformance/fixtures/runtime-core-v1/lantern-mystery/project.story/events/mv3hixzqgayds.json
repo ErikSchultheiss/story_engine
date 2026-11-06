@@ -1,0 +1,54 @@
+{
+  "id": "evt_0009",
+  "alias": "old_tunnel",
+  "presentation": {
+    "title": "Old Tunnel",
+    "body": "You reach an old service tunnel. Faded chalk marks point toward one exit, while another passage appears shorter."
+  },
+  "entryEffects": [],
+  "choices": [
+    {
+      "id": "ch_0021",
+      "presentation": {
+        "text": "Follow the chalk marks"
+      },
+      "availabilityCondition": {
+        "kind": "variable_comparison",
+        "variableId": "var_0006",
+        "operator": "equal",
+        "value": {
+          "type": "boolean",
+          "value": true
+        }
+      },
+      "effects": [],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0010"
+      }
+    },
+    {
+      "id": "ch_0022",
+      "presentation": {
+        "text": "Take the nearest exit"
+      },
+      "availabilityCondition": {
+        "kind": "not",
+        "condition": {
+          "kind": "variable_comparison",
+          "variableId": "var_0006",
+          "operator": "equal",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      },
+      "effects": [],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0011"
+      }
+    }
+  ]
+}

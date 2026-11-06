@@ -63,10 +63,7 @@ void main() {
       );
 
       engine.start();
-      expect(
-        engine.start,
-        throwsA(isA<StoryEngineOperationException>()),
-      );
+      expect(engine.start, throwsA(isA<StoryEngineOperationException>()));
 
       engine.choose(choiceId);
       expect(engine.status, StoryEngineStatus.terminated);
@@ -77,41 +74,44 @@ void main() {
       );
     });
 
-    test('accepts a caller-supplied immutable initial state with same schema', () {
-      final goldId = StoryVariableId('var_gold');
-      final schema = StoryStateSchema(
-        variables: [
-          StoryVariableDefinition(
-            id: goldId,
-            type: StoryValueType.integer,
-            initialValue: StoryIntegerValue(10),
-          ),
-        ],
-      );
-      final startId = StoryEventId('evt_start');
-      final project = StoryProject(
-        id: StoryProjectId('project_initial_state'),
-        stateSchema: schema,
-        entryEventId: startId,
-        events: [
-          StoryEvent(
-            id: startId,
-            automaticTransition: const StoryTerminalTransition(),
-          ),
-        ],
-      );
-      final supplied = StoryState.fromValues(
-        schema: schema,
-        values: {goldId: StoryIntegerValue(99)},
-      );
-      final engine = StoryEngine(project: project, randomSeed: 4);
+    test(
+      'accepts a caller-supplied immutable initial state with same schema',
+      () {
+        final goldId = StoryVariableId('var_gold');
+        final schema = StoryStateSchema(
+          variables: [
+            StoryVariableDefinition(
+              id: goldId,
+              type: StoryValueType.integer,
+              initialValue: StoryIntegerValue(10),
+            ),
+          ],
+        );
+        final startId = StoryEventId('evt_start');
+        final project = StoryProject(
+          id: StoryProjectId('project_initial_state'),
+          stateSchema: schema,
+          entryEventId: startId,
+          events: [
+            StoryEvent(
+              id: startId,
+              automaticTransition: const StoryTerminalTransition(),
+            ),
+          ],
+        );
+        final supplied = StoryState.fromValues(
+          schema: schema,
+          values: {goldId: StoryIntegerValue(99)},
+        );
+        final engine = StoryEngine(project: project, randomSeed: 4);
 
-      engine.start(initialState: supplied);
+        engine.start(initialState: supplied);
 
-      expect(engine.status, StoryEngineStatus.terminated);
-      expect(engine.state?.valueOf(goldId), StoryIntegerValue(99));
-      expect(supplied.valueOf(goldId), StoryIntegerValue(99));
-    });
+        expect(engine.status, StoryEngineStatus.terminated);
+        expect(engine.state?.valueOf(goldId), StoryIntegerValue(99));
+        expect(supplied.valueOf(goldId), StoryIntegerValue(99));
+      },
+    );
 
     test('rejects an initial state governed by a different schema', () {
       final startId = StoryEventId('evt_start');
@@ -302,66 +302,69 @@ void main() {
       expect(engine.status, StoryEngineStatus.terminated);
     });
 
-    test('automatic event entry effects run before its transition resolution', () {
-      final flagId = StoryVariableId('var_flag');
-      final schema = StoryStateSchema(
-        variables: [
-          StoryVariableDefinition(
-            id: flagId,
-            type: StoryValueType.boolean,
-            initialValue: const StoryBooleanValue(false),
-          ),
-        ],
-      );
-      final autoId = StoryEventId('evt_auto');
-      final trueId = StoryEventId('evt_true');
-      final falseId = StoryEventId('evt_false');
-      final project = StoryProject(
-        id: StoryProjectId('project_auto_order'),
-        stateSchema: schema,
-        entryEventId: autoId,
-        events: [
-          StoryEvent(
-            id: autoId,
-            entryEffects: [
-              StorySetVariableEffect(
-                variableId: flagId,
-                value: const StoryBooleanValue(true),
-              ),
-            ],
-            automaticTransition: StoryConditionalTransition(
-              branches: [
-                StoryConditionalTransitionBranch(
-                  condition: StoryVariableComparisonCondition(
-                    variableId: flagId,
-                    operator: StoryComparisonOperator.equal,
-                    value: const StoryBooleanValue(true),
-                  ),
-                  transition: StoryEventTransition(
-                    destinationEventId: trueId,
-                  ),
+    test(
+      'automatic event entry effects run before its transition resolution',
+      () {
+        final flagId = StoryVariableId('var_flag');
+        final schema = StoryStateSchema(
+          variables: [
+            StoryVariableDefinition(
+              id: flagId,
+              type: StoryValueType.boolean,
+              initialValue: const StoryBooleanValue(false),
+            ),
+          ],
+        );
+        final autoId = StoryEventId('evt_auto');
+        final trueId = StoryEventId('evt_true');
+        final falseId = StoryEventId('evt_false');
+        final project = StoryProject(
+          id: StoryProjectId('project_auto_order'),
+          stateSchema: schema,
+          entryEventId: autoId,
+          events: [
+            StoryEvent(
+              id: autoId,
+              entryEffects: [
+                StorySetVariableEffect(
+                  variableId: flagId,
+                  value: const StoryBooleanValue(true),
                 ),
               ],
-              fallback: StoryEventTransition(destinationEventId: falseId),
+              automaticTransition: StoryConditionalTransition(
+                branches: [
+                  StoryConditionalTransitionBranch(
+                    condition: StoryVariableComparisonCondition(
+                      variableId: flagId,
+                      operator: StoryComparisonOperator.equal,
+                      value: const StoryBooleanValue(true),
+                    ),
+                    transition: StoryEventTransition(
+                      destinationEventId: trueId,
+                    ),
+                  ),
+                ],
+                fallback: StoryEventTransition(destinationEventId: falseId),
+              ),
             ),
-          ),
-          StoryEvent(
-            id: trueId,
-            automaticTransition: const StoryTerminalTransition(),
-          ),
-          StoryEvent(
-            id: falseId,
-            automaticTransition: const StoryTerminalTransition(),
-          ),
-        ],
-      );
-      final engine = StoryEngine(project: project, randomSeed: 6);
+            StoryEvent(
+              id: trueId,
+              automaticTransition: const StoryTerminalTransition(),
+            ),
+            StoryEvent(
+              id: falseId,
+              automaticTransition: const StoryTerminalTransition(),
+            ),
+          ],
+        );
+        final engine = StoryEngine(project: project, randomSeed: 6);
 
-      engine.start();
+        engine.start();
 
-      expect(engine.currentEvent?.id, trueId);
-      expect(engine.status, StoryEngineStatus.terminated);
-    });
+        expect(engine.currentEvent?.id, trueId);
+        expect(engine.status, StoryEngineStatus.terminated);
+      },
+    );
   });
 
   group('Choice availability and selection', () {
@@ -406,10 +409,9 @@ void main() {
       );
       final engine = StoryEngine(project: project, randomSeed: 8)..start();
 
-      expect(
-        engine.availableChoices.map((choice) => choice.id),
-        [visibleChoiceId],
-      );
+      expect(engine.availableChoices.map((choice) => choice.id), [
+        visibleChoiceId,
+      ]);
       expect(
         () => engine.choose(hiddenChoiceId),
         throwsA(isA<StoryEngineOperationException>()),
@@ -450,44 +452,47 @@ void main() {
   });
 
   group('Automatic flow and deterministic randomness', () {
-    test('start resolves automatic chains until interactive content is reached', () {
-      final firstId = StoryEventId('evt_first');
-      final secondId = StoryEventId('evt_second');
-      final thirdId = StoryEventId('evt_third');
-      final choiceId = StoryChoiceId('choice_end');
-      final project = StoryProject(
-        id: StoryProjectId('project_auto_chain'),
-        entryEventId: firstId,
-        events: [
-          StoryEvent(
-            id: firstId,
-            automaticTransition: StoryEventTransition(
-              destinationEventId: secondId,
-            ),
-          ),
-          StoryEvent(
-            id: secondId,
-            automaticTransition: StoryEventTransition(
-              destinationEventId: thirdId,
-            ),
-          ),
-          StoryEvent(
-            id: thirdId,
-            choices: [
-              StoryChoice(
-                id: choiceId,
-                transition: const StoryTerminalTransition(),
+    test(
+      'start resolves automatic chains until interactive content is reached',
+      () {
+        final firstId = StoryEventId('evt_first');
+        final secondId = StoryEventId('evt_second');
+        final thirdId = StoryEventId('evt_third');
+        final choiceId = StoryChoiceId('choice_end');
+        final project = StoryProject(
+          id: StoryProjectId('project_auto_chain'),
+          entryEventId: firstId,
+          events: [
+            StoryEvent(
+              id: firstId,
+              automaticTransition: StoryEventTransition(
+                destinationEventId: secondId,
               ),
-            ],
-          ),
-        ],
-      );
-      final engine = StoryEngine(project: project, randomSeed: 10)..start();
+            ),
+            StoryEvent(
+              id: secondId,
+              automaticTransition: StoryEventTransition(
+                destinationEventId: thirdId,
+              ),
+            ),
+            StoryEvent(
+              id: thirdId,
+              choices: [
+                StoryChoice(
+                  id: choiceId,
+                  transition: const StoryTerminalTransition(),
+                ),
+              ],
+            ),
+          ],
+        );
+        final engine = StoryEngine(project: project, randomSeed: 10)..start();
 
-      expect(engine.currentEvent?.id, thirdId);
-      expect(engine.status, StoryEngineStatus.awaitingChoice);
-      expect(engine.availableChoices.single.id, choiceId);
-    });
+        expect(engine.currentEvent?.id, thirdId);
+        expect(engine.status, StoryEngineStatus.awaitingChoice);
+        expect(engine.availableChoices.single.id, choiceId);
+      },
+    );
 
     test('same seed and authored weighted flow produce the same route', () {
       final startId = StoryEventId('evt_start');
@@ -562,10 +567,7 @@ void main() {
         maxAutomaticTransitions: 4,
       );
 
-      expect(
-        engine.start,
-        throwsA(isA<StoryEngineExecutionException>()),
-      );
+      expect(engine.start, throwsA(isA<StoryEngineExecutionException>()));
       expect(engine.status, StoryEngineStatus.notStarted);
       expect(engine.state, isNull);
       expect(engine.currentEvent, isNull);
@@ -637,10 +639,7 @@ void main() {
         randomSeed: 1,
       );
 
-      expect(
-        engine.start,
-        throwsA(isA<StoryEngineConfigurationException>()),
-      );
+      expect(engine.start, throwsA(isA<StoryEngineConfigurationException>()));
       expect(engine.status, StoryEngineStatus.notStarted);
     });
 
@@ -709,9 +708,7 @@ void main() {
                     amount: StoryIntegerValue(5),
                   ),
                 ],
-                transition: StoryEventTransition(
-                  destinationEventId: missingId,
-                ),
+                transition: StoryEventTransition(destinationEventId: missingId),
               ),
             ],
           ),
@@ -731,110 +728,113 @@ void main() {
       expect(engine.state?.valueOf(goldId), StoryIntegerValue(10));
     });
 
-    test('event availability failure rolls back the whole choose operation', () {
-      final flagId = StoryVariableId('var_flag');
-      final schema = StoryStateSchema(
-        variables: [
-          StoryVariableDefinition(
-            id: flagId,
-            type: StoryValueType.boolean,
-            initialValue: const StoryBooleanValue(false),
-          ),
-        ],
-      );
-      final startId = StoryEventId('evt_start');
-      final guardedId = StoryEventId('evt_guarded');
-      final choiceId = StoryChoiceId('choice_enter');
-      final project = StoryProject(
-        id: StoryProjectId('project_event_guard'),
-        stateSchema: schema,
-        entryEventId: startId,
-        events: [
-          StoryEvent(
-            id: startId,
-            choices: [
-              StoryChoice(
-                id: choiceId,
-                effects: [
-                  StorySetVariableEffect(
-                    variableId: flagId,
-                    value: const StoryBooleanValue(true),
-                  ),
-                ],
-                transition: StoryEventTransition(
-                  destinationEventId: guardedId,
-                ),
-              ),
-            ],
-          ),
-          StoryEvent(
-            id: guardedId,
-            availabilityCondition: StoryVariableComparisonCondition(
-              variableId: flagId,
-              operator: StoryComparisonOperator.equal,
-              value: const StoryBooleanValue(false),
+    test(
+      'event availability failure rolls back the whole choose operation',
+      () {
+        final flagId = StoryVariableId('var_flag');
+        final schema = StoryStateSchema(
+          variables: [
+            StoryVariableDefinition(
+              id: flagId,
+              type: StoryValueType.boolean,
+              initialValue: const StoryBooleanValue(false),
             ),
-            automaticTransition: const StoryTerminalTransition(),
-          ),
-        ],
-      );
-      final engine = StoryEngine(project: project, randomSeed: 13)..start();
+          ],
+        );
+        final startId = StoryEventId('evt_start');
+        final guardedId = StoryEventId('evt_guarded');
+        final choiceId = StoryChoiceId('choice_enter');
+        final project = StoryProject(
+          id: StoryProjectId('project_event_guard'),
+          stateSchema: schema,
+          entryEventId: startId,
+          events: [
+            StoryEvent(
+              id: startId,
+              choices: [
+                StoryChoice(
+                  id: choiceId,
+                  effects: [
+                    StorySetVariableEffect(
+                      variableId: flagId,
+                      value: const StoryBooleanValue(true),
+                    ),
+                  ],
+                  transition: StoryEventTransition(
+                    destinationEventId: guardedId,
+                  ),
+                ),
+              ],
+            ),
+            StoryEvent(
+              id: guardedId,
+              availabilityCondition: StoryVariableComparisonCondition(
+                variableId: flagId,
+                operator: StoryComparisonOperator.equal,
+                value: const StoryBooleanValue(false),
+              ),
+              automaticTransition: const StoryTerminalTransition(),
+            ),
+          ],
+        );
+        final engine = StoryEngine(project: project, randomSeed: 13)..start();
 
-      expect(
-        () => engine.choose(choiceId),
-        throwsA(isA<StoryEngineExecutionException>()),
-      );
-      expect(
-        engine.state?.valueOf(flagId),
-        const StoryBooleanValue(false),
-      );
-      expect(engine.currentEvent?.id, startId);
-      expect(engine.status, StoryEngineStatus.awaitingChoice);
-    });
+        expect(
+          () => engine.choose(choiceId),
+          throwsA(isA<StoryEngineExecutionException>()),
+        );
+        expect(engine.state?.valueOf(flagId), const StoryBooleanValue(false));
+        expect(engine.currentEvent?.id, startId);
+        expect(engine.status, StoryEngineStatus.awaitingChoice);
+      },
+    );
   });
 
   group('Authored runtime model immutability', () {
-    test('project events, event choices/effects, and choice effects are copied', () {
-      final choiceEffects = <StoryEffect>[];
-      final choices = <StoryChoice>[
-        StoryChoice(
-          id: StoryChoiceId('choice_end'),
-          effects: choiceEffects,
-          transition: const StoryTerminalTransition(),
-        ),
-      ];
-      final entryEffects = <StoryEffect>[];
-      final event = StoryEvent(
-        id: StoryEventId('evt_start'),
-        entryEffects: entryEffects,
-        choices: choices,
-      );
-      final events = <StoryEvent>[event];
-      final project = StoryProject(
-        id: StoryProjectId('project_immutable'),
-        events: events,
-        entryEventId: event.id,
-      );
+    test(
+      'project events, event choices/effects, and choice effects are copied',
+      () {
+        final choiceEffects = <StoryEffect>[];
+        final choices = <StoryChoice>[
+          StoryChoice(
+            id: StoryChoiceId('choice_end'),
+            effects: choiceEffects,
+            transition: const StoryTerminalTransition(),
+          ),
+        ];
+        final entryEffects = <StoryEffect>[];
+        final event = StoryEvent(
+          id: StoryEventId('evt_start'),
+          entryEffects: entryEffects,
+          choices: choices,
+        );
+        final events = <StoryEvent>[event];
+        final project = StoryProject(
+          id: StoryProjectId('project_immutable'),
+          events: events,
+          entryEventId: event.id,
+        );
 
-      choices.clear();
-      entryEffects.add(
-        StorySetVariableEffect(
-          variableId: StoryVariableId('var_unused'),
-          value: const StoryBooleanValue(true),
-        ),
-      );
-      choiceEffects.add(
-        StoryUnsetVariableEffect(variableId: StoryVariableId('var_unused')),
-      );
-      events.clear();
+        choices.clear();
+        entryEffects.add(
+          StorySetVariableEffect(
+            variableId: StoryVariableId('var_unused'),
+            value: const StoryBooleanValue(true),
+          ),
+        );
+        choiceEffects.add(
+          StoryUnsetVariableEffect(variableId: StoryVariableId('var_unused')),
+        );
+        events.clear();
 
-      expect(project.events, [event]);
-      expect(event.choices, hasLength(1));
-      expect(event.entryEffects, isEmpty);
-      expect(event.choices.single.effects, isEmpty);
-      expect(() => event.choices.clear(), throwsUnsupportedError);
-      expect(() => project.events.clear(), throwsUnsupportedError);
-    });
+        expect(project.events, [event]);
+        expect(event.choices, hasLength(1));
+        expect(event.entryEffects, isEmpty);
+        expect(event.choices.single.effects, isEmpty);
+        expect(() => event.choices.clear(), throwsUnsupportedError);
+        expect(() => project.events.clear(), throwsUnsupportedError);
+      },
+    );
   });
 
   test('random seed is constrained to one explicit 32-bit seed', () {

@@ -56,10 +56,7 @@ void main() {
   });
 }
 
-StoryEngine _runPrimaryRoute(
-  StoryProject project, {
-  required int randomSeed,
-}) {
+StoryEngine _runPrimaryRoute(StoryProject project, {required int randomSeed}) {
   final engine = StoryEngine(project: project, randomSeed: randomSeed);
   engine.start();
 

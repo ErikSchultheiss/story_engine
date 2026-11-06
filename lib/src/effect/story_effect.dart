@@ -13,10 +13,7 @@ sealed class StoryEffect {
 
 /// Replaces the current value of one declared scalar story variable.
 final class StorySetVariableEffect extends StoryEffect {
-  const StorySetVariableEffect({
-    required this.variableId,
-    required this.value,
-  });
+  const StorySetVariableEffect({required this.variableId, required this.value});
 
   /// Variable whose current runtime value should be replaced.
   final StoryVariableId variableId;

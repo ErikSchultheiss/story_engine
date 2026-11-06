@@ -53,10 +53,7 @@ void main() {
     expect(codec.encodeJson(decoded), encoded);
     expect(decoded.id, LanternMysteryFixture.projectId);
     expect(decoded.events, hasLength(12));
-    expect(
-      decoded.events.expand((event) => event.choices),
-      hasLength(22),
-    );
+    expect(decoded.events.expand((event) => event.choices), hasLength(22));
   });
 
   test('incomplete editor data round-trips without runtime validation', () {
@@ -224,7 +221,10 @@ void main() {
     final decoded = codec.decode(encoded);
 
     expect(decoded.events.last.continuationTransition, isNull);
-    expect(decoded.events.last.presentation?.title, const StoryText('Destination'));
+    expect(
+      decoded.events.last.presentation?.title,
+      const StoryText('Destination'),
+    );
   });
 
   test('revision 2 rejects revision 3 continuation fields', () {

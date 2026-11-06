@@ -1,0 +1,18 @@
+{
+  "id": "loop",
+  "entryEffects": [
+    {
+      "kind": "increment_variable",
+      "variableId": "score",
+      "amount": {
+        "type": "integer",
+        "value": 1
+      }
+    }
+  ],
+  "choices": [],
+  "automaticTransition": {
+    "kind": "event",
+    "destinationEventId": "loop"
+  }
+}

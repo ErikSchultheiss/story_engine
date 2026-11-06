@@ -1,0 +1,25 @@
+{
+  "id": "evt_0008",
+  "alias": "unstable_passage",
+  "entryEffects": [],
+  "choices": [],
+  "automaticTransition": {
+    "kind": "weighted",
+    "options": [
+      {
+        "weight": 3,
+        "transition": {
+          "kind": "event",
+          "destinationEventId": "evt_0009"
+        }
+      },
+      {
+        "weight": 1,
+        "transition": {
+          "kind": "event",
+          "destinationEventId": "evt_0012"
+        }
+      }
+    ]
+  }
+}

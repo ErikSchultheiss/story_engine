@@ -51,10 +51,7 @@ void main() {
 
       expect(diagnostic.location.pathString, 'events[1]');
       expect(diagnostic.location.eventId, orphanId);
-      expect(
-        diagnostic.references,
-        [StoryDiagnosticReference.event(orphanId)],
-      );
+      expect(diagnostic.references, [StoryDiagnosticReference.event(orphanId)]);
     });
 
     test('nested conditional and weighted branches all count as reachable', () {
@@ -80,9 +77,7 @@ void main() {
               branches: [
                 StoryConditionalTransitionBranch(
                   condition: StoryVariableComparisonCondition(
-                    variableId: StoryVariableId(
-                      'variable_nested_reachability',
-                    ),
+                    variableId: StoryVariableId('variable_nested_reachability'),
                     operator: StoryComparisonOperator.equal,
                     value: const StoryBooleanValue(true),
                   ),
@@ -128,54 +123,58 @@ void main() {
       );
     });
 
-    test('ambiguous event still contributes authored edges to reachability', () {
-      final entryId = StoryEventId('event_ambiguous_graph_entry');
-      final choiceDestinationId = StoryEventId('event_choice_destination');
-      final automaticDestinationId = StoryEventId('event_auto_destination');
-      final project = StoryProject(
-        id: StoryProjectId('project_ambiguous_graph_reachability'),
-        entryEventId: entryId,
-        events: [
-          StoryEvent(
-            id: entryId,
-            choices: [
-              StoryChoice(
-                id: StoryChoiceId('choice_ambiguous_graph'),
-                transition: StoryEventTransition(
-                  destinationEventId: choiceDestinationId,
+    test(
+      'ambiguous event still contributes authored edges to reachability',
+      () {
+        final entryId = StoryEventId('event_ambiguous_graph_entry');
+        final choiceDestinationId = StoryEventId('event_choice_destination');
+        final automaticDestinationId = StoryEventId('event_auto_destination');
+        final project = StoryProject(
+          id: StoryProjectId('project_ambiguous_graph_reachability'),
+          entryEventId: entryId,
+          events: [
+            StoryEvent(
+              id: entryId,
+              choices: [
+                StoryChoice(
+                  id: StoryChoiceId('choice_ambiguous_graph'),
+                  transition: StoryEventTransition(
+                    destinationEventId: choiceDestinationId,
+                  ),
                 ),
+              ],
+              automaticTransition: StoryEventTransition(
+                destinationEventId: automaticDestinationId,
               ),
-            ],
-            automaticTransition: StoryEventTransition(
-              destinationEventId: automaticDestinationId,
             ),
-          ),
-          StoryEvent(
-            id: choiceDestinationId,
-            automaticTransition: const StoryTerminalTransition(),
-          ),
-          StoryEvent(
-            id: automaticDestinationId,
-            automaticTransition: const StoryTerminalTransition(),
-          ),
-        ],
-      );
+            StoryEvent(
+              id: choiceDestinationId,
+              automaticTransition: const StoryTerminalTransition(),
+            ),
+            StoryEvent(
+              id: automaticDestinationId,
+              automaticTransition: const StoryTerminalTransition(),
+            ),
+          ],
+        );
 
-      final report = StoryValidator.validate(project);
+        final report = StoryValidator.validate(project);
 
-      expect(
-        report.errors.singleWhere(
-          (item) => item.code == StoryDiagnosticCode.structureEventAmbiguousFlow,
-        ),
-        isNotNull,
-      );
-      expect(
-        report.diagnostics.where(
-          (item) => item.code == StoryDiagnosticCode.graphUnreachableEvent,
-        ),
-        isEmpty,
-      );
-    });
+        expect(
+          report.errors.singleWhere(
+            (item) =>
+                item.code == StoryDiagnosticCode.structureEventAmbiguousFlow,
+          ),
+          isNotNull,
+        );
+        expect(
+          report.diagnostics.where(
+            (item) => item.code == StoryDiagnosticCode.graphUnreachableEvent,
+          ),
+          isEmpty,
+        );
+      },
+    );
 
     test('reachable automatic self-cycle is an error', () {
       final eventId = StoryEventId('event_automatic_self_cycle');
@@ -198,10 +197,7 @@ void main() {
       );
 
       expect(diagnostic.location.pathString, 'events[0]');
-      expect(
-        diagnostic.references,
-        [StoryDiagnosticReference.event(eventId)],
-      );
+      expect(diagnostic.references, [StoryDiagnosticReference.event(eventId)]);
       expect(
         report.diagnostics.where(
           (item) =>
@@ -239,13 +235,10 @@ void main() {
       );
 
       expect(diagnostic.location.pathString, 'events[0]');
-      expect(
-        diagnostic.references,
-        [
-          StoryDiagnosticReference.event(firstId),
-          StoryDiagnosticReference.event(secondId),
-        ],
-      );
+      expect(diagnostic.references, [
+        StoryDiagnosticReference.event(firstId),
+        StoryDiagnosticReference.event(secondId),
+      ]);
       expect(diagnostic.relatedLocations, hasLength(1));
       expect(diagnostic.relatedLocations.single.pathString, 'events[1]');
     });
@@ -275,9 +268,12 @@ void main() {
       final report = StoryValidator.validate(project);
 
       expect(
-        report.warnings.singleWhere(
-          (item) => item.code == StoryDiagnosticCode.graphContinuationCycle,
-        ).location.pathString,
+        report.warnings
+            .singleWhere(
+              (item) => item.code == StoryDiagnosticCode.graphContinuationCycle,
+            )
+            .location
+            .pathString,
         'events[0]',
       );
       expect(
@@ -288,96 +284,108 @@ void main() {
       );
     });
 
-    test('interactive cycle is information and can still have terminal exit', () {
-      final firstId = StoryEventId('event_interactive_cycle_first');
-      final secondId = StoryEventId('event_interactive_cycle_second');
-      final project = StoryProject(
-        id: StoryProjectId('project_interactive_cycle'),
-        entryEventId: firstId,
-        events: [
-          StoryEvent(
-            id: firstId,
-            choices: [
-              StoryChoice(
-                id: StoryChoiceId('choice_interactive_loop_forward'),
-                transition: StoryEventTransition(
-                  destinationEventId: secondId,
+    test(
+      'interactive cycle is information and can still have terminal exit',
+      () {
+        final firstId = StoryEventId('event_interactive_cycle_first');
+        final secondId = StoryEventId('event_interactive_cycle_second');
+        final project = StoryProject(
+          id: StoryProjectId('project_interactive_cycle'),
+          entryEventId: firstId,
+          events: [
+            StoryEvent(
+              id: firstId,
+              choices: [
+                StoryChoice(
+                  id: StoryChoiceId('choice_interactive_loop_forward'),
+                  transition: StoryEventTransition(
+                    destinationEventId: secondId,
+                  ),
                 ),
-              ),
-              StoryChoice(
-                id: StoryChoiceId('choice_interactive_finish'),
-                transition: const StoryTerminalTransition(),
-              ),
-            ],
-          ),
-          StoryEvent(
-            id: secondId,
-            choices: [
-              StoryChoice(
-                id: StoryChoiceId('choice_interactive_loop_back'),
-                transition: StoryEventTransition(
-                  destinationEventId: firstId,
+                StoryChoice(
+                  id: StoryChoiceId('choice_interactive_finish'),
+                  transition: const StoryTerminalTransition(),
                 ),
+              ],
+            ),
+            StoryEvent(
+              id: secondId,
+              choices: [
+                StoryChoice(
+                  id: StoryChoiceId('choice_interactive_loop_back'),
+                  transition: StoryEventTransition(destinationEventId: firstId),
+                ),
+              ],
+            ),
+          ],
+        );
+
+        final report = StoryValidator.validate(project);
+
+        expect(
+          report.information
+              .singleWhere(
+                (item) =>
+                    item.code == StoryDiagnosticCode.graphInteractiveCycle,
+              )
+              .location
+              .pathString,
+          'events[0]',
+        );
+        expect(
+          report.diagnostics.where(
+            (item) =>
+                item.code ==
+                StoryDiagnosticCode.graphEventCannotReachTermination,
+          ),
+          isEmpty,
+        );
+      },
+    );
+
+    test(
+      'mixed automatic and continuation cycle is non-blocking information',
+      () {
+        final automaticId = StoryEventId('event_mixed_automatic');
+        final continuationId = StoryEventId('event_mixed_continuation');
+        final project = StoryProject(
+          id: StoryProjectId('project_mixed_cycle'),
+          entryEventId: automaticId,
+          events: [
+            StoryEvent(
+              id: automaticId,
+              automaticTransition: StoryEventTransition(
+                destinationEventId: continuationId,
               ),
-            ],
-          ),
-        ],
-      );
-
-      final report = StoryValidator.validate(project);
-
-      expect(
-        report.information.singleWhere(
-          (item) => item.code == StoryDiagnosticCode.graphInteractiveCycle,
-        ).location.pathString,
-        'events[0]',
-      );
-      expect(
-        report.diagnostics.where(
-          (item) =>
-              item.code == StoryDiagnosticCode.graphEventCannotReachTermination,
-        ),
-        isEmpty,
-      );
-    });
-
-    test('mixed automatic and continuation cycle is non-blocking information', () {
-      final automaticId = StoryEventId('event_mixed_automatic');
-      final continuationId = StoryEventId('event_mixed_continuation');
-      final project = StoryProject(
-        id: StoryProjectId('project_mixed_cycle'),
-        entryEventId: automaticId,
-        events: [
-          StoryEvent(
-            id: automaticId,
-            automaticTransition: StoryEventTransition(
-              destinationEventId: continuationId,
             ),
-          ),
-          StoryEvent(
-            id: continuationId,
-            continuationTransition: StoryEventTransition(
-              destinationEventId: automaticId,
+            StoryEvent(
+              id: continuationId,
+              continuationTransition: StoryEventTransition(
+                destinationEventId: automaticId,
+              ),
             ),
+          ],
+        );
+
+        final report = StoryValidator.validate(project);
+
+        expect(
+          report.information
+              .singleWhere(
+                (item) => item.code == StoryDiagnosticCode.graphMixedCycle,
+              )
+              .location
+              .pathString,
+          'events[0]',
+        );
+        expect(
+          report.errors.where(
+            (item) => item.code == StoryDiagnosticCode.graphAutomaticCycle,
           ),
-        ],
-      );
-
-      final report = StoryValidator.validate(project);
-
-      expect(
-        report.information.singleWhere(
-          (item) => item.code == StoryDiagnosticCode.graphMixedCycle,
-        ).location.pathString,
-        'events[0]',
-      );
-      expect(
-        report.errors.where(
-          (item) => item.code == StoryDiagnosticCode.graphAutomaticCycle,
-        ),
-        isEmpty,
-      );
-    });
+          isEmpty,
+        );
+      },
+    );
 
     test('automatic subcycle inside a mixed SCC remains an error', () {
       final automaticId = StoryEventId('event_mixed_with_auto_subcycle');
@@ -417,15 +425,19 @@ void main() {
       final report = StoryValidator.validate(project);
 
       expect(
-        report.errors.singleWhere(
-          (item) => item.code == StoryDiagnosticCode.graphAutomaticCycle,
-        ).references,
+        report.errors
+            .singleWhere(
+              (item) => item.code == StoryDiagnosticCode.graphAutomaticCycle,
+            )
+            .references,
         [StoryDiagnosticReference.event(automaticId)],
       );
       expect(
-        report.information.singleWhere(
-          (item) => item.code == StoryDiagnosticCode.graphMixedCycle,
-        ).references,
+        report.information
+            .singleWhere(
+              (item) => item.code == StoryDiagnosticCode.graphMixedCycle,
+            )
+            .references,
         [
           StoryDiagnosticReference.event(continuationId),
           StoryDiagnosticReference.event(automaticId),
@@ -475,88 +487,103 @@ void main() {
           .toList();
 
       expect(noTermination, hasLength(3));
+      expect(noTermination.map((item) => item.location.pathString), [
+        'events[0]',
+        'events[1]',
+        'events[2]',
+      ]);
       expect(
-        noTermination.map((item) => item.location.pathString),
-        ['events[0]', 'events[1]', 'events[2]'],
-      );
-      expect(
-        report.information.singleWhere(
-          (item) => item.code == StoryDiagnosticCode.graphInteractiveCycle,
-        ).location.pathString,
+        report.information
+            .singleWhere(
+              (item) => item.code == StoryDiagnosticCode.graphInteractiveCycle,
+            )
+            .location
+            .pathString,
         'events[2]',
       );
     });
 
-    test('unreachable automatic cycle is not reported as runtime-cycle error', () {
-      final entryId = StoryEventId('event_reachable_terminal');
-      final cycleId = StoryEventId('event_unreachable_auto_cycle');
-      final project = StoryProject(
-        id: StoryProjectId('project_unreachable_auto_cycle'),
-        entryEventId: entryId,
-        events: [
-          StoryEvent(
-            id: entryId,
-            automaticTransition: const StoryTerminalTransition(),
-          ),
-          StoryEvent(
-            id: cycleId,
-            automaticTransition: StoryEventTransition(
-              destinationEventId: cycleId,
+    test(
+      'unreachable automatic cycle is not reported as runtime-cycle error',
+      () {
+        final entryId = StoryEventId('event_reachable_terminal');
+        final cycleId = StoryEventId('event_unreachable_auto_cycle');
+        final project = StoryProject(
+          id: StoryProjectId('project_unreachable_auto_cycle'),
+          entryEventId: entryId,
+          events: [
+            StoryEvent(
+              id: entryId,
+              automaticTransition: const StoryTerminalTransition(),
             ),
-          ),
-        ],
-      );
-
-      final report = StoryValidator.validate(project);
-
-      expect(
-        report.warnings.singleWhere(
-          (item) => item.code == StoryDiagnosticCode.graphUnreachableEvent,
-        ).location.pathString,
-        'events[1]',
-      );
-      expect(
-        report.errors.where(
-          (item) => item.code == StoryDiagnosticCode.graphAutomaticCycle,
-        ),
-        isEmpty,
-      );
-    });
-
-    test('missing destination remains Stage 3C-owned nontermination boundary', () {
-      final entryId = StoryEventId('event_missing_destination_entry');
-      final missingId = StoryEventId('event_missing_destination_target');
-      final project = StoryProject(
-        id: StoryProjectId('project_missing_destination_boundary'),
-        entryEventId: entryId,
-        events: [
-          StoryEvent(
-            id: entryId,
-            automaticTransition: StoryEventTransition(
-              destinationEventId: missingId,
+            StoryEvent(
+              id: cycleId,
+              automaticTransition: StoryEventTransition(
+                destinationEventId: cycleId,
+              ),
             ),
+          ],
+        );
+
+        final report = StoryValidator.validate(project);
+
+        expect(
+          report.warnings
+              .singleWhere(
+                (item) =>
+                    item.code == StoryDiagnosticCode.graphUnreachableEvent,
+              )
+              .location
+              .pathString,
+          'events[1]',
+        );
+        expect(
+          report.errors.where(
+            (item) => item.code == StoryDiagnosticCode.graphAutomaticCycle,
           ),
-        ],
-      );
+          isEmpty,
+        );
+      },
+    );
 
-      final report = StoryValidator.validate(project);
+    test(
+      'missing destination remains Stage 3C-owned nontermination boundary',
+      () {
+        final entryId = StoryEventId('event_missing_destination_entry');
+        final missingId = StoryEventId('event_missing_destination_target');
+        final project = StoryProject(
+          id: StoryProjectId('project_missing_destination_boundary'),
+          entryEventId: entryId,
+          events: [
+            StoryEvent(
+              id: entryId,
+              automaticTransition: StoryEventTransition(
+                destinationEventId: missingId,
+              ),
+            ),
+          ],
+        );
 
-      expect(
-        report.errors.singleWhere(
-          (item) =>
-              item.code ==
-              StoryDiagnosticCode.referenceMissingTransitionDestination,
-        ),
-        isNotNull,
-      );
-      expect(
-        report.diagnostics.where(
-          (item) =>
-              item.code == StoryDiagnosticCode.graphEventCannotReachTermination,
-        ),
-        isEmpty,
-      );
-    });
+        final report = StoryValidator.validate(project);
+
+        expect(
+          report.errors.singleWhere(
+            (item) =>
+                item.code ==
+                StoryDiagnosticCode.referenceMissingTransitionDestination,
+          ),
+          isNotNull,
+        );
+        expect(
+          report.diagnostics.where(
+            (item) =>
+                item.code ==
+                StoryDiagnosticCode.graphEventCannotReachTermination,
+          ),
+          isEmpty,
+        );
+      },
+    );
 
     test('unresolved entry and duplicate event IDs suppress graph claims', () {
       final duplicateId = StoryEventId('event_graph_duplicate');
@@ -590,14 +617,18 @@ void main() {
         StoryValidator.validate(unresolvedProject),
       ]) {
         expect(
-          report.diagnostics.where((item) => item.code.value.startsWith('graph.')),
+          report.diagnostics.where(
+            (item) => item.code.value.startsWith('graph.'),
+          ),
           isEmpty,
         );
       }
     });
 
     test('Lantern Mystery has no graph errors or graph warnings', () {
-      final report = StoryValidator.validate(LanternMysteryFixture.buildProject());
+      final report = StoryValidator.validate(
+        LanternMysteryFixture.buildProject(),
+      );
 
       expect(
         report.errors.where((item) => item.code.value.startsWith('graph.')),
@@ -615,13 +646,16 @@ void main() {
       );
     });
 
-    test('Stage 3F diagnostics remain deterministic across repeated validation', () {
-      final project = LanternMysteryFixture.buildProject();
+    test(
+      'Stage 3F diagnostics remain deterministic across repeated validation',
+      () {
+        final project = LanternMysteryFixture.buildProject();
 
-      final first = StoryValidator.validate(project);
-      final second = StoryValidator.validate(project);
+        final first = StoryValidator.validate(project);
+        final second = StoryValidator.validate(project);
 
-      expect(second.diagnostics, first.diagnostics);
-    });
+        expect(second.diagnostics, first.diagnostics);
+      },
+    );
   });
 }

@@ -1,0 +1,28 @@
+{
+  "formatId": "open_story.conformance_expected_trace",
+  "formatVersion": 1,
+  "observations": [
+    {
+      "afterInputIndex": 0,
+      "status": "awaitingChoice",
+      "currentEventId": "evt_0001",
+      "availableChoiceIds": [
+        "ch_0001",
+        "ch_0003",
+        "ch_0005"
+      ]
+    },
+    {
+      "afterInputIndex": 1,
+      "status": "awaitingContinue",
+      "currentEventId": "evt_0011",
+      "availableChoiceIds": []
+    },
+    {
+      "afterInputIndex": 2,
+      "status": "terminated",
+      "currentEventId": "evt_0011",
+      "availableChoiceIds": []
+    }
+  ]
+}

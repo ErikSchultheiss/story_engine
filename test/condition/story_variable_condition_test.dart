@@ -30,10 +30,7 @@ void main() {
         type: StoryValueType.string,
         initialValue: const StoryStringValue('forest'),
       ),
-      StoryVariableDefinition(
-        id: unsetId,
-        type: StoryValueType.boolean,
-      ),
+      StoryVariableDefinition(id: unsetId, type: StoryValueType.boolean),
     ],
   );
 
@@ -161,6 +158,58 @@ void main() {
       );
     });
 
+    test('number ordering treats signed zero as numerically equal', () {
+      final zeroId = StoryVariableId('var_zero');
+      final zeroSchema = StoryStateSchema(
+        variables: [
+          StoryVariableDefinition(
+            id: zeroId,
+            type: StoryValueType.number,
+            initialValue: StoryNumberValue(-0.0),
+          ),
+        ],
+      );
+      final zeroContext = StoryConditionContext(
+        state: StoryState.initial(zeroSchema),
+      );
+
+      for (final operator in [
+        StoryComparisonOperator.equal,
+        StoryComparisonOperator.lessThanOrEqual,
+        StoryComparisonOperator.greaterThanOrEqual,
+      ]) {
+        expect(
+          evaluator.evaluate(
+            StoryVariableComparisonCondition(
+              variableId: zeroId,
+              operator: operator,
+              value: StoryNumberValue(0.0),
+            ),
+            zeroContext,
+          ),
+          isTrue,
+        );
+      }
+
+      for (final operator in [
+        StoryComparisonOperator.notEqual,
+        StoryComparisonOperator.lessThan,
+        StoryComparisonOperator.greaterThan,
+      ]) {
+        expect(
+          evaluator.evaluate(
+            StoryVariableComparisonCondition(
+              variableId: zeroId,
+              operator: operator,
+              value: StoryNumberValue(0.0),
+            ),
+            zeroContext,
+          ),
+          isFalse,
+        );
+      }
+    });
+
     test('reject ordering operators for Boolean and String literals', () {
       expect(
         () => StoryVariableComparisonCondition(
@@ -193,20 +242,23 @@ void main() {
       );
     });
 
-    test('all scalar comparisons against unset evaluate false, including !=', () {
-      final equal = StoryVariableComparisonCondition(
-        variableId: unsetId,
-        operator: StoryComparisonOperator.equal,
-        value: const StoryBooleanValue(true),
-      );
-      final notEqual = StoryVariableComparisonCondition(
-        variableId: unsetId,
-        operator: StoryComparisonOperator.notEqual,
-        value: const StoryBooleanValue(true),
-      );
+    test(
+      'all scalar comparisons against unset evaluate false, including !=',
+      () {
+        final equal = StoryVariableComparisonCondition(
+          variableId: unsetId,
+          operator: StoryComparisonOperator.equal,
+          value: const StoryBooleanValue(true),
+        );
+        final notEqual = StoryVariableComparisonCondition(
+          variableId: unsetId,
+          operator: StoryComparisonOperator.notEqual,
+          value: const StoryBooleanValue(true),
+        );
 
-      expect(evaluator.evaluate(equal, context), isFalse);
-      expect(evaluator.evaluate(notEqual, context), isFalse);
-    });
+        expect(evaluator.evaluate(equal, context), isFalse);
+        expect(evaluator.evaluate(notEqual, context), isFalse);
+      },
+    );
   });
 }

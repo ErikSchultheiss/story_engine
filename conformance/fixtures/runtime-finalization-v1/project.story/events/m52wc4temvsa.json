@@ -1,0 +1,26 @@
+{
+  "id": "guarded",
+  "availabilityCondition": {
+    "kind": "any",
+    "conditions": [
+      {
+        "kind": "variable_is_set",
+        "variableId": "flag"
+      },
+      {
+        "kind": "variable_comparison",
+        "variableId": "score",
+        "operator": "equal",
+        "value": {
+          "type": "string",
+          "value": "malformed"
+        }
+      }
+    ]
+  },
+  "entryEffects": [],
+  "choices": [],
+  "continuationTransition": {
+    "kind": "terminal"
+  }
+}

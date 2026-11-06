@@ -1,0 +1,13 @@
+{
+  "id": "evt_0011",
+  "alias": "neutral_outcome",
+  "presentation": {
+    "title": "Outside Again",
+    "body": "You leave the station safely, although most of its secrets remain unsolved."
+  },
+  "entryEffects": [],
+  "choices": [],
+  "continuationTransition": {
+    "kind": "terminal"
+  }
+}

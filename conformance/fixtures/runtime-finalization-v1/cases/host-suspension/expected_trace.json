@@ -1,0 +1,780 @@
+{
+  "formatId": "open_story.conformance_hardening_expected_trace",
+  "formatVersion": 1,
+  "observations": [
+    {
+      "afterInputIndex": 0,
+      "outcome": "committed",
+      "error": null,
+      "checkpointUnchanged": false,
+      "persistentState": {
+        "formatId": "open_story.conformance_state",
+        "formatVersion": 1,
+        "mode": "explicit",
+        "values": [
+          {
+            "variableId": "score",
+            "state": "set",
+            "value": {
+              "type": "integer",
+              "value": 0
+            }
+          },
+          {
+            "variableId": "flag",
+            "state": "set",
+            "value": {
+              "type": "boolean",
+              "value": true
+            }
+          }
+        ]
+      },
+      "persistentStateRevision": 0,
+      "nextSessionIndex": 1,
+      "activeSessionIndexes": [
+        0
+      ],
+      "sessions": [
+        {
+          "sessionIndex": 0,
+          "entryPointId": "entry",
+          "status": "awaitingChoice",
+          "currentEventId": "root",
+          "availableChoiceIds": [
+            "safe",
+            "fail",
+            "bad_branch",
+            "short",
+            "bump",
+            "finish"
+          ],
+          "state": {
+            "formatId": "open_story.conformance_state",
+            "formatVersion": 1,
+            "mode": "explicit",
+            "values": [
+              {
+                "variableId": "score",
+                "state": "set",
+                "value": {
+                  "type": "integer",
+                  "value": 0
+                }
+              },
+              {
+                "variableId": "flag",
+                "state": "set",
+                "value": {
+                  "type": "boolean",
+                  "value": true
+                }
+              }
+            ]
+          },
+          "history": {
+            "formatId": "open_story.conformance_history",
+            "formatVersion": 1,
+            "steps": [
+              {
+                "kind": "eventEntered",
+                "eventId": "root"
+              }
+            ]
+          },
+          "nextRequestOrdinal": 0,
+          "pendingRequest": null
+        }
+      ]
+    },
+    {
+      "afterInputIndex": 1,
+      "outcome": "committed",
+      "error": null,
+      "checkpointUnchanged": false,
+      "persistentState": {
+        "formatId": "open_story.conformance_state",
+        "formatVersion": 1,
+        "mode": "explicit",
+        "values": [
+          {
+            "variableId": "score",
+            "state": "set",
+            "value": {
+              "type": "integer",
+              "value": 0
+            }
+          },
+          {
+            "variableId": "flag",
+            "state": "set",
+            "value": {
+              "type": "boolean",
+              "value": true
+            }
+          }
+        ]
+      },
+      "persistentStateRevision": 0,
+      "nextSessionIndex": 1,
+      "activeSessionIndexes": [
+        0
+      ],
+      "sessions": [
+        {
+          "sessionIndex": 0,
+          "entryPointId": "entry",
+          "status": "awaitingHost",
+          "currentEventId": "root",
+          "availableChoiceIds": [],
+          "state": {
+            "formatId": "open_story.conformance_state",
+            "formatVersion": 1,
+            "mode": "explicit",
+            "values": [
+              {
+                "variableId": "score",
+                "state": "set",
+                "value": {
+                  "type": "integer",
+                  "value": 0
+                }
+              },
+              {
+                "variableId": "flag",
+                "state": "set",
+                "value": {
+                  "type": "boolean",
+                  "value": true
+                }
+              }
+            ]
+          },
+          "history": {
+            "formatId": "open_story.conformance_history",
+            "formatVersion": 1,
+            "steps": [
+              {
+                "kind": "eventEntered",
+                "eventId": "root"
+              }
+            ]
+          },
+          "nextRequestOrdinal": 1,
+          "pendingRequest": {
+            "id": "host_action_session_0_0",
+            "schemaNamespace": "org.example.conformance",
+            "actionId": "approve",
+            "arguments": {
+              "subject": "portable"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "afterInputIndex": 2,
+      "outcome": "rejected",
+      "error": "operationRejected",
+      "checkpointUnchanged": true,
+      "persistentState": {
+        "formatId": "open_story.conformance_state",
+        "formatVersion": 1,
+        "mode": "explicit",
+        "values": [
+          {
+            "variableId": "score",
+            "state": "set",
+            "value": {
+              "type": "integer",
+              "value": 0
+            }
+          },
+          {
+            "variableId": "flag",
+            "state": "set",
+            "value": {
+              "type": "boolean",
+              "value": true
+            }
+          }
+        ]
+      },
+      "persistentStateRevision": 0,
+      "nextSessionIndex": 1,
+      "activeSessionIndexes": [
+        0
+      ],
+      "sessions": [
+        {
+          "sessionIndex": 0,
+          "entryPointId": "entry",
+          "status": "awaitingHost",
+          "currentEventId": "root",
+          "availableChoiceIds": [],
+          "state": {
+            "formatId": "open_story.conformance_state",
+            "formatVersion": 1,
+            "mode": "explicit",
+            "values": [
+              {
+                "variableId": "score",
+                "state": "set",
+                "value": {
+                  "type": "integer",
+                  "value": 0
+                }
+              },
+              {
+                "variableId": "flag",
+                "state": "set",
+                "value": {
+                  "type": "boolean",
+                  "value": true
+                }
+              }
+            ]
+          },
+          "history": {
+            "formatId": "open_story.conformance_history",
+            "formatVersion": 1,
+            "steps": [
+              {
+                "kind": "eventEntered",
+                "eventId": "root"
+              }
+            ]
+          },
+          "nextRequestOrdinal": 1,
+          "pendingRequest": {
+            "id": "host_action_session_0_0",
+            "schemaNamespace": "org.example.conformance",
+            "actionId": "approve",
+            "arguments": {
+              "subject": "portable"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "afterInputIndex": 3,
+      "outcome": "committed",
+      "error": null,
+      "checkpointUnchanged": true,
+      "persistentState": {
+        "formatId": "open_story.conformance_state",
+        "formatVersion": 1,
+        "mode": "explicit",
+        "values": [
+          {
+            "variableId": "score",
+            "state": "set",
+            "value": {
+              "type": "integer",
+              "value": 0
+            }
+          },
+          {
+            "variableId": "flag",
+            "state": "set",
+            "value": {
+              "type": "boolean",
+              "value": true
+            }
+          }
+        ]
+      },
+      "persistentStateRevision": 0,
+      "nextSessionIndex": 1,
+      "activeSessionIndexes": [
+        0
+      ],
+      "sessions": [
+        {
+          "sessionIndex": 0,
+          "entryPointId": "entry",
+          "status": "awaitingHost",
+          "currentEventId": "root",
+          "availableChoiceIds": [],
+          "state": {
+            "formatId": "open_story.conformance_state",
+            "formatVersion": 1,
+            "mode": "explicit",
+            "values": [
+              {
+                "variableId": "score",
+                "state": "set",
+                "value": {
+                  "type": "integer",
+                  "value": 0
+                }
+              },
+              {
+                "variableId": "flag",
+                "state": "set",
+                "value": {
+                  "type": "boolean",
+                  "value": true
+                }
+              }
+            ]
+          },
+          "history": {
+            "formatId": "open_story.conformance_history",
+            "formatVersion": 1,
+            "steps": [
+              {
+                "kind": "eventEntered",
+                "eventId": "root"
+              }
+            ]
+          },
+          "nextRequestOrdinal": 1,
+          "pendingRequest": {
+            "id": "host_action_session_0_0",
+            "schemaNamespace": "org.example.conformance",
+            "actionId": "approve",
+            "arguments": {
+              "subject": "portable"
+            }
+          }
+        }
+      ],
+      "observationsReplayed": 0
+    },
+    {
+      "afterInputIndex": 4,
+      "outcome": "rejected",
+      "error": "operationRejected",
+      "checkpointUnchanged": true,
+      "persistentState": {
+        "formatId": "open_story.conformance_state",
+        "formatVersion": 1,
+        "mode": "explicit",
+        "values": [
+          {
+            "variableId": "score",
+            "state": "set",
+            "value": {
+              "type": "integer",
+              "value": 0
+            }
+          },
+          {
+            "variableId": "flag",
+            "state": "set",
+            "value": {
+              "type": "boolean",
+              "value": true
+            }
+          }
+        ]
+      },
+      "persistentStateRevision": 0,
+      "nextSessionIndex": 1,
+      "activeSessionIndexes": [
+        0
+      ],
+      "sessions": [
+        {
+          "sessionIndex": 0,
+          "entryPointId": "entry",
+          "status": "awaitingHost",
+          "currentEventId": "root",
+          "availableChoiceIds": [],
+          "state": {
+            "formatId": "open_story.conformance_state",
+            "formatVersion": 1,
+            "mode": "explicit",
+            "values": [
+              {
+                "variableId": "score",
+                "state": "set",
+                "value": {
+                  "type": "integer",
+                  "value": 0
+                }
+              },
+              {
+                "variableId": "flag",
+                "state": "set",
+                "value": {
+                  "type": "boolean",
+                  "value": true
+                }
+              }
+            ]
+          },
+          "history": {
+            "formatId": "open_story.conformance_history",
+            "formatVersion": 1,
+            "steps": [
+              {
+                "kind": "eventEntered",
+                "eventId": "root"
+              }
+            ]
+          },
+          "nextRequestOrdinal": 1,
+          "pendingRequest": {
+            "id": "host_action_session_0_0",
+            "schemaNamespace": "org.example.conformance",
+            "actionId": "approve",
+            "arguments": {
+              "subject": "portable"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "afterInputIndex": 5,
+      "outcome": "committed",
+      "error": null,
+      "checkpointUnchanged": false,
+      "persistentState": {
+        "formatId": "open_story.conformance_state",
+        "formatVersion": 1,
+        "mode": "explicit",
+        "values": [
+          {
+            "variableId": "score",
+            "state": "set",
+            "value": {
+              "type": "integer",
+              "value": 0
+            }
+          },
+          {
+            "variableId": "flag",
+            "state": "set",
+            "value": {
+              "type": "boolean",
+              "value": true
+            }
+          }
+        ]
+      },
+      "persistentStateRevision": 0,
+      "nextSessionIndex": 1,
+      "activeSessionIndexes": [
+        0
+      ],
+      "sessions": [
+        {
+          "sessionIndex": 0,
+          "entryPointId": "entry",
+          "status": "awaitingChoice",
+          "currentEventId": "root",
+          "availableChoiceIds": [
+            "safe",
+            "fail",
+            "bad_branch",
+            "short",
+            "bump",
+            "finish"
+          ],
+          "state": {
+            "formatId": "open_story.conformance_state",
+            "formatVersion": 1,
+            "mode": "explicit",
+            "values": [
+              {
+                "variableId": "score",
+                "state": "set",
+                "value": {
+                  "type": "integer",
+                  "value": 0
+                }
+              },
+              {
+                "variableId": "flag",
+                "state": "set",
+                "value": {
+                  "type": "boolean",
+                  "value": true
+                }
+              }
+            ]
+          },
+          "history": {
+            "formatId": "open_story.conformance_history",
+            "formatVersion": 1,
+            "steps": [
+              {
+                "kind": "eventEntered",
+                "eventId": "root"
+              }
+            ]
+          },
+          "nextRequestOrdinal": 1,
+          "pendingRequest": null
+        }
+      ]
+    },
+    {
+      "afterInputIndex": 6,
+      "outcome": "committed",
+      "error": null,
+      "checkpointUnchanged": false,
+      "persistentState": {
+        "formatId": "open_story.conformance_state",
+        "formatVersion": 1,
+        "mode": "explicit",
+        "values": [
+          {
+            "variableId": "score",
+            "state": "set",
+            "value": {
+              "type": "integer",
+              "value": 11
+            }
+          },
+          {
+            "variableId": "flag",
+            "state": "set",
+            "value": {
+              "type": "boolean",
+              "value": true
+            }
+          }
+        ]
+      },
+      "persistentStateRevision": 1,
+      "nextSessionIndex": 1,
+      "activeSessionIndexes": [
+        0
+      ],
+      "sessions": [
+        {
+          "sessionIndex": 0,
+          "entryPointId": "entry",
+          "status": "awaitingContinue",
+          "currentEventId": "done_a",
+          "availableChoiceIds": [],
+          "state": {
+            "formatId": "open_story.conformance_state",
+            "formatVersion": 1,
+            "mode": "explicit",
+            "values": [
+              {
+                "variableId": "score",
+                "state": "set",
+                "value": {
+                  "type": "integer",
+                  "value": 11
+                }
+              },
+              {
+                "variableId": "flag",
+                "state": "set",
+                "value": {
+                  "type": "boolean",
+                  "value": true
+                }
+              }
+            ]
+          },
+          "history": {
+            "formatId": "open_story.conformance_history",
+            "formatVersion": 1,
+            "steps": [
+              {
+                "kind": "eventEntered",
+                "eventId": "root"
+              },
+              {
+                "kind": "choiceSelected",
+                "eventId": "root",
+                "choiceId": "safe"
+              },
+              {
+                "kind": "eventEntered",
+                "eventId": "done_a"
+              }
+            ]
+          },
+          "nextRequestOrdinal": 1,
+          "pendingRequest": null
+        }
+      ]
+    },
+    {
+      "afterInputIndex": 7,
+      "outcome": "rejected",
+      "error": "operationRejected",
+      "checkpointUnchanged": true,
+      "persistentState": {
+        "formatId": "open_story.conformance_state",
+        "formatVersion": 1,
+        "mode": "explicit",
+        "values": [
+          {
+            "variableId": "score",
+            "state": "set",
+            "value": {
+              "type": "integer",
+              "value": 11
+            }
+          },
+          {
+            "variableId": "flag",
+            "state": "set",
+            "value": {
+              "type": "boolean",
+              "value": true
+            }
+          }
+        ]
+      },
+      "persistentStateRevision": 1,
+      "nextSessionIndex": 1,
+      "activeSessionIndexes": [
+        0
+      ],
+      "sessions": [
+        {
+          "sessionIndex": 0,
+          "entryPointId": "entry",
+          "status": "awaitingContinue",
+          "currentEventId": "done_a",
+          "availableChoiceIds": [],
+          "state": {
+            "formatId": "open_story.conformance_state",
+            "formatVersion": 1,
+            "mode": "explicit",
+            "values": [
+              {
+                "variableId": "score",
+                "state": "set",
+                "value": {
+                  "type": "integer",
+                  "value": 11
+                }
+              },
+              {
+                "variableId": "flag",
+                "state": "set",
+                "value": {
+                  "type": "boolean",
+                  "value": true
+                }
+              }
+            ]
+          },
+          "history": {
+            "formatId": "open_story.conformance_history",
+            "formatVersion": 1,
+            "steps": [
+              {
+                "kind": "eventEntered",
+                "eventId": "root"
+              },
+              {
+                "kind": "choiceSelected",
+                "eventId": "root",
+                "choiceId": "safe"
+              },
+              {
+                "kind": "eventEntered",
+                "eventId": "done_a"
+              }
+            ]
+          },
+          "nextRequestOrdinal": 1,
+          "pendingRequest": null
+        }
+      ]
+    },
+    {
+      "afterInputIndex": 8,
+      "outcome": "committed",
+      "error": null,
+      "checkpointUnchanged": false,
+      "persistentState": {
+        "formatId": "open_story.conformance_state",
+        "formatVersion": 1,
+        "mode": "explicit",
+        "values": [
+          {
+            "variableId": "score",
+            "state": "set",
+            "value": {
+              "type": "integer",
+              "value": 11
+            }
+          },
+          {
+            "variableId": "flag",
+            "state": "set",
+            "value": {
+              "type": "boolean",
+              "value": true
+            }
+          }
+        ]
+      },
+      "persistentStateRevision": 1,
+      "nextSessionIndex": 1,
+      "activeSessionIndexes": [],
+      "sessions": [
+        {
+          "sessionIndex": 0,
+          "entryPointId": "entry",
+          "status": "terminated",
+          "currentEventId": "done_a",
+          "availableChoiceIds": [],
+          "state": {
+            "formatId": "open_story.conformance_state",
+            "formatVersion": 1,
+            "mode": "explicit",
+            "values": [
+              {
+                "variableId": "score",
+                "state": "set",
+                "value": {
+                  "type": "integer",
+                  "value": 11
+                }
+              },
+              {
+                "variableId": "flag",
+                "state": "set",
+                "value": {
+                  "type": "boolean",
+                  "value": true
+                }
+              }
+            ]
+          },
+          "history": {
+            "formatId": "open_story.conformance_history",
+            "formatVersion": 1,
+            "steps": [
+              {
+                "kind": "eventEntered",
+                "eventId": "root"
+              },
+              {
+                "kind": "choiceSelected",
+                "eventId": "root",
+                "choiceId": "safe"
+              },
+              {
+                "kind": "eventEntered",
+                "eventId": "done_a"
+              },
+              {
+                "kind": "eventContinued",
+                "eventId": "done_a"
+              }
+            ]
+          },
+          "nextRequestOrdinal": 1,
+          "pendingRequest": null
+        }
+      ]
+    }
+  ]
+}

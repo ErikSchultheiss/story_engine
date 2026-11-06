@@ -1,6 +1,6 @@
 name: story_engine
 description: A pure-Dart runtime foundation for declarative interactive narrative and event systems.
-version: 0.1.0-alpha.1
+version: 0.9.0
 repository: https://github.com/ErikSchultheiss/story_engine
 topics:
   - interactive-fiction
@@ -10,6 +10,9 @@ topics:
 
 environment:
   sdk: '>=3.11.0 <4.0.0'
+
+dependencies:
+  crypto: ^3.0.7
 
 dev_dependencies:
   lints: ^6.1.0

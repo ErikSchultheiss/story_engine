@@ -1,0 +1,58 @@
+{
+  "formatId": "open_story.conformance_report",
+  "formatVersion": 1,
+  "profile": "runtime-core-v1",
+  "fixtureSetId": "runtime-core-v1-foundation",
+  "implementation": {
+    "name": "example-runtime",
+    "version": "0.0.0",
+    "language": "example",
+    "runtimeSemantics": {
+      "coreRevision": 1
+    },
+    "randomProfiles": [
+      {
+        "algorithmId": "story_engine.lcg32",
+        "algorithmVersion": 1
+      }
+    ]
+  },
+  "summary": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0
+  },
+  "results": [
+    {
+      "caseId": "lantern-mystery/canonical-good",
+      "status": "pass",
+      "failures": []
+    },
+    {
+      "caseId": "lantern-mystery/immediate-neutral",
+      "status": "pass",
+      "failures": []
+    },
+    {
+      "caseId": "lantern-mystery/weighted-safe",
+      "status": "pass",
+      "failures": []
+    },
+    {
+      "caseId": "lantern-mystery/weighted-collapse",
+      "status": "pass",
+      "failures": []
+    },
+    {
+      "caseId": "lantern-mystery/cold-route",
+      "status": "pass",
+      "failures": []
+    },
+    {
+      "caseId": "lantern-mystery/low-trust-fallback",
+      "status": "pass",
+      "failures": []
+    }
+  ]
+}

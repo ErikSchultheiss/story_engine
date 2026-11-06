@@ -9,6 +9,12 @@ void main() {
       final documents = <String, String>{
         'README.md': File('README.md').readAsStringSync(),
         'doc/QUICK_START.md': File('doc/QUICK_START.md').readAsStringSync(),
+        'doc/INTEGRATION_PATH.md': File(
+          'doc/INTEGRATION_PATH.md',
+        ).readAsStringSync(),
+        'doc/ABSTRACTION_GUIDE.md': File(
+          'doc/ABSTRACTION_GUIDE.md',
+        ).readAsStringSync(),
         'doc/API_GUIDE.md': File('doc/API_GUIDE.md').readAsStringSync(),
       };
 
@@ -33,6 +39,8 @@ void main() {
 
       expect(readme, contains('## Quick start'));
       expect(readme, contains('doc/QUICK_START.md'));
+      expect(readme, contains('doc/INTEGRATION_PATH.md'));
+      expect(readme, contains('doc/ABSTRACTION_GUIDE.md'));
       expect(readme, contains('doc/API_GUIDE.md'));
       expect(readme, contains('doc/STORY_FORMAT_V1.md'));
       expect(readme, contains('## Save and restore'));
@@ -68,7 +76,7 @@ void main() {
           match.group(1)!,
       };
 
-      expect(barrelSymbols, hasLength(98));
+      expect(barrelSymbols, hasLength(277));
       expect(indexedSymbols, barrelSymbols);
     });
 
@@ -90,7 +98,7 @@ void main() {
 
         for (final symbol in symbols) {
           final declaration = RegExp(
-            '(?:^|\\n)(?:///[^\\n]*\\n)+(?:abstract final |sealed |final |abstract )?'
+            '(?:^|\\n)(?:///[^\\n]*\\n)+(?:abstract final |abstract interface |sealed |final |abstract )?'
             '(?:class|enum|typedef)\\s+${RegExp.escape(symbol)}\\b',
             multiLine: true,
           );

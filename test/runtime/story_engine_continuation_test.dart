@@ -242,10 +242,7 @@ void main() {
       );
       final engine = StoryEngine(project: project, randomSeed: 6);
 
-      expect(
-        engine.start,
-        throwsA(isA<StoryEngineConfigurationException>()),
-      );
+      expect(engine.start, throwsA(isA<StoryEngineConfigurationException>()));
       expect(engine.status, StoryEngineStatus.notStarted);
     });
   });

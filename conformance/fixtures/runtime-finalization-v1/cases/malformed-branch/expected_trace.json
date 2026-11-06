@@ -1,0 +1,155 @@
+{
+  "formatId": "open_story.conformance_hardening_expected_trace",
+  "formatVersion": 1,
+  "observations": [
+    {
+      "afterInputIndex": 0,
+      "outcome": "committed",
+      "error": null,
+      "checkpointUnchanged": false,
+      "status": "awaitingChoice",
+      "currentEventId": "root",
+      "availableChoiceIds": [
+        "safe",
+        "fail",
+        "bad_branch",
+        "short",
+        "bump",
+        "finish"
+      ],
+      "state": {
+        "formatId": "open_story.conformance_state",
+        "formatVersion": 1,
+        "mode": "explicit",
+        "values": [
+          {
+            "variableId": "score",
+            "state": "set",
+            "value": {
+              "type": "integer",
+              "value": 0
+            }
+          },
+          {
+            "variableId": "flag",
+            "state": "set",
+            "value": {
+              "type": "boolean",
+              "value": true
+            }
+          }
+        ]
+      },
+      "history": {
+        "formatId": "open_story.conformance_history",
+        "formatVersion": 1,
+        "steps": [
+          {
+            "kind": "eventEntered",
+            "eventId": "root"
+          }
+        ]
+      }
+    },
+    {
+      "afterInputIndex": 1,
+      "outcome": "rejected",
+      "error": "executionRejected",
+      "checkpointUnchanged": true,
+      "status": "awaitingChoice",
+      "currentEventId": "root",
+      "availableChoiceIds": [
+        "safe",
+        "fail",
+        "bad_branch",
+        "short",
+        "bump",
+        "finish"
+      ],
+      "state": {
+        "formatId": "open_story.conformance_state",
+        "formatVersion": 1,
+        "mode": "explicit",
+        "values": [
+          {
+            "variableId": "score",
+            "state": "set",
+            "value": {
+              "type": "integer",
+              "value": 0
+            }
+          },
+          {
+            "variableId": "flag",
+            "state": "set",
+            "value": {
+              "type": "boolean",
+              "value": true
+            }
+          }
+        ]
+      },
+      "history": {
+        "formatId": "open_story.conformance_history",
+        "formatVersion": 1,
+        "steps": [
+          {
+            "kind": "eventEntered",
+            "eventId": "root"
+          }
+        ]
+      }
+    },
+    {
+      "afterInputIndex": 2,
+      "outcome": "committed",
+      "error": null,
+      "checkpointUnchanged": false,
+      "status": "awaitingContinue",
+      "currentEventId": "done_b",
+      "availableChoiceIds": [],
+      "state": {
+        "formatId": "open_story.conformance_state",
+        "formatVersion": 1,
+        "mode": "explicit",
+        "values": [
+          {
+            "variableId": "score",
+            "state": "set",
+            "value": {
+              "type": "integer",
+              "value": 21
+            }
+          },
+          {
+            "variableId": "flag",
+            "state": "set",
+            "value": {
+              "type": "boolean",
+              "value": true
+            }
+          }
+        ]
+      },
+      "history": {
+        "formatId": "open_story.conformance_history",
+        "formatVersion": 1,
+        "steps": [
+          {
+            "kind": "eventEntered",
+            "eventId": "root"
+          },
+          {
+            "kind": "choiceSelected",
+            "eventId": "root",
+            "choiceId": "safe"
+          },
+          {
+            "kind": "eventEntered",
+            "eventId": "done_b"
+          }
+        ]
+      }
+    }
+  ]
+}

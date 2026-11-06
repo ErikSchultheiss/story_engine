@@ -163,11 +163,7 @@ final class LanternMysteryFixture {
             true,
           ),
           StoryNotCondition(
-            _boolComparison(
-              hasLanternId,
-              StoryComparisonOperator.equal,
-              true,
-            ),
+            _boolComparison(hasLanternId, StoryComparisonOperator.equal, true),
           ),
         ]),
         effects: [
@@ -225,9 +221,7 @@ final class LanternMysteryFixture {
     choices: [
       StoryChoice(
         id: correctCodenameId,
-        presentation: const StoryChoicePresentation(
-          text: StoryText('“Rook.”'),
-        ),
+        presentation: const StoryChoicePresentation(text: StoryText('“Rook.”')),
         availabilityCondition: _stringComparison(
           codenameId,
           StoryComparisonOperator.equal,
@@ -255,9 +249,7 @@ final class LanternMysteryFixture {
       ),
       StoryChoice(
         id: fakeCodenameId,
-        presentation: const StoryChoicePresentation(
-          text: StoryText('“Fox.”'),
-        ),
+        presentation: const StoryChoicePresentation(text: StoryText('“Fox.”')),
         effects: [
           StorySetVariableEffect(
             variableId: codenameId,
@@ -320,71 +312,66 @@ final class LanternMysteryFixture {
     ],
   );
 
-  static StoryEvent _corridor(StoryCondition archiveAccessCondition) =>
-      StoryEvent(
-        id: corridorId,
-        alias: StoryAlias('corridor'),
-        presentation: StoryEventPresentation(
-          title: const StoryText('Main Corridor'),
-          body: const StoryText(
-            'The corridor splits between a cellar stairway and a reinforced '
-            'archive door. An alarm control box hangs beside the wall.',
-          ),
+  static StoryEvent _corridor(
+    StoryCondition archiveAccessCondition,
+  ) => StoryEvent(
+    id: corridorId,
+    alias: StoryAlias('corridor'),
+    presentation: StoryEventPresentation(
+      title: const StoryText('Main Corridor'),
+      body: const StoryText(
+        'The corridor splits between a cellar stairway and a reinforced '
+        'archive door. An alarm control box hangs beside the wall.',
+      ),
+    ),
+    choices: [
+      StoryChoice(
+        id: enterCellarId,
+        presentation: const StoryChoicePresentation(
+          text: StoryText('Enter the cellar'),
         ),
-        choices: [
-          StoryChoice(
-            id: enterCellarId,
-            presentation: const StoryChoicePresentation(
-              text: StoryText('Enter the cellar'),
-            ),
-            availabilityCondition: StoryAllCondition([
-              _boolComparison(
-                hasLanternId,
-                StoryComparisonOperator.equal,
-                true,
-              ),
-              StoryNotCondition(
-                _boolComparison(
-                  alarmTriggeredId,
-                  StoryComparisonOperator.equal,
-                  true,
-                ),
-              ),
-            ]),
-            transition: StoryEventTransition(destinationEventId: cellarId),
-          ),
-          StoryChoice(
-            id: resetAlarmId,
-            presentation: const StoryChoicePresentation(
-              text: StoryText('Reset the alarm wiring'),
-            ),
-            availabilityCondition: _boolComparison(
+        availabilityCondition: StoryAllCondition([
+          _boolComparison(hasLanternId, StoryComparisonOperator.equal, true),
+          StoryNotCondition(
+            _boolComparison(
               alarmTriggeredId,
               StoryComparisonOperator.equal,
               true,
             ),
-            effects: [StoryUnsetVariableEffect(variableId: alarmTriggeredId)],
-            transition: StoryEventTransition(destinationEventId: corridorId),
           ),
-          StoryChoice(
-            id: openArchiveId,
-            presentation: const StoryChoicePresentation(
-              text: StoryText('Open the archive door'),
-            ),
-            availabilityCondition: archiveAccessCondition,
-            transition: StoryEventTransition(destinationEventId: archiveId),
-          ),
-          StoryChoice(
-            id: leaveCorridorId,
-            presentation: const StoryChoicePresentation(
-              text: StoryText('Give up and leave'),
-            ),
-            transition: StoryEventTransition(
-              destinationEventId: neutralOutcomeId,
-            ),
-          ),
-        ],
-      );
+        ]),
+        transition: StoryEventTransition(destinationEventId: cellarId),
+      ),
+      StoryChoice(
+        id: resetAlarmId,
+        presentation: const StoryChoicePresentation(
+          text: StoryText('Reset the alarm wiring'),
+        ),
+        availabilityCondition: _boolComparison(
+          alarmTriggeredId,
+          StoryComparisonOperator.equal,
+          true,
+        ),
+        effects: [StoryUnsetVariableEffect(variableId: alarmTriggeredId)],
+        transition: StoryEventTransition(destinationEventId: corridorId),
+      ),
+      StoryChoice(
+        id: openArchiveId,
+        presentation: const StoryChoicePresentation(
+          text: StoryText('Open the archive door'),
+        ),
+        availabilityCondition: archiveAccessCondition,
+        transition: StoryEventTransition(destinationEventId: archiveId),
+      ),
+      StoryChoice(
+        id: leaveCorridorId,
+        presentation: const StoryChoicePresentation(
+          text: StoryText('Give up and leave'),
+        ),
+        transition: StoryEventTransition(destinationEventId: neutralOutcomeId),
+      ),
+    ],
+  );
 
   static StoryEvent _coldChamber() => StoryEvent(
     id: coldChamberId,
@@ -453,9 +440,7 @@ final class LanternMysteryFixture {
           StoryComparisonOperator.equal,
           true,
         ),
-        transition: StoryEventTransition(
-          destinationEventId: unstablePassageId,
-        ),
+        transition: StoryEventTransition(destinationEventId: unstablePassageId),
       ),
       StoryChoice(
         id: returnToCorridorFromCellarId,
@@ -618,18 +603,10 @@ final class LanternMysteryFixture {
         StoryComparisonOperator.greaterThanOrEqual,
         60,
       ),
-      _stringComparison(
-        codenameId,
-        StoryComparisonOperator.equal,
-        'Rook',
-      ),
+      _stringComparison(codenameId, StoryComparisonOperator.equal, 'Rook'),
     ]),
     StoryNotCondition(
-      _boolComparison(
-        alarmTriggeredId,
-        StoryComparisonOperator.equal,
-        true,
-      ),
+      _boolComparison(alarmTriggeredId, StoryComparisonOperator.equal, true),
     ),
   ]);
 

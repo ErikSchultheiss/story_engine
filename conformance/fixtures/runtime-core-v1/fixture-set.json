@@ -1,0 +1,111 @@
+{
+  "formatId": "open_story.conformance_fixture_set",
+  "formatVersion": 1,
+  "fixtureSetId": "runtime-core-v1-foundation",
+  "profile": "runtime-core-v1",
+  "contracts": {
+    "storyFormat": {
+      "formatId": "story_engine.story_format",
+      "formatVersion": 1
+    },
+    "runtimeSemantics": {
+      "coreRevision": 1
+    },
+    "deterministicRandom": {
+      "algorithmId": "story_engine.lcg32",
+      "algorithmVersion": 1
+    }
+  },
+  "cases": [
+    {
+      "caseId": "lantern-mystery/canonical-good",
+      "path": "lantern-mystery/cases/canonical-good",
+      "projectPath": "lantern-mystery/project.story",
+      "description": "Effects, conditions, repeated event entry, choice history, continuation, and explicit termination.",
+      "features": [
+        "interactive",
+        "conditions",
+        "effects",
+        "conditional-transition",
+        "continuation",
+        "termination",
+        "history"
+      ]
+    },
+    {
+      "caseId": "lantern-mystery/immediate-neutral",
+      "path": "lantern-mystery/cases/immediate-neutral",
+      "projectPath": "lantern-mystery/project.story",
+      "description": "Project-default initial state preserves an explicitly unset variable through termination.",
+      "features": [
+        "interactive",
+        "unset-state",
+        "continuation",
+        "termination",
+        "history"
+      ]
+    },
+    {
+      "caseId": "lantern-mystery/weighted-safe",
+      "path": "lantern-mystery/cases/weighted-safe",
+      "projectPath": "lantern-mystery/project.story",
+      "description": "Seed 0 selects the safe branch of an automatic weighted transition and continues to a neutral ending.",
+      "features": [
+        "interactive",
+        "automatic",
+        "weighted-transition",
+        "deterministic-random",
+        "continuation",
+        "termination",
+        "history"
+      ]
+    },
+    {
+      "caseId": "lantern-mystery/weighted-collapse",
+      "path": "lantern-mystery/cases/weighted-collapse",
+      "projectPath": "lantern-mystery/project.story",
+      "description": "Seed 1 selects the collapse branch of the same automatic weighted transition.",
+      "features": [
+        "interactive",
+        "automatic",
+        "weighted-transition",
+        "deterministic-random",
+        "continuation",
+        "termination",
+        "history"
+      ]
+    },
+    {
+      "caseId": "lantern-mystery/cold-route",
+      "path": "lantern-mystery/cases/cold-route",
+      "projectPath": "lantern-mystery/project.story",
+      "description": "Continuation entry effects, Number arithmetic, repeated cellar entry, automatic weighted flow, and conditional choice availability.",
+      "features": [
+        "interactive",
+        "continuation",
+        "number-effects",
+        "conditions",
+        "automatic",
+        "weighted-transition",
+        "deterministic-random",
+        "history"
+      ]
+    },
+    {
+      "caseId": "lantern-mystery/low-trust-fallback",
+      "path": "lantern-mystery/cases/low-trust-fallback",
+      "projectPath": "lantern-mystery/project.story",
+      "description": "An explicit initial state changes a post-effect conditional transition and preserves one variable as unset.",
+      "features": [
+        "explicit-initial-state",
+        "unset-state",
+        "entry-effects",
+        "choice-effects",
+        "conditional-transition",
+        "continuation",
+        "termination",
+        "history"
+      ]
+    }
+  ]
+}

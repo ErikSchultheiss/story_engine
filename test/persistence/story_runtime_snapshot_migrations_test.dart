@@ -30,10 +30,7 @@ void main() {
         steps: const [_Migration1To2()],
       );
 
-      expect(
-        pipeline.canMigrate(fromVersion: 1, toVersion: 3),
-        isFalse,
-      );
+      expect(pipeline.canMigrate(fromVersion: 1, toVersion: 3), isFalse);
       expect(
         () => pipeline.migrate(
           document: const {'formatVersion': 1},
@@ -72,11 +69,7 @@ final class _Migration1To2 implements StoryRuntimeSnapshotMigrationStep {
 
   @override
   Map<String, Object?> migrate(Map<String, Object?> document) =>
-      <String, Object?>{
-        ...document,
-        'formatVersion': 2,
-        'migrated1': true,
-      };
+      <String, Object?>{...document, 'formatVersion': 2, 'migrated1': true};
 }
 
 final class _Migration2To3 implements StoryRuntimeSnapshotMigrationStep {
@@ -90,11 +83,7 @@ final class _Migration2To3 implements StoryRuntimeSnapshotMigrationStep {
 
   @override
   Map<String, Object?> migrate(Map<String, Object?> document) =>
-      <String, Object?>{
-        ...document,
-        'formatVersion': 3,
-        'migrated2': true,
-      };
+      <String, Object?>{...document, 'formatVersion': 3, 'migrated2': true};
 }
 
 final class _Migration1To3 implements StoryRuntimeSnapshotMigrationStep {

@@ -42,10 +42,7 @@ void main() {
         () => history.steps.add(StoryEventEnteredStep(eventId: cellarId)),
         throwsUnsupportedError,
       );
-      expect(
-        () => history.eventRoute.add(cellarId),
-        throwsUnsupportedError,
-      );
+      expect(() => history.eventRoute.add(cellarId), throwsUnsupportedError);
       expect(
         () => history.visitedEventIds.add(cellarId),
         throwsUnsupportedError,

@@ -28,10 +28,8 @@ void main() {
         expect(formatCodec.encodeProject(decodedProject), bundle);
         expect(bundle.files, hasLength(1001));
 
-        var engine = StoryEngine(
-          project: decodedProject,
-          randomSeed: 0x6a17,
-        )..start();
+        var engine = StoryEngine(project: decodedProject, randomSeed: 0x6a17)
+          ..start();
 
         const checkpoints = <int>[200, 500, 800];
         var nextCheckpoint = 0;
@@ -86,76 +84,79 @@ void main() {
       },
     );
 
-    test('16 seeded 250-event projects survive the complete public workflow', () {
-      const formatCodec = StoryFormatCodec();
-      final snapshotCodec = StoryRuntimeSnapshotCodec();
+    test(
+      '16 seeded 250-event projects survive the complete public workflow',
+      () {
+        const formatCodec = StoryFormatCodec();
+        final snapshotCodec = StoryRuntimeSnapshotCodec();
 
-      for (var seed = 0; seed < 16; seed++) {
-        final fixture = SyntheticStoryProjectGenerator.randomized(
-          seed: seed,
-          eventCount: 250,
-          variableCount: 80,
-        );
-        final report = StoryValidator.validate(fixture.project);
-        expect(report.errors, isEmpty, reason: 'generator seed $seed');
+        for (var seed = 0; seed < 16; seed++) {
+          final fixture = SyntheticStoryProjectGenerator.randomized(
+            seed: seed,
+            eventCount: 250,
+            variableCount: 80,
+          );
+          final report = StoryValidator.validate(fixture.project);
+          expect(report.errors, isEmpty, reason: 'generator seed $seed');
 
-        final bundle = formatCodec.encodeProject(fixture.project);
-        final decodedProject = formatCodec.decodeProject(bundle);
-        expect(
-          formatCodec.encodeProject(decodedProject),
-          bundle,
-          reason: 'generator seed $seed',
-        );
+          final bundle = formatCodec.encodeProject(fixture.project);
+          final decodedProject = formatCodec.decodeProject(bundle);
+          expect(
+            formatCodec.encodeProject(decodedProject),
+            bundle,
+            reason: 'generator seed $seed',
+          );
 
-        var engine = StoryEngine(
-          project: decodedProject,
-          randomSeed: (seed * 7919 + 17) & 0xffffffff,
-        )..start();
-        var selectedChoices = 0;
-        var restoredOnce = false;
+          var engine = StoryEngine(
+            project: decodedProject,
+            randomSeed: (seed * 7919 + 17) & 0xffffffff,
+          )..start();
+          var selectedChoices = 0;
+          var restoredOnce = false;
 
-        while (engine.status != StoryEngineStatus.terminated) {
-          switch (engine.status) {
-            case StoryEngineStatus.awaitingChoice:
-              final choices = engine.availableChoices;
-              expect(choices, isNotEmpty, reason: 'generator seed $seed');
-              engine.choose(choices.first.id);
-              selectedChoices++;
+          while (engine.status != StoryEngineStatus.terminated) {
+            switch (engine.status) {
+              case StoryEngineStatus.awaitingChoice:
+                final choices = engine.availableChoices;
+                expect(choices, isNotEmpty, reason: 'generator seed $seed');
+                engine.choose(choices.first.id);
+                selectedChoices++;
 
-              if (!restoredOnce && selectedChoices >= 75) {
-                final restored = _roundTrip(
-                  project: decodedProject,
-                  engine: engine,
-                  codec: snapshotCodec,
+                if (!restoredOnce && selectedChoices >= 75) {
+                  final restored = _roundTrip(
+                    project: decodedProject,
+                    engine: engine,
+                    codec: snapshotCodec,
+                  );
+                  _expectCommittedRuntimeParity(
+                    restored,
+                    engine,
+                    reason: 'generator seed $seed',
+                  );
+                  engine = restored;
+                  restoredOnce = true;
+                }
+                break;
+
+              case StoryEngineStatus.awaitingContinue:
+                engine.continueStory();
+                break;
+
+              case StoryEngineStatus.notStarted:
+                throw StateError(
+                  'Seed $seed unexpectedly returned to notStarted.',
                 );
-                _expectCommittedRuntimeParity(
-                  restored,
-                  engine,
-                  reason: 'generator seed $seed',
-                );
-                engine = restored;
-                restoredOnce = true;
-              }
-              break;
 
-            case StoryEngineStatus.awaitingContinue:
-              engine.continueStory();
-              break;
-
-            case StoryEngineStatus.notStarted:
-              throw StateError(
-                'Seed $seed unexpectedly returned to notStarted.',
-              );
-
-            case StoryEngineStatus.terminated:
-              break;
+              case StoryEngineStatus.terminated:
+                break;
+            }
           }
-        }
 
-        expect(restoredOnce, isTrue, reason: 'generator seed $seed');
-        expect(engine.history.eventRoute, isNotEmpty, reason: 'seed $seed');
-      }
-    });
+          expect(restoredOnce, isTrue, reason: 'generator seed $seed');
+          expect(engine.history.eventRoute, isNotEmpty, reason: 'seed $seed');
+        }
+      },
+    );
 
     test('every representable fault remains detectable at 500-event scale', () {
       for (var index = 0; index < SyntheticStoryFault.values.length; index++) {
@@ -177,7 +178,8 @@ void main() {
                 diagnostic.location.pathString == metadata.targetPath,
           ),
           isTrue,
-          reason: '500-event ${fault.token} fixture should preserve its '
+          reason:
+              '500-event ${fault.token} fixture should preserve its '
               'expected diagnostic identity/location.',
         );
       }
@@ -185,40 +187,44 @@ void main() {
   });
 
   group('Stage 6G performance-baseline contract', () {
-    test('benchmark runner stays opt-in and free of hard timing assertions', () {
-      final source = File(
-        'benchmark/performance_baseline.dart',
-      ).readAsStringSync();
+    test(
+      'benchmark runner stays opt-in and free of hard timing assertions',
+      () {
+        final source = File(
+          'benchmark/performance_baseline.dart',
+        ).readAsStringSync();
 
-      expect(source, contains('Stopwatch'));
-      expect(source, contains('--samples='));
-      expect(source, contains('--stress-events='));
-      expect(source, contains('StoryValidator.validate'));
-      expect(source, contains('encodeProject'));
-      expect(source, contains('decodeProject'));
-      expect(source, contains('StoryRuntimeSnapshotCodec'));
-      expect(source, isNot(contains('package:test/test.dart')));
-      expect(source, isNot(contains('expect(')));
-    });
+        expect(source, contains('Stopwatch'));
+        expect(source, contains('--samples='));
+        expect(source, contains('--stress-events='));
+        expect(source, contains('StoryValidator.validate'));
+        expect(source, contains('encodeProject'));
+        expect(source, contains('decodeProject'));
+        expect(source, contains('StoryRuntimeSnapshotCodec'));
+        expect(source, isNot(contains('package:test/test.dart')));
+        expect(source, isNot(contains('expect(')));
+      },
+    );
 
     test('documented structural baseline remains fixed', () {
-      const expected = <SyntheticStoryProfile, ({int events, int choices, int variables})>{
-        SyntheticStoryProfile.small: (
-          events: 100,
-          choices: 389,
-          variables: 25,
-        ),
-        SyntheticStoryProfile.medium: (
-          events: 500,
-          choices: 1949,
-          variables: 100,
-        ),
-        SyntheticStoryProfile.large: (
-          events: 1000,
-          choices: 4876,
-          variables: 250,
-        ),
-      };
+      const expected =
+          <SyntheticStoryProfile, ({int events, int choices, int variables})>{
+            SyntheticStoryProfile.small: (
+              events: 100,
+              choices: 389,
+              variables: 25,
+            ),
+            SyntheticStoryProfile.medium: (
+              events: 500,
+              choices: 1949,
+              variables: 100,
+            ),
+            SyntheticStoryProfile.large: (
+              events: 1000,
+              choices: 4876,
+              variables: 250,
+            ),
+          };
 
       for (final entry in expected.entries) {
         final fixture = SyntheticStoryProjectGenerator.structured(entry.key);

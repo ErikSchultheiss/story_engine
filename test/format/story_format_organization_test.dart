@@ -6,12 +6,8 @@ void main() {
     test('groups preserve authored event and child order', () {
       final eventB = StoryEventId('event_group_b');
       final eventA = StoryEventId('event_group_a');
-      final childB = StoryFormatGroup(
-        id: StoryFormatGroupId('group_child_b'),
-      );
-      final childA = StoryFormatGroup(
-        id: StoryFormatGroupId('group_child_a'),
-      );
+      final childB = StoryFormatGroup(id: StoryFormatGroupId('group_child_b'));
+      final childA = StoryFormatGroup(id: StoryFormatGroupId('group_child_a'));
 
       final group = StoryFormatGroup(
         id: StoryFormatGroupId('group_root'),

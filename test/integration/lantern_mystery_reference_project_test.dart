@@ -13,10 +13,7 @@ void main() {
       expect(project.entryEventId, LanternMysteryFixture.foyerId);
       expect(project.stateSchema.variables, hasLength(6));
       expect(project.events, hasLength(12));
-      expect(
-        project.events.expand((event) => event.choices),
-        hasLength(22),
-      );
+      expect(project.events.expand((event) => event.choices), hasLength(22));
 
       for (final event in project.events) {
         if (event.choices.isNotEmpty || event.continuationTransition != null) {
@@ -97,7 +94,9 @@ void main() {
           LanternMysteryFixture.caretakerTrustId: StoryIntegerValue(0),
           LanternMysteryFixture.temperatureId: StoryNumberValue(18.5),
           LanternMysteryFixture.codenameId: const StoryStringValue('Rook'),
-          LanternMysteryFixture.knowsSafeRouteId: const StoryBooleanValue(false),
+          LanternMysteryFixture.knowsSafeRouteId: const StoryBooleanValue(
+            false,
+          ),
         },
       );
       final engine = StoryEngine(
@@ -287,20 +286,23 @@ void main() {
       expect(engine.status, StoryEngineStatus.terminated);
     });
 
-    test('scenario J: safe weighted route without route knowledge is neutral', () {
-      final engine = _startedEngine(seed: LanternMysteryFixture.safeSeed);
+    test(
+      'scenario J: safe weighted route without route knowledge is neutral',
+      () {
+        final engine = _startedEngine(seed: LanternMysteryFixture.safeSeed);
 
-      _reachUnstablePassage(engine);
+        _reachUnstablePassage(engine);
 
-      expect(engine.currentEvent?.id, LanternMysteryFixture.oldTunnelId);
-      expect(
-        _availableIds(engine),
-        equals({LanternMysteryFixture.takeNearestExitId}),
-      );
+        expect(engine.currentEvent?.id, LanternMysteryFixture.oldTunnelId);
+        expect(
+          _availableIds(engine),
+          equals({LanternMysteryFixture.takeNearestExitId}),
+        );
 
-      engine.choose(LanternMysteryFixture.takeNearestExitId);
-      expect(engine.currentEvent?.id, LanternMysteryFixture.neutralOutcomeId);
-    });
+        engine.choose(LanternMysteryFixture.takeNearestExitId);
+        expect(engine.currentEvent?.id, LanternMysteryFixture.neutralOutcomeId);
+      },
+    );
 
     test('Stage 2D records the exact canonical good-route history', () {
       final engine = _startedEngine();
@@ -313,31 +315,25 @@ void main() {
       engine.choose(LanternMysteryFixture.followMarkedSafeRouteId);
       engine.continueStory();
 
-      expect(
-        engine.history.eventRoute,
-        [
-          LanternMysteryFixture.foyerId,
-          LanternMysteryFixture.foyerId,
-          LanternMysteryFixture.foyerId,
-          LanternMysteryFixture.caretakerId,
-          LanternMysteryFixture.libraryId,
-          LanternMysteryFixture.corridorId,
-          LanternMysteryFixture.archiveId,
-          LanternMysteryFixture.goodOutcomeId,
-        ],
-      );
-      expect(
-        engine.history.selectedChoiceIds,
-        [
-          LanternMysteryFixture.inspectAlarmId,
-          LanternMysteryFixture.openServiceDrawerId,
-          LanternMysteryFixture.visitCaretakerId,
-          LanternMysteryFixture.correctCodenameId,
-          LanternMysteryFixture.readMaintenanceNoteId,
-          LanternMysteryFixture.openArchiveId,
-          LanternMysteryFixture.followMarkedSafeRouteId,
-        ],
-      );
+      expect(engine.history.eventRoute, [
+        LanternMysteryFixture.foyerId,
+        LanternMysteryFixture.foyerId,
+        LanternMysteryFixture.foyerId,
+        LanternMysteryFixture.caretakerId,
+        LanternMysteryFixture.libraryId,
+        LanternMysteryFixture.corridorId,
+        LanternMysteryFixture.archiveId,
+        LanternMysteryFixture.goodOutcomeId,
+      ]);
+      expect(engine.history.selectedChoiceIds, [
+        LanternMysteryFixture.inspectAlarmId,
+        LanternMysteryFixture.openServiceDrawerId,
+        LanternMysteryFixture.visitCaretakerId,
+        LanternMysteryFixture.correctCodenameId,
+        LanternMysteryFixture.readMaintenanceNoteId,
+        LanternMysteryFixture.openArchiveId,
+        LanternMysteryFixture.followMarkedSafeRouteId,
+      ]);
       expect(
         engine.history.eventOccurrenceCount(LanternMysteryFixture.foyerId),
         3,
@@ -350,48 +346,50 @@ void main() {
         engine.history.hasContinuedEvent(LanternMysteryFixture.goodOutcomeId),
         isTrue,
       );
-      expect(
-        engine.history.continuedEventIds,
-        [LanternMysteryFixture.goodOutcomeId],
-      );
+      expect(engine.history.continuedEventIds, [
+        LanternMysteryFixture.goodOutcomeId,
+      ]);
     });
 
-    test('history keeps continuation events and synchronous automatic events', () {
-      final engine = _startedEngine(seed: LanternMysteryFixture.safeSeed);
+    test(
+      'history keeps continuation events and synchronous automatic events',
+      () {
+        final engine = _startedEngine(seed: LanternMysteryFixture.safeSeed);
 
-      _obtainLantern(engine);
-      engine.choose(LanternMysteryFixture.visitCaretakerId);
-      engine.choose(LanternMysteryFixture.correctCodenameId);
-      engine.choose(LanternMysteryFixture.takeColdStairwayId);
+        _obtainLantern(engine);
+        engine.choose(LanternMysteryFixture.visitCaretakerId);
+        engine.choose(LanternMysteryFixture.correctCodenameId);
+        engine.choose(LanternMysteryFixture.takeColdStairwayId);
 
-      expect(engine.currentEvent?.id, LanternMysteryFixture.coldChamberId);
-      expect(engine.status, StoryEngineStatus.awaitingContinue);
-      expect(
-        engine.history.eventRoute,
-        containsAllInOrder([
-          LanternMysteryFixture.libraryId,
-          LanternMysteryFixture.coldChamberId,
-        ]),
-      );
+        expect(engine.currentEvent?.id, LanternMysteryFixture.coldChamberId);
+        expect(engine.status, StoryEngineStatus.awaitingContinue);
+        expect(
+          engine.history.eventRoute,
+          containsAllInOrder([
+            LanternMysteryFixture.libraryId,
+            LanternMysteryFixture.coldChamberId,
+          ]),
+        );
 
-      engine.continueStory();
-      expect(engine.currentEvent?.id, LanternMysteryFixture.cellarId);
-      expect(
-        engine.history.continuedEventIds,
-        contains(LanternMysteryFixture.coldChamberId),
-      );
+        engine.continueStory();
+        expect(engine.currentEvent?.id, LanternMysteryFixture.cellarId);
+        expect(
+          engine.history.continuedEventIds,
+          contains(LanternMysteryFixture.coldChamberId),
+        );
 
-      engine.choose(LanternMysteryFixture.enterUnstablePassageId);
+        engine.choose(LanternMysteryFixture.enterUnstablePassageId);
 
-      expect(
-        engine.history.eventRoute,
-        containsAllInOrder([
-          LanternMysteryFixture.cellarId,
-          LanternMysteryFixture.unstablePassageId,
-          LanternMysteryFixture.oldTunnelId,
-        ]),
-      );
-    });
+        expect(
+          engine.history.eventRoute,
+          containsAllInOrder([
+            LanternMysteryFixture.cellarId,
+            LanternMysteryFixture.unstablePassageId,
+            LanternMysteryFixture.oldTunnelId,
+          ]),
+        );
+      },
+    );
 
     test('presented continuation pauses while automatic routing does not', () {
       final project = LanternMysteryFixture.buildProject();

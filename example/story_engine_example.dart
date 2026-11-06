@@ -5,22 +5,14 @@ final _gateId = StoryEventId('forest_gate');
 final _tunnelId = StoryEventId('old_tunnel');
 final _lightLanternId = StoryChoiceId('light_lantern');
 
-/// Runs the complete Pure-Dart public-API walkthrough.
+/// Runs the minimal branching-story save/restore walkthrough.
 ///
 /// [log] exists so the example can be exercised by the package test suite
 /// without changing the normal `dart run` output.
 void runExample({void Function(Object?)? log}) {
   final void Function(Object?) write = log ?? print;
 
-  final authoredProject = buildExampleProject();
-
-  // Story Format is storage-neutral. A real host can map these logical files to
-  // a directory, archive, database, network payload, or another storage layer.
-  const storyFormat = StoryFormatCodec();
-  final bundle = storyFormat.encodeProject(authoredProject);
-  final project = storyFormat.decodeProject(bundle);
-
-  write('Story Format: ${bundle.files.length} logical files loaded.');
+  final project = buildExampleProject();
 
   final validation = StoryValidator.validate(project);
   write('Validation: ${validation.summary}');
@@ -41,19 +33,18 @@ void runExample({void Function(Object?)? log}) {
   write('lantern_lit = ${engine.state?.rawValueOf(_lanternLitId)}');
   _showCurrentEvent(engine, write);
 
+  final snapshot = engine.createSnapshot();
   final snapshotCodec = StoryRuntimeSnapshotCodec();
-  final saveJson = snapshotCodec.encodeJson(engine.createSnapshot());
+  final saveJson = snapshotCodec.encodeJson(snapshot);
   write('Saved runtime snapshot: ${saveJson.length} JSON characters.');
 
-  final decodedSnapshot = snapshotCodec.decodeJson(
-    saveJson,
-    project: project,
-  );
+  final decodedSnapshot = snapshotCodec.decodeJson(saveJson, project: project);
   final restored = StoryEngine.restore(
     project: project,
     snapshot: decodedSnapshot,
   );
   write('Restored status: ${restored.status.name}');
+  write('Restored lantern_lit = ${restored.state?.rawValueOf(_lanternLitId)}');
 
   restored.continueStory();
   write('Finished status: ${restored.status.name}');
@@ -126,10 +117,7 @@ StoryProject buildExampleProject() {
   );
 }
 
-void _showCurrentEvent(
-  StoryEngine engine,
-  void Function(Object?) write,
-) {
+void _showCurrentEvent(StoryEngine engine, void Function(Object?) write) {
   final event = engine.currentEvent;
   if (event == null) {
     write('No current event.');

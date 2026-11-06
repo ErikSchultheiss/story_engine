@@ -20,9 +20,10 @@ generating Android/iOS/desktop runner boilerplate. The Dart/Flutter integration
 itself is platform-neutral; add other Flutter platform runners with the normal
 Flutter tooling if you want to run the sample elsewhere.
 
-Run its widget test with:
+Run its package checks with:
 
 ```text
+flutter analyze
 flutter test
 ```
 
@@ -38,8 +39,9 @@ A published consumer would replace that path dependency with the normal
 
 ## What the example demonstrates
 
-The app follows the same public workflow as the Pure-Dart example, but maps it
-to Flutter widgets:
+The app follows the same **core `StoryEngine` workflow** as the Pure-Dart
+example, but maps it to Flutter widgets. It is deliberately not the package's
+host-driven orchestration example:
 
 1. build/load a `StoryProject` through `StoryFormatCodec`;
 2. validate with `StoryValidator.validate(project)`;
@@ -92,6 +94,9 @@ This example is not an application framework and does not prescribe:
 - custom engine actions/conditions;
 - editor/authoring-tool UI.
 
-Those are host/application decisions or later roadmap stages. The purpose of
-this example is to make the package boundary and basic Flutter integration
-obvious for a downstream Flutter integration.
+Those are separate host/application or advanced engine-integration concerns.
+For host-driven entry points, multi-session state authority, suspendable host
+actions, and aggregate persistence, use the package API Guide and the dedicated
+orchestration contracts rather than expanding this UI sample into a second
+integration architecture. The purpose of this example is to make the package
+boundary and basic Flutter integration obvious for a downstream Flutter host.

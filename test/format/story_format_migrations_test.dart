@@ -38,10 +38,7 @@ void main() {
         steps: const [_Migration1To2()],
       );
 
-      expect(
-        pipeline.canMigrate(fromVersion: 1, toVersion: 3),
-        isFalse,
-      );
+      expect(pipeline.canMigrate(fromVersion: 1, toVersion: 3), isFalse);
       expect(
         () => pipeline.migrate(
           bundle: StoryFormatBundle(
@@ -56,9 +53,7 @@ void main() {
 
     test('rejects non-consecutive and duplicate step registrations', () {
       expect(
-        () => StoryFormatMigrationPipeline(
-          steps: const [_Migration1To3()],
-        ),
+        () => StoryFormatMigrationPipeline(steps: const [_Migration1To3()]),
         throwsArgumentError,
       );
       expect(
@@ -72,14 +67,8 @@ void main() {
     test('built-in pipeline contains no fictional pre-v1 migration', () {
       final pipeline = StoryFormatMigrationPipeline.builtIn();
 
-      expect(
-        pipeline.canMigrate(fromVersion: 1, toVersion: 2),
-        isFalse,
-      );
-      expect(
-        pipeline.canMigrate(fromVersion: 1, toVersion: 1),
-        isTrue,
-      );
+      expect(pipeline.canMigrate(fromVersion: 1, toVersion: 2), isFalse);
+      expect(pipeline.canMigrate(fromVersion: 1, toVersion: 1), isTrue);
     });
   });
 }

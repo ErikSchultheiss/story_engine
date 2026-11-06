@@ -35,24 +35,27 @@ void main() {
       );
     });
 
-    test('missing entry reference survives round-trip for validator repair', () {
-      final missingEntryId = StoryEventId('event_5e_missing_entry');
-      final document = StoryFormatDocument(
-        project: StoryProject(
-          id: StoryProjectId('project_5e_missing_entry'),
-          entryEventId: missingEntryId,
-        ),
-      );
+    test(
+      'missing entry reference survives round-trip for validator repair',
+      () {
+        final missingEntryId = StoryEventId('event_5e_missing_entry');
+        final document = StoryFormatDocument(
+          project: StoryProject(
+            id: StoryProjectId('project_5e_missing_entry'),
+            entryEventId: missingEntryId,
+          ),
+        );
 
-      final decoded = codec.decode(codec.encode(document));
-      final report = StoryValidator.validate(decoded.project);
+        final decoded = codec.decode(codec.encode(document));
+        final report = StoryValidator.validate(decoded.project);
 
-      expect(decoded.project.entryEventId, missingEntryId);
-      expect(
-        report.errors.map((diagnostic) => diagnostic.code),
-        contains(StoryDiagnosticCode.structureEntryEventNotFound),
-      );
-    });
+        expect(decoded.project.entryEventId, missingEntryId);
+        expect(
+          report.errors.map((diagnostic) => diagnostic.code),
+          contains(StoryDiagnosticCode.structureEntryEventNotFound),
+        );
+      },
+    );
 
     test('event with no flow survives round-trip for validator repair', () {
       final eventId = StoryEventId('event_5e_missing_flow');
@@ -109,7 +112,9 @@ void main() {
     test('unresolved semantic references survive for StoryValidator', () {
       final entryId = StoryEventId('event_5e_reference_entry');
       final missingEventId = StoryEventId('event_5e_reference_missing');
-      final missingVariableId = StoryVariableId('variable_5e_reference_missing');
+      final missingVariableId = StoryVariableId(
+        'variable_5e_reference_missing',
+      );
       final document = StoryFormatDocument(
         project: StoryProject(
           id: StoryProjectId('project_5e_references'),
@@ -181,7 +186,9 @@ void main() {
     test('dangling opaque extension targets are preserved losslessly', () {
       final missingEventId = StoryEventId('event_5e_extension_missing');
       final missingChoiceId = StoryChoiceId('choice_5e_extension_missing');
-      final missingVariableId = StoryVariableId('variable_5e_extension_missing');
+      final missingVariableId = StoryVariableId(
+        'variable_5e_extension_missing',
+      );
       final missingGroupId = StoryFormatGroupId('group_5e_extension_missing');
       final missingTagId = StoryFormatTagId('tag_5e_extension_missing');
       final namespace = StoryFormatExtensionNamespace('com.example.future_ui');
@@ -203,10 +210,7 @@ void main() {
       final document = StoryFormatDocument(
         project: StoryProject(id: StoryProjectId('project_5e_extensions')),
         extensions: [
-          attachment(
-            StoryFormatEventExtensionTarget(missingEventId),
-            'event',
-          ),
+          attachment(StoryFormatEventExtensionTarget(missingEventId), 'event'),
           attachment(
             StoryFormatChoiceExtensionTarget(missingChoiceId),
             'choice',
@@ -215,14 +219,8 @@ void main() {
             StoryFormatVariableExtensionTarget(missingVariableId),
             'variable',
           ),
-          attachment(
-            StoryFormatGroupExtensionTarget(missingGroupId),
-            'group',
-          ),
-          attachment(
-            StoryFormatTagExtensionTarget(missingTagId),
-            'tag',
-          ),
+          attachment(StoryFormatGroupExtensionTarget(missingGroupId), 'group'),
+          attachment(StoryFormatTagExtensionTarget(missingTagId), 'tag'),
         ],
       );
 
@@ -242,9 +240,7 @@ void main() {
       );
 
       expect(
-        () => codec.decode(
-          StoryFormatBundle(files: {'project.json': source}),
-        ),
+        () => codec.decode(StoryFormatBundle(files: {'project.json': source})),
         throwsA(
           isA<StoryFormatCompatibilityException>()
               .having(
@@ -269,9 +265,7 @@ void main() {
       );
 
       expect(
-        () => codec.decode(
-          StoryFormatBundle(files: {'project.json': source}),
-        ),
+        () => codec.decode(StoryFormatBundle(files: {'project.json': source})),
         throwsA(
           isA<StoryFormatCompatibilityException>()
               .having(
@@ -296,15 +290,14 @@ void main() {
       );
 
       expect(
-        () => codec.decode(
-          StoryFormatBundle(files: {'project.json': source}),
-        ),
+        () => codec.decode(StoryFormatBundle(files: {'project.json': source})),
         throwsA(isA<StoryFormatCodecException>()),
       );
     });
 
     test('constructor-impossible current-v1 values remain codec failures', () {
-      final source = '{\n'
+      final source =
+          '{\n'
           '  "formatId": "story_engine.story_format",\n'
           '  "formatVersion": 1,\n'
           '  "project": {\n'
@@ -315,9 +308,7 @@ void main() {
           '}\n';
 
       expect(
-        () => codec.decode(
-          StoryFormatBundle(files: {'project.json': source}),
-        ),
+        () => codec.decode(StoryFormatBundle(files: {'project.json': source})),
         throwsA(isA<StoryFormatCodecException>()),
       );
     });
@@ -327,7 +318,10 @@ void main() {
       final document = StoryFormatDocument(
         project: StoryProject(
           id: StoryProjectId('project_5e_duplicate_storage'),
-          events: [StoryEvent(id: duplicateId), StoryEvent(id: duplicateId)],
+          events: [
+            StoryEvent(id: duplicateId),
+            StoryEvent(id: duplicateId),
+          ],
         ),
       );
 

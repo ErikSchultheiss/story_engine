@@ -148,7 +148,6 @@ final class StoryDiagnostic {
     relatedLocations: relatedLocations,
   );
 
-
   /// Actionable engine-owned repair guidance when one is known.
   ///
   /// Suggestions are human-facing convenience text, not machine identity. They
@@ -207,124 +206,102 @@ final class StoryDiagnostic {
       'StoryDiagnostic(${severity.name}, $code, $location, $message)';
 }
 
-String? _suggestionFor(StoryDiagnosticCode code) {
-  if (code == StoryDiagnosticCode.structureMissingEntryEvent) {
-    return 'Set StoryProject.entryEventId to the ID of an authored event.';
-  }
-  if (code == StoryDiagnosticCode.structureEntryEventNotFound) {
-    return 'Point entryEventId at an existing event, or add the referenced '
-        'event.';
-  }
-  if (code == StoryDiagnosticCode.identityDuplicateEventId) {
-    return 'Give every event a unique stable ID and update references to the '
-        'renamed event.';
-  }
-  if (code == StoryDiagnosticCode.identityDuplicateChoiceId) {
-    return 'Give every choice a unique stable ID across the project.';
-  }
-  if (code == StoryDiagnosticCode.structureChoiceMissingTransition) {
-    return 'Add a terminal, event, conditional, or weighted transition to the '
-        'choice.';
-  }
-  if (code == StoryDiagnosticCode.structureEventMissingFlow) {
-    return 'Define exactly one event flow: choices, a continuation transition, '
-        'or an automatic transition.';
-  }
-  if (code == StoryDiagnosticCode.structureEventAmbiguousFlow) {
-    return 'Keep exactly one event flow mode and remove the competing flow '
-        'definitions.';
-  }
-  if (code == StoryDiagnosticCode.referenceMissingTransitionDestination) {
-    return 'Add the destination event or change the transition to an existing '
-        'event ID.';
-  }
-  if (code == StoryDiagnosticCode.referenceUndeclaredConditionVariable ||
-      code == StoryDiagnosticCode.referenceUndeclaredEffectVariable) {
-    return 'Declare the referenced variable in StoryStateSchema or update the '
-        'authored reference.';
-  }
-  if (code == StoryDiagnosticCode.typeConditionOperandMismatch) {
-    return 'Use a comparison value with the same StoryValueType as the '
-        'declared variable.';
-  }
-  if (code == StoryDiagnosticCode.typeConditionOperatorNotSupported) {
-    return 'Use an operator supported by the variable type; ordering operators '
-        'require integer or number values.';
-  }
-  if (code == StoryDiagnosticCode.typeEffectValueMismatch) {
-    return 'Set the variable with a value matching its declared StoryValueType.';
-  }
-  if (code == StoryDiagnosticCode.typeNumericEffectTargetNotNumeric) {
-    return 'Target an integer/number variable, or use a set/unset effect '
-        'instead.';
-  }
-  if (code == StoryDiagnosticCode.typeNumericEffectAmountMismatch) {
-    return 'Use an increment/decrement amount with the same numeric type as '
-        'the target variable.';
-  }
-  if (code == StoryDiagnosticCode.stateReadMayBeUnset) {
-    return 'Initialize or write the variable before this read, or guard the '
-        'read with an explicit is-set/is-unset condition.';
-  }
-  if (code == StoryDiagnosticCode.stateNumericEffectTargetUnset) {
-    return 'Initialize or set the numeric variable before applying this '
-        'increment/decrement.';
-  }
-  if (code == StoryDiagnosticCode.stateNumericEffectTargetMayBeUnset) {
-    return 'Ensure every reachable path sets the numeric variable first, or '
-        'guard the adjustment with an is-set condition.';
-  }
-  if (code == StoryDiagnosticCode.stateVariableNeverReferenced) {
-    return 'Remove the unused declaration or reference it from authored logic.';
-  }
-  if (code == StoryDiagnosticCode.stateVariableWrittenNeverRead) {
-    return 'Read the variable from a condition, or remove writes that have no '
-        'observable effect.';
-  }
-  if (code == StoryDiagnosticCode.stateVariableReadWithoutInitialization) {
-    return 'Provide an initial value or add an authored write before any '
-        'reachable read.';
-  }
-  if (code == StoryDiagnosticCode.graphUnreachableEvent) {
-    return 'Connect the event from reachable flow or remove it if it is no '
-        'longer used.';
-  }
-  if (code == StoryDiagnosticCode.graphAutomaticCycle) {
-    return 'Break the synchronous automatic cycle with a terminal, interactive, '
-        'or continuation path.';
-  }
-  if (code == StoryDiagnosticCode.graphContinuationCycle) {
-    return 'Add a route out of the continuation cycle if indefinite host-driven '
-        'looping is not intentional.';
-  }
-  if (code == StoryDiagnosticCode.graphInteractiveCycle ||
-      code == StoryDiagnosticCode.graphMixedCycle) {
-    return 'Review the cycle and keep it only if repeated traversal is '
-        'intentional.';
-  }
-  if (code == StoryDiagnosticCode.graphEventCannotReachTermination) {
-    return 'Add a structurally reachable terminal transition from this region '
-        'if the story is expected to finish.';
-  }
-  if (code == StoryDiagnosticCode.presentationChoiceMissingText) {
-    return 'Add meaningful default presentation text for the interactive '
-        'choice.';
-  }
-  if (code == StoryDiagnosticCode.presentationEventEmptyText) {
-    return 'Remove the empty field or provide non-whitespace presentation text.';
-  }
-  if (code ==
-      StoryDiagnosticCode.presentationContinuationWithoutMeaningfulPresentation) {
-    return 'Give the continuation event meaningful title/body content so the '
-        'host has something to present while paused.';
-  }
-  if (code ==
-      StoryDiagnosticCode.presentationAutomaticEventPresentationNotHostVisible) {
-    return 'Move user-visible content to a host-visible event, or remove the '
-        'unused automatic-event presentation.';
-  }
-  return null;
-}
+String? _suggestionFor(StoryDiagnosticCode code) =>
+    _diagnosticSuggestions[code];
+
+final Map<StoryDiagnosticCode, String> _diagnosticSuggestions =
+    Map<StoryDiagnosticCode, String>.unmodifiable({
+      StoryDiagnosticCode.structureMissingEntryEvent:
+          'Set StoryProject.entryEventId to the ID of an authored event.',
+      StoryDiagnosticCode.structureValidationEntryNotFound:
+          'Choose an existing event ID for the validation context entry root.',
+      StoryDiagnosticCode.structureEntryEventNotFound:
+          'Point entryEventId at an existing event, or add the referenced '
+          'event.',
+      StoryDiagnosticCode.identityDuplicateEventId:
+          'Give every event a unique stable ID and update references to the '
+          'renamed event.',
+      StoryDiagnosticCode.identityDuplicateChoiceId:
+          'Give every choice a unique stable ID across the project.',
+      StoryDiagnosticCode.structureChoiceMissingTransition:
+          'Add a terminal, event, conditional, or weighted transition to the '
+          'choice.',
+      StoryDiagnosticCode.structureEventMissingFlow:
+          'Define exactly one event flow: choices, a continuation transition, '
+          'or an automatic transition.',
+      StoryDiagnosticCode.structureEventAmbiguousFlow:
+          'Keep exactly one event flow mode and remove the competing flow '
+          'definitions.',
+      StoryDiagnosticCode.referenceMissingTransitionDestination:
+          'Add the destination event or change the transition to an existing '
+          'event ID.',
+      StoryDiagnosticCode.referenceUndeclaredConditionVariable:
+          'Declare the referenced variable in StoryStateSchema or update the '
+          'authored reference.',
+      StoryDiagnosticCode.referenceUndeclaredEffectVariable:
+          'Declare the referenced variable in StoryStateSchema or update the '
+          'authored reference.',
+      StoryDiagnosticCode.typeConditionOperandMismatch:
+          'Use a comparison value with the same StoryValueType as the '
+          'declared variable.',
+      StoryDiagnosticCode.typeConditionOperatorNotSupported:
+          'Use an operator supported by the variable type; ordering operators '
+          'require integer or number values.',
+      StoryDiagnosticCode.typeEffectValueMismatch:
+          'Set the variable with a value matching its declared StoryValueType.',
+      StoryDiagnosticCode.typeNumericEffectTargetNotNumeric:
+          'Target an integer/number variable, or use a set/unset effect '
+          'instead.',
+      StoryDiagnosticCode.typeNumericEffectAmountMismatch:
+          'Use an increment/decrement amount with the same numeric type as '
+          'the target variable.',
+      StoryDiagnosticCode.stateReadMayBeUnset:
+          'Initialize or write the variable before this read, or guard the '
+          'read with an explicit is-set/is-unset condition.',
+      StoryDiagnosticCode.stateNumericEffectTargetUnset:
+          'Initialize or set the numeric variable before applying this '
+          'increment/decrement.',
+      StoryDiagnosticCode.stateNumericEffectTargetMayBeUnset:
+          'Ensure every reachable path sets the numeric variable first, or '
+          'guard the adjustment with an is-set condition.',
+      StoryDiagnosticCode.stateVariableNeverReferenced:
+          'Remove the unused declaration or reference it from authored logic.',
+      StoryDiagnosticCode.stateVariableWrittenNeverRead:
+          'Read the variable from a condition, or remove writes that have no '
+          'observable effect.',
+      StoryDiagnosticCode.stateVariableReadWithoutInitialization:
+          'Provide an initial value or add an authored write before any '
+          'reachable read.',
+      StoryDiagnosticCode.graphUnreachableEvent:
+          'Connect the event from reachable flow or remove it if it is no '
+          'longer used.',
+      StoryDiagnosticCode.graphAutomaticCycle:
+          'Break the synchronous automatic cycle with a terminal, interactive, '
+          'or continuation path.',
+      StoryDiagnosticCode.graphContinuationCycle:
+          'Add a route out of the continuation cycle if indefinite host-driven '
+          'looping is not intentional.',
+      StoryDiagnosticCode.graphInteractiveCycle:
+          'Review the cycle and keep it only if repeated traversal is '
+          'intentional.',
+      StoryDiagnosticCode.graphMixedCycle:
+          'Review the cycle and keep it only if repeated traversal is '
+          'intentional.',
+      StoryDiagnosticCode.graphEventCannotReachTermination:
+          'Add a structurally reachable terminal transition from this region '
+          'if the story is expected to finish.',
+      StoryDiagnosticCode.presentationChoiceMissingText:
+          'Add meaningful default presentation text for the interactive '
+          'choice.',
+      StoryDiagnosticCode.presentationEventEmptyText:
+          'Remove the empty field or provide non-whitespace presentation text.',
+      StoryDiagnosticCode.presentationContinuationWithoutMeaningfulPresentation:
+          'Give the continuation event meaningful title/body content so the '
+          'host has something to present while paused.',
+      StoryDiagnosticCode.presentationAutomaticEventPresentationNotHostVisible:
+          'Move user-visible content to a host-visible event, or remove the '
+          'unused automatic-event presentation.',
+    });
 
 bool _orderedReferencesEqual(
   List<StoryDiagnosticReference> left,

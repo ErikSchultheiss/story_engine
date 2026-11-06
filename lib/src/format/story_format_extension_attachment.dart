@@ -27,14 +27,9 @@ final class StoryFormatExtensionAttachment {
           other.payload == payload;
 
   @override
-  int get hashCode => Object.hash(
-    StoryFormatExtensionAttachment,
-    namespace,
-    target,
-    payload,
-  );
+  int get hashCode =>
+      Object.hash(StoryFormatExtensionAttachment, namespace, target, payload);
 
   @override
-  String toString() =>
-      'StoryFormatExtensionAttachment($namespace @ $target)';
+  String toString() => 'StoryFormatExtensionAttachment($namespace @ $target)';
 }

@@ -31,9 +31,7 @@ void main() {
             choices: [
               StoryChoice(
                 id: choiceId,
-                transition: StoryEventTransition(
-                  destinationEventId: missingId,
-                ),
+                transition: StoryEventTransition(destinationEventId: missingId),
               ),
             ],
           ),
@@ -55,10 +53,9 @@ void main() {
         diagnostic.location.pathString,
         'events[0].choices[0].transition.destinationEventId',
       );
-      expect(
-        diagnostic.references,
-        [StoryDiagnosticReference.event(missingId)],
-      );
+      expect(diagnostic.references, [
+        StoryDiagnosticReference.event(missingId),
+      ]);
     });
 
     test('conditions are traversed recursively at arbitrary Boolean depth', () {
@@ -73,9 +70,7 @@ void main() {
             availabilityCondition: StoryAllCondition([
               StoryNotCondition(
                 StoryAnyCondition([
-                  StoryVariableIsSetCondition(
-                    variableId: missingVariableId,
-                  ),
+                  StoryVariableIsSetCondition(variableId: missingVariableId),
                 ]),
               ),
             ]),
@@ -98,10 +93,9 @@ void main() {
         'events[0].availabilityCondition.conditions[0].condition.'
         'conditions[0].variableId',
       );
-      expect(
-        diagnostic.references,
-        [StoryDiagnosticReference.variable(missingVariableId)],
-      );
+      expect(diagnostic.references, [
+        StoryDiagnosticReference.variable(missingVariableId),
+      ]);
     });
 
     test('choice availability carries the enclosing choice location', () {
@@ -321,9 +315,7 @@ void main() {
                       transition: const StoryTerminalTransition(),
                     ),
                   ],
-                  fallback: StoryEventTransition(
-                    destinationEventId: missingId,
-                  ),
+                  fallback: StoryEventTransition(destinationEventId: missingId),
                 ),
               ),
             ],
@@ -380,9 +372,7 @@ void main() {
 
       expect(missingDestinations, hasLength(2));
       expect(
-        missingDestinations.map(
-          (diagnostic) => diagnostic.location.pathString,
-        ),
+        missingDestinations.map((diagnostic) => diagnostic.location.pathString),
         [
           'events[0].continuationTransition.destinationEventId',
           'events[1].automaticTransition.destinationEventId',

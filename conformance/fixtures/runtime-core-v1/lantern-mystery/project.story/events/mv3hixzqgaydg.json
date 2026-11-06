@@ -1,0 +1,51 @@
+{
+  "id": "evt_0003",
+  "alias": "library",
+  "presentation": {
+    "title": "Library",
+    "body": "The caretaker unlocks a narrow library. A maintenance note lies on a desk. At the rear, stone steps descend into a visibly colder part of the station."
+  },
+  "availabilityCondition": {
+    "kind": "variable_comparison",
+    "variableId": "var_0002",
+    "operator": "greater_than_or_equal",
+    "value": {
+      "type": "integer",
+      "value": 60
+    }
+  },
+  "entryEffects": [],
+  "choices": [
+    {
+      "id": "ch_0009",
+      "presentation": {
+        "text": "Read the maintenance note"
+      },
+      "effects": [
+        {
+          "kind": "set_variable",
+          "variableId": "var_0006",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0004"
+      }
+    },
+    {
+      "id": "ch_0010",
+      "presentation": {
+        "text": "Take the cold stairway"
+      },
+      "effects": [],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0005"
+      }
+    }
+  ]
+}

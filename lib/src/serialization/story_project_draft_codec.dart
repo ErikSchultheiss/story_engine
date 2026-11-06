@@ -45,11 +45,11 @@ final class StoryProjectDraftCodec {
   StoryProject decode(Object? encoded) {
     try {
       final root = _map(encoded, r'$');
-      _allowOnly(
-        root,
-        const {'documentType', 'draftRevision', 'project'},
-        r'$',
-      );
+      _allowOnly(root, const {
+        'documentType',
+        'draftRevision',
+        'project',
+      }, r'$');
 
       final type = _string(
         _required(root, 'documentType', r'$'),
@@ -70,7 +70,7 @@ final class StoryProjectDraftCodec {
         throw StoryDraftSerializationException(
           r'$.draftRevision',
           'Unsupported internal draft revision $revision. Supported range is '
-          '$oldestSupportedDraftRevision..$draftRevision.',
+              '$oldestSupportedDraftRevision..$draftRevision.',
         );
       }
 
@@ -115,11 +115,7 @@ final class StoryProjectDraftCodec {
 /// The exception is intentionally package-private with the codec. Public
 /// persistence/format diagnostics will be designed with Story Format v1.
 final class StoryDraftSerializationException implements Exception {
-  const StoryDraftSerializationException(
-    this.path,
-    this.message, {
-    this.cause,
-  });
+  const StoryDraftSerializationException(this.path, this.message, {this.cause});
 
   final String path;
   final String message;
@@ -133,9 +129,7 @@ final class StoryDraftSerializationException implements Exception {
 }
 
 Map<String, Object?> _encodeProject(StoryProject project) {
-  final result = <String, Object?>{
-    'id': project.id.value,
-  };
+  final result = <String, Object?>{'id': project.id.value};
   _putAlias(result, project.alias);
   result['stateSchema'] = _encodeStateSchema(project.stateSchema);
   result['events'] = project.events.map(_encodeEvent).toList(growable: false);
@@ -152,11 +146,13 @@ StoryProject _decodeProject(
   required int draftRevision,
 }) {
   final map = _map(encoded, path);
-  _allowOnly(
-    map,
-    const {'id', 'alias', 'stateSchema', 'events', 'entryEventId'},
-    path,
-  );
+  _allowOnly(map, const {
+    'id',
+    'alias',
+    'stateSchema',
+    'events',
+    'entryEventId',
+  }, path);
 
   return StoryProject(
     id: StoryProjectId(_string(_required(map, 'id', path), '$path.id')),
@@ -165,15 +161,13 @@ StoryProject _decodeProject(
       _required(map, 'stateSchema', path),
       '$path.stateSchema',
     ),
-    events: _list(_required(map, 'events', path), '$path.events')
-        .indexed
-        .map(
-          (entry) => _decodeEvent(
-            entry.$2,
-            '$path.events[${entry.$1}]',
-            draftRevision: draftRevision,
-          ),
-        ),
+    events: _list(_required(map, 'events', path), '$path.events').indexed.map(
+      (entry) => _decodeEvent(
+        entry.$2,
+        '$path.events[${entry.$1}]',
+        draftRevision: draftRevision,
+      ),
+    ),
     entryEventId: map.containsKey('entryEventId')
         ? StoryEventId(_string(map['entryEventId'], '$path.entryEventId'))
         : null,
@@ -259,7 +253,9 @@ Map<String, Object?> _encodeEvent(StoryEvent event) {
 
   final continuationTransition = event.continuationTransition;
   if (continuationTransition != null) {
-    result['continuationTransition'] = _encodeTransition(continuationTransition);
+    result['continuationTransition'] = _encodeTransition(
+      continuationTransition,
+    );
   }
 
   final automaticTransition = event.automaticTransition;
@@ -321,22 +317,21 @@ StoryEvent _decodeEvent(
             '$path.availabilityCondition',
           )
         : null,
-    entryEffects: _list(
-      _required(map, 'entryEffects', path),
-      '$path.entryEffects',
-    ).indexed.map(
-      (entry) => _decodeEffect(entry.$2, '$path.entryEffects[${entry.$1}]'),
-    ),
-    choices: _list(
-      _required(map, 'choices', path),
-      '$path.choices',
-    ).indexed.map(
-      (entry) => _decodeChoice(
-        entry.$2,
-        '$path.choices[${entry.$1}]',
-        draftRevision: draftRevision,
-      ),
-    ),
+    entryEffects:
+        _list(
+          _required(map, 'entryEffects', path),
+          '$path.entryEffects',
+        ).indexed.map(
+          (entry) => _decodeEffect(entry.$2, '$path.entryEffects[${entry.$1}]'),
+        ),
+    choices: _list(_required(map, 'choices', path), '$path.choices').indexed
+        .map(
+          (entry) => _decodeChoice(
+            entry.$2,
+            '$path.choices[${entry.$1}]',
+            draftRevision: draftRevision,
+          ),
+        ),
     continuationTransition: map.containsKey('continuationTransition')
         ? _decodeTransition(
             map['continuationTransition'],
@@ -413,12 +408,8 @@ StoryChoice _decodeChoice(
             '$path.availabilityCondition',
           )
         : null,
-    effects: _list(
-      _required(map, 'effects', path),
-      '$path.effects',
-    ).indexed.map(
-      (entry) => _decodeEffect(entry.$2, '$path.effects[${entry.$1}]'),
-    ),
+    effects: _list(_required(map, 'effects', path), '$path.effects').indexed
+        .map((entry) => _decodeEffect(entry.$2, '$path.effects[${entry.$1}]')),
     transition: map.containsKey('transition')
         ? _decodeTransition(map['transition'], '$path.transition')
         : null,
@@ -501,12 +492,13 @@ Map<String, Object?> _encodeCondition(StoryCondition condition) =>
         :final variableId,
         :final operator,
         :final value,
-      ) => <String, Object?>{
-        'kind': 'variableComparison',
-        'variableId': variableId.value,
-        'operator': operator.name,
-        'value': _encodeValue(value),
-      },
+      ) =>
+        <String, Object?>{
+          'kind': 'variableComparison',
+          'variableId': variableId.value,
+          'operator': operator.name,
+          'value': _encodeValue(value),
+        },
     };
 
 StoryCondition _decodeCondition(Object? encoded, String path) {
@@ -537,12 +529,10 @@ StoryCondition _decodeConditionGroup(
   required bool all,
 }) {
   _allowOnly(map, const {'kind', 'conditions'}, path);
-  final conditions = _list(
-    _required(map, 'conditions', path),
-    '$path.conditions',
-  ).indexed.map(
-    (entry) => _decodeCondition(entry.$2, '$path.conditions[${entry.$1}]'),
-  );
+  final conditions =
+      _list(_required(map, 'conditions', path), '$path.conditions').indexed.map(
+        (entry) => _decodeCondition(entry.$2, '$path.conditions[${entry.$1}]'),
+      );
   return all ? StoryAllCondition(conditions) : StoryAnyCondition(conditions);
 }
 
@@ -737,24 +727,23 @@ StoryTransition _decodeConditionalTransition(
   String path,
 ) {
   _allowOnly(map, const {'kind', 'branches', 'fallback'}, path);
-  final branches = _list(
-    _required(map, 'branches', path),
-    '$path.branches',
-  ).indexed.map((entry) {
-    final branchPath = '$path.branches[${entry.$1}]';
-    final branch = _map(entry.$2, branchPath);
-    _allowOnly(branch, const {'condition', 'transition'}, branchPath);
-    return StoryConditionalTransitionBranch(
-      condition: _decodeCondition(
-        _required(branch, 'condition', branchPath),
-        '$branchPath.condition',
-      ),
-      transition: _decodeTransition(
-        _required(branch, 'transition', branchPath),
-        '$branchPath.transition',
-      ),
-    );
-  });
+  final branches = _list(_required(map, 'branches', path), '$path.branches')
+      .indexed
+      .map((entry) {
+        final branchPath = '$path.branches[${entry.$1}]';
+        final branch = _map(entry.$2, branchPath);
+        _allowOnly(branch, const {'condition', 'transition'}, branchPath);
+        return StoryConditionalTransitionBranch(
+          condition: _decodeCondition(
+            _required(branch, 'condition', branchPath),
+            '$branchPath.condition',
+          ),
+          transition: _decodeTransition(
+            _required(branch, 'transition', branchPath),
+            '$branchPath.transition',
+          ),
+        );
+      });
 
   return StoryConditionalTransition(
     branches: branches,
@@ -770,24 +759,23 @@ StoryTransition _decodeWeightedTransition(
   String path,
 ) {
   _allowOnly(map, const {'kind', 'options'}, path);
-  final options = _list(
-    _required(map, 'options', path),
-    '$path.options',
-  ).indexed.map((entry) {
-    final optionPath = '$path.options[${entry.$1}]';
-    final option = _map(entry.$2, optionPath);
-    _allowOnly(option, const {'weight', 'transition'}, optionPath);
-    return StoryWeightedTransitionOption(
-      weight: _integer(
-        _required(option, 'weight', optionPath),
-        '$optionPath.weight',
-      ),
-      transition: _decodeTransition(
-        _required(option, 'transition', optionPath),
-        '$optionPath.transition',
-      ),
-    );
-  });
+  final options = _list(_required(map, 'options', path), '$path.options')
+      .indexed
+      .map((entry) {
+        final optionPath = '$path.options[${entry.$1}]';
+        final option = _map(entry.$2, optionPath);
+        _allowOnly(option, const {'weight', 'transition'}, optionPath);
+        return StoryWeightedTransitionOption(
+          weight: _integer(
+            _required(option, 'weight', optionPath),
+            '$optionPath.weight',
+          ),
+          transition: _decodeTransition(
+            _required(option, 'transition', optionPath),
+            '$optionPath.transition',
+          ),
+        );
+      });
 
   return StoryWeightedTransition(options: options);
 }
@@ -868,8 +856,8 @@ void _putAlias(Map<String, Object?> result, StoryAlias? alias) {
 
 StoryAlias? _decodeAlias(Map<String, Object?> map, String path) =>
     map.containsKey('alias')
-        ? StoryAlias(_string(map['alias'], '$path.alias'))
-        : null;
+    ? StoryAlias(_string(map['alias'], '$path.alias'))
+    : null;
 
 Object? _required(Map<String, Object?> map, String key, String path) {
   if (!map.containsKey(key)) {
@@ -934,17 +922,13 @@ double _number(Object? value, String path) {
   return value.toDouble();
 }
 
-void _allowOnly(
-  Map<String, Object?> map,
-  Set<String> allowed,
-  String path,
-) {
+void _allowOnly(Map<String, Object?> map, Set<String> allowed, String path) {
   for (final key in map.keys) {
     if (!allowed.contains(key)) {
       throw StoryDraftSerializationException(
         '$path.$key',
         'Unknown field. Stage 1I draft decoding is strict to prevent data '
-        'loss.',
+            'loss.',
       );
     }
   }

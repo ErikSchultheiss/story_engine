@@ -20,7 +20,8 @@ void main() {
         expect(
           replay.currentEventId,
           first.currentEventId,
-          reason: 'Identical scenario inputs must reproduce the terminal event.',
+          reason:
+              'Identical scenario inputs must reproduce the terminal event.',
         );
         expect(
           replay.state,
@@ -39,10 +40,7 @@ void main() {
 
 _ScenarioRunResult _runScenario(_ScenarioCase scenario) {
   final project = LanternMysteryFixture.buildProject();
-  final engine = StoryEngine(
-    project: project,
-    randomSeed: scenario.seed,
-  );
+  final engine = StoryEngine(project: project, randomSeed: scenario.seed);
 
   engine.start(initialState: scenario.initialState?.call(project));
   for (final action in scenario.actions) {
@@ -138,7 +136,8 @@ List<_ScenarioCase> _canonicalScenarios() => [
     ),
   ),
   _ScenarioCase(
-    name: 'immediate neutral route preserves initial state including unset alarm',
+    name:
+        'immediate neutral route preserves initial state including unset alarm',
     seed: LanternMysteryFixture.safeSeed,
     actions: [
       _choose(LanternMysteryFixture.leaveFoyerId),

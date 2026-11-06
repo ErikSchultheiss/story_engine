@@ -13,8 +13,7 @@ final class StoryProjectId {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is StoryProjectId && other.value == value;
+      identical(this, other) || other is StoryProjectId && other.value == value;
 
   @override
   int get hashCode => Object.hash(StoryProjectId, value);

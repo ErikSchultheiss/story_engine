@@ -76,24 +76,26 @@ final class StorySeededRandomSource implements StoryRandomSource {
     }
     if (runtimeState.algorithmVersion != runtimeStateAlgorithmVersion) {
       throw StorySeededRandomStateException(
-        message: 'Unsupported $runtimeStateAlgorithmId algorithm version '
+        message:
+            'Unsupported $runtimeStateAlgorithmId algorithm version '
             '${runtimeState.algorithmVersion}.',
       );
     }
     if (runtimeState.stateWords.length != runtimeStateWordCount) {
       throw StorySeededRandomStateException(
-        message: '$runtimeStateAlgorithmId v$runtimeStateAlgorithmVersion '
+        message:
+            '$runtimeStateAlgorithmId v$runtimeStateAlgorithmVersion '
             'requires exactly $runtimeStateWordCount state words.',
       );
     }
 
-    final initialSeed = runtimeState.stateWords[
-      runtimeStateInitialSeedWordIndex
-    ];
+    final initialSeed =
+        runtimeState.stateWords[runtimeStateInitialSeedWordIndex];
     final state = runtimeState.stateWords[runtimeStateCurrentStateWordIndex];
     if (initialSeed > maxSeed || state > maxSeed) {
       throw StorySeededRandomStateException(
-        message: '$runtimeStateAlgorithmId state words must be within '
+        message:
+            '$runtimeStateAlgorithmId state words must be within '
             '0..$maxSeed.',
       );
     }

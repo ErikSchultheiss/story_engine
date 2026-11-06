@@ -1,0 +1,108 @@
+{
+  "id": "evt_0002",
+  "alias": "caretaker",
+  "presentation": {
+    "title": "The Caretaker",
+    "body": "The caretaker studies you suspiciously. “Codename?”"
+  },
+  "entryEffects": [
+    {
+      "kind": "increment_variable",
+      "variableId": "var_0002",
+      "amount": {
+        "type": "integer",
+        "value": 5
+      }
+    }
+  ],
+  "choices": [
+    {
+      "id": "ch_0006",
+      "presentation": {
+        "text": "“Rook.”"
+      },
+      "availabilityCondition": {
+        "kind": "variable_comparison",
+        "variableId": "var_0004",
+        "operator": "equal",
+        "value": {
+          "type": "string",
+          "value": "Rook"
+        }
+      },
+      "effects": [
+        {
+          "kind": "increment_variable",
+          "variableId": "var_0002",
+          "amount": {
+            "type": "integer",
+            "value": 20
+          }
+        }
+      ],
+      "transition": {
+        "kind": "conditional",
+        "branches": [
+          {
+            "condition": {
+              "kind": "variable_comparison",
+              "variableId": "var_0002",
+              "operator": "greater_than_or_equal",
+              "value": {
+                "type": "integer",
+                "value": 60
+              }
+            },
+            "transition": {
+              "kind": "event",
+              "destinationEventId": "evt_0003"
+            }
+          }
+        ],
+        "fallback": {
+          "kind": "event",
+          "destinationEventId": "evt_0004"
+        }
+      }
+    },
+    {
+      "id": "ch_0007",
+      "presentation": {
+        "text": "“Fox.”"
+      },
+      "effects": [
+        {
+          "kind": "set_variable",
+          "variableId": "var_0004",
+          "value": {
+            "type": "string",
+            "value": "Fox"
+          }
+        },
+        {
+          "kind": "set_variable",
+          "variableId": "var_0005",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0004"
+      }
+    },
+    {
+      "id": "ch_0008",
+      "presentation": {
+        "text": "Say nothing"
+      },
+      "effects": [],
+      "transition": {
+        "kind": "event",
+        "destinationEventId": "evt_0004"
+      }
+    }
+  ]
+}

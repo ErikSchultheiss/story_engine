@@ -1,0 +1,77 @@
+{
+  "formatId": "story_engine.story_format",
+  "formatVersion": 1,
+  "project": {
+    "id": "prj_0001",
+    "alias": "lantern_mystery",
+    "stateSchema": {
+      "variables": [
+        {
+          "id": "var_0001",
+          "type": "boolean",
+          "alias": "has_lantern",
+          "initialValue": {
+            "type": "boolean",
+            "value": false
+          }
+        },
+        {
+          "id": "var_0002",
+          "type": "integer",
+          "alias": "caretaker_trust",
+          "initialValue": {
+            "type": "integer",
+            "value": 40
+          }
+        },
+        {
+          "id": "var_0003",
+          "type": "number",
+          "alias": "temperature",
+          "initialValue": {
+            "type": "number",
+            "value": 18.5
+          }
+        },
+        {
+          "id": "var_0004",
+          "type": "string",
+          "alias": "codename",
+          "initialValue": {
+            "type": "string",
+            "value": "Rook"
+          }
+        },
+        {
+          "id": "var_0005",
+          "type": "boolean",
+          "alias": "alarm_triggered"
+        },
+        {
+          "id": "var_0006",
+          "type": "boolean",
+          "alias": "knows_safe_route",
+          "initialValue": {
+            "type": "boolean",
+            "value": false
+          }
+        }
+      ]
+    },
+    "eventIds": [
+      "evt_0001",
+      "evt_0002",
+      "evt_0003",
+      "evt_0004",
+      "evt_0005",
+      "evt_0006",
+      "evt_0007",
+      "evt_0008",
+      "evt_0009",
+      "evt_0010",
+      "evt_0011",
+      "evt_0012"
+    ],
+    "entryEventId": "evt_0001"
+  }
+}

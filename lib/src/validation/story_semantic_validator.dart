@@ -215,10 +215,7 @@ final class StorySemanticValidator {
           variableIndices: variableIndices,
           eventId: eventId,
           choiceId: choiceId,
-          path: [
-            ...path,
-            const StoryDiagnosticPathSegment.field('condition'),
-          ],
+          path: [...path, const StoryDiagnosticPathSegment.field('condition')],
           diagnostics: diagnostics,
         );
       case StoryVariableIsSetCondition():
@@ -269,21 +266,17 @@ final class StorySemanticValidator {
         StoryDiagnostic(
           code: StoryDiagnosticCode.typeConditionOperandMismatch,
           severity: StoryDiagnosticSeverity.error,
-          message: 'Condition value type ${condition.value.type.name} does not '
+          message:
+              'Condition value type ${condition.value.type.name} does not '
               'match declared variable type ${definition.type.name} for '
               '${condition.variableId.value}.',
           location: StoryDiagnosticLocation.condition(
             projectId: project.id,
             eventId: eventId,
             choiceId: choiceId,
-            path: [
-              ...path,
-              const StoryDiagnosticPathSegment.field('value'),
-            ],
+            path: [...path, const StoryDiagnosticPathSegment.field('value')],
           ),
-          references: [
-            StoryDiagnosticReference.variable(condition.variableId),
-          ],
+          references: [StoryDiagnosticReference.variable(condition.variableId)],
           relatedLocations: [relatedLocation],
         ),
       );
@@ -295,20 +288,16 @@ final class StorySemanticValidator {
         StoryDiagnostic(
           code: StoryDiagnosticCode.typeConditionOperatorNotSupported,
           severity: StoryDiagnosticSeverity.error,
-          message: 'Comparison operator ${condition.operator.name} is not '
+          message:
+              'Comparison operator ${condition.operator.name} is not '
               'supported for variable type ${definition.type.name}.',
           location: StoryDiagnosticLocation.condition(
             projectId: project.id,
             eventId: eventId,
             choiceId: choiceId,
-            path: [
-              ...path,
-              const StoryDiagnosticPathSegment.field('operator'),
-            ],
+            path: [...path, const StoryDiagnosticPathSegment.field('operator')],
           ),
-          references: [
-            StoryDiagnosticReference.variable(condition.variableId),
-          ],
+          references: [StoryDiagnosticReference.variable(condition.variableId)],
           relatedLocations: [relatedLocation],
         ),
       );
@@ -349,7 +338,8 @@ final class StorySemanticValidator {
             StoryDiagnostic(
               code: StoryDiagnosticCode.typeEffectValueMismatch,
               severity: StoryDiagnosticSeverity.error,
-              message: 'Effect value type ${value.type.name} does not match '
+              message:
+                  'Effect value type ${value.type.name} does not match '
                   'declared variable type ${definition.type.name} for '
                   '${variableId.value}.',
               location: StoryDiagnosticLocation.effect(
@@ -411,7 +401,8 @@ final class StorySemanticValidator {
         StoryDiagnostic(
           code: StoryDiagnosticCode.typeNumericEffectTargetNotNumeric,
           severity: StoryDiagnosticSeverity.error,
-          message: 'Increment/decrement target ${variableId.value} is '
+          message:
+              'Increment/decrement target ${variableId.value} is '
               'declared as ${definition.type.name}; a numeric variable is '
               'required.',
           location: StoryDiagnosticLocation.effect(
@@ -435,17 +426,15 @@ final class StorySemanticValidator {
         StoryDiagnostic(
           code: StoryDiagnosticCode.typeNumericEffectAmountMismatch,
           severity: StoryDiagnosticSeverity.error,
-          message: 'Numeric effect amount type ${amountType.name} does not '
+          message:
+              'Numeric effect amount type ${amountType.name} does not '
               'match declared variable type ${definition.type.name} for '
               '${variableId.value}.',
           location: StoryDiagnosticLocation.effect(
             projectId: project.id,
             eventId: eventId,
             choiceId: choiceId,
-            path: [
-              ...path,
-              const StoryDiagnosticPathSegment.field('amount'),
-            ],
+            path: [...path, const StoryDiagnosticPathSegment.field('amount')],
           ),
           references: [StoryDiagnosticReference.variable(variableId)],
           relatedLocations: [relatedLocation],
@@ -507,10 +496,7 @@ final class StorySemanticValidator {
           variableIndices: variableIndices,
           eventId: eventId,
           choiceId: choiceId,
-          path: [
-            ...path,
-            const StoryDiagnosticPathSegment.field('fallback'),
-          ],
+          path: [...path, const StoryDiagnosticPathSegment.field('fallback')],
           diagnostics: diagnostics,
         );
       case StoryWeightedTransition(:final options):
@@ -549,13 +535,15 @@ StoryDiagnosticLocation _variableTypeLocation({
   ],
 );
 
-bool _isOrderingOperator(StoryComparisonOperator operator) => switch (operator) {
-  StoryComparisonOperator.lessThan ||
-  StoryComparisonOperator.lessThanOrEqual ||
-  StoryComparisonOperator.greaterThan ||
-  StoryComparisonOperator.greaterThanOrEqual => true,
-  StoryComparisonOperator.equal || StoryComparisonOperator.notEqual => false,
-};
+bool _isOrderingOperator(StoryComparisonOperator operator) =>
+    switch (operator) {
+      StoryComparisonOperator.lessThan ||
+      StoryComparisonOperator.lessThanOrEqual ||
+      StoryComparisonOperator.greaterThan ||
+      StoryComparisonOperator.greaterThanOrEqual => true,
+      StoryComparisonOperator.equal ||
+      StoryComparisonOperator.notEqual => false,
+    };
 
 bool _supportsOrdering(StoryValueType type) => _isNumericType(type);
 
@@ -569,12 +557,10 @@ List<StoryDiagnosticPathSegment> _eventPath(int eventIndex) => [
   StoryDiagnosticPathSegment.index(eventIndex),
 ];
 
-List<StoryDiagnosticPathSegment> _choicePath(
-  int eventIndex,
-  int choiceIndex,
-) => [
-  const StoryDiagnosticPathSegment.field('events'),
-  StoryDiagnosticPathSegment.index(eventIndex),
-  const StoryDiagnosticPathSegment.field('choices'),
-  StoryDiagnosticPathSegment.index(choiceIndex),
-];
+List<StoryDiagnosticPathSegment> _choicePath(int eventIndex, int choiceIndex) =>
+    [
+      const StoryDiagnosticPathSegment.field('events'),
+      StoryDiagnosticPathSegment.index(eventIndex),
+      const StoryDiagnosticPathSegment.field('choices'),
+      StoryDiagnosticPathSegment.index(choiceIndex),
+    ];

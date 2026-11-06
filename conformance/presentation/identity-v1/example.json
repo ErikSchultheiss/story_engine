@@ -1,0 +1,26 @@
+{
+  "contract": "open_story.presentation_identity_catalog",
+  "contractVersion": 1,
+  "projectId": "project_example",
+  "units": [
+    {
+      "unitId": "line_choice_leave",
+      "sourceRevision": 2,
+      "kind": "choice_text",
+      "eventId": "evt_gate",
+      "choiceId": "choice_leave"
+    },
+    {
+      "unitId": "line_gate_body",
+      "sourceRevision": 7,
+      "kind": "event_body",
+      "eventId": "evt_gate"
+    },
+    {
+      "unitId": "line_gate_title",
+      "sourceRevision": 3,
+      "kind": "event_title",
+      "eventId": "evt_gate"
+    }
+  ]
+}

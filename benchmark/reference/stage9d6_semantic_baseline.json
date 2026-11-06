@@ -1,0 +1,2269 @@
+{
+  "schema": "story_engine.stage9d6.semantic_baseline.v2",
+  "sourceBenchmarkSchema": "story_engine.stage9d5.optimization_baseline.v1",
+  "gateReportSchema": "story_engine.stage9d6.performance_regression_gate.v2",
+  "benchmarkReportSchema": "story_engine.stage9d6.benchmark_report.v2",
+  "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+  "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+  "frozenPreparationMode": "frozen_stage9d5_prepare_outside_timer",
+  "cases": [
+    {
+      "id": "restore_compact_short",
+      "semanticFingerprint": "746fcdf1879f26be40e5b843d858eeda8f42540c078f0e0b78dc9d0d22272ce3",
+      "workload": {
+        "kind": "validated_restore",
+        "projectProfile": "compact",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "short",
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historySteps": 17
+      }
+    },
+    {
+      "id": "restore_compact_long",
+      "semanticFingerprint": "01d316b81173c2b453476955d1496497fe2d16f48475bc70a61492026843cef9",
+      "workload": {
+        "kind": "validated_restore",
+        "projectProfile": "compact",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "long",
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historySteps": 513
+      }
+    },
+    {
+      "id": "restore_event_heavy_short",
+      "semanticFingerprint": "97055446ea9b7993d5feae906cfca0b2e2381aeec2a4708056da00eeaa7d3da8",
+      "workload": {
+        "kind": "validated_restore",
+        "projectProfile": "event_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "event_heavy",
+        "historyProfile": "short",
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historySteps": 17
+      }
+    },
+    {
+      "id": "restore_event_heavy_long",
+      "semanticFingerprint": "c8f75eb707ba599a83a27ce1cacf92fc866668b571335f9bb536ac00faf7d4ca",
+      "workload": {
+        "kind": "validated_restore",
+        "projectProfile": "event_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "event_heavy",
+        "historyProfile": "long",
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historySteps": 513
+      }
+    },
+    {
+      "id": "restore_choice_heavy_short",
+      "semanticFingerprint": "74eadb56cef1d1f4e01b99e42043b710bc020cd1c2f5e1a6baa6569d989fd230",
+      "workload": {
+        "kind": "validated_restore",
+        "projectProfile": "choice_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "choice_heavy",
+        "historyProfile": "short",
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "historySteps": 17
+      }
+    },
+    {
+      "id": "restore_choice_heavy_long",
+      "semanticFingerprint": "1ae63b7c021d3e3b45877313b4d958ddddf39af22a03b322958639b40b3d7ca9",
+      "workload": {
+        "kind": "validated_restore",
+        "projectProfile": "choice_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "choice_heavy",
+        "historyProfile": "long",
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "historySteps": 513
+      }
+    },
+    {
+      "id": "restore_state_heavy_short",
+      "semanticFingerprint": "d6b8984ccd5c0600469c44e7bde612d5328ee69bb78240351e1892acce2e114f",
+      "workload": {
+        "kind": "validated_restore",
+        "projectProfile": "state_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256
+      },
+      "metrics": {
+        "projectProfile": "state_heavy",
+        "historyProfile": "short",
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "historySteps": 17
+      }
+    },
+    {
+      "id": "restore_state_heavy_long",
+      "semanticFingerprint": "38a496b04078716d669afe6a1ced6dca43b707f3e17f6e7a81b3e249dc910680",
+      "workload": {
+        "kind": "validated_restore",
+        "projectProfile": "state_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256
+      },
+      "metrics": {
+        "projectProfile": "state_heavy",
+        "historyProfile": "long",
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "historySteps": 513
+      }
+    },
+    {
+      "id": "restore_combined_large_short",
+      "semanticFingerprint": "7bae647ae45dbe999ef14d3e46d0f74a51b1aa54ec94d0fcf842bf19ca03813d",
+      "workload": {
+        "kind": "validated_restore",
+        "projectProfile": "combined_large",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256
+      },
+      "metrics": {
+        "projectProfile": "combined_large",
+        "historyProfile": "short",
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "historySteps": 17
+      }
+    },
+    {
+      "id": "restore_combined_large_long",
+      "semanticFingerprint": "eeb7cdcb4bddf62c3237058f2af73638525e24c1e5d521899dca9bc7a017e2ed",
+      "workload": {
+        "kind": "validated_restore",
+        "projectProfile": "combined_large",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256
+      },
+      "metrics": {
+        "projectProfile": "combined_large",
+        "historyProfile": "long",
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "historySteps": 513
+      }
+    },
+    {
+      "id": "propagation_compact_short_s1",
+      "semanticFingerprint": "62d49a03b06fd7b706adea0a34e80591c43e0cbd1d0e861adc7535849e245fc3",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "compact",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "short",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 17,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_compact_short_s10",
+      "semanticFingerprint": "c7fb2b4ccd328e8bb8f9bc849c5f5df2ab87813f32976ac307c7f3d0df3b4751",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "compact",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "short",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 17,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_compact_short_s50",
+      "semanticFingerprint": "a9d72c2d12ad8763388bbee15480bea3433380ade0b8ab2e464b4eeba680e941",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "compact",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "short",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 17,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_compact_long_s1",
+      "semanticFingerprint": "bf9e7c060881407d306ee0e96401790e320ad844de1e58244ede4097aa344201",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "compact",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "long",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 513,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_compact_long_s10",
+      "semanticFingerprint": "46438d66ae81bcc9f0debfaef10e457d92822c4a8ad202047a29f0147bdda8b8",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "compact",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "long",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 513,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_compact_long_s50",
+      "semanticFingerprint": "06ce905292877d1287546fc8ec39f4301555251fdb1446811fc073c92db56973",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "compact",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "long",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 513,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_event_heavy_short_s1",
+      "semanticFingerprint": "22783cf0a11dde82807538c6cfe0addce993774383db33d45aa437198dbaa9b0",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "event_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "event_heavy",
+        "historyProfile": "short",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 17,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_event_heavy_short_s10",
+      "semanticFingerprint": "605b88daca063e048aa2133caa123da0e9776abb642672bbf1bfac0eb4666af0",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "event_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "event_heavy",
+        "historyProfile": "short",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 17,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_event_heavy_short_s50",
+      "semanticFingerprint": "75bfffbb596a825edd2b4820b7646d02e4ed51cab9f5b7a18d8ce901a45f48a3",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "event_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "event_heavy",
+        "historyProfile": "short",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 17,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_event_heavy_long_s1",
+      "semanticFingerprint": "7bbd592ffd255b2cdcf73ffa48127fb1cc418ff217ab54a26558a9ce40d4d322",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "event_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "event_heavy",
+        "historyProfile": "long",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 513,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_event_heavy_long_s10",
+      "semanticFingerprint": "ac4b1ec90a5477fa92f55fc668d68ec100e1ab353c8a373607291737fdb1f935",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "event_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "event_heavy",
+        "historyProfile": "long",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 513,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_event_heavy_long_s50",
+      "semanticFingerprint": "294adfc2121a961f35343e4e0ac7f02279fc665c50c3562603ec10d464c0c862",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "event_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "event_heavy",
+        "historyProfile": "long",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 513,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_choice_heavy_short_s1",
+      "semanticFingerprint": "eb2f73096250a43b039394a402b9d8cb25d2e45aa6a815afc6b9c4e39423f348",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "choice_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "choice_heavy",
+        "historyProfile": "short",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 17,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_choice_heavy_short_s10",
+      "semanticFingerprint": "888a5b7119afb3653c1f8946627a37737429f8372d3d9bedd6ccf8f4758748f8",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "choice_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "choice_heavy",
+        "historyProfile": "short",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 17,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_choice_heavy_short_s50",
+      "semanticFingerprint": "62cb921137bdba329543e89e398a9461fec5f79b2c1fb41996c377cba87de7fe",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "choice_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "choice_heavy",
+        "historyProfile": "short",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 17,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_choice_heavy_long_s1",
+      "semanticFingerprint": "1249af0a938373299b30323c1335aa6e3bdbd245228b151238608bc7644a7592",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "choice_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "choice_heavy",
+        "historyProfile": "long",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 513,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_choice_heavy_long_s10",
+      "semanticFingerprint": "09e42970c08a68c36e3e6671f768ba5f9c664bf97a18edb89a1ab68d02ca45e8",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "choice_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "choice_heavy",
+        "historyProfile": "long",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 513,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_choice_heavy_long_s50",
+      "semanticFingerprint": "f58b5f029143f1cabc514a6ce8a4a3cbe173eaf0a2aac14bf3c23d4d3b7095f7",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "choice_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "projectProfile": "choice_heavy",
+        "historyProfile": "long",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 513,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_state_heavy_short_s1",
+      "semanticFingerprint": "18ebb0cf1a16acd93317fc75d2bae5c850797ffb83d1fdacffe0a12560b1d1ca",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "state_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256
+      },
+      "metrics": {
+        "projectProfile": "state_heavy",
+        "historyProfile": "short",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 17,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_state_heavy_short_s10",
+      "semanticFingerprint": "8e81a88a5fabf6e5405fdf2f6870b3fab4224f0638cb2d3290efe75948756d9f",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "state_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256
+      },
+      "metrics": {
+        "projectProfile": "state_heavy",
+        "historyProfile": "short",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 17,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_state_heavy_short_s50",
+      "semanticFingerprint": "7f3886534bf30e3a6bd54d2230054b4393d647ba139dfde63f065cf879f6f6b9",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "state_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256
+      },
+      "metrics": {
+        "projectProfile": "state_heavy",
+        "historyProfile": "short",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 17,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_state_heavy_long_s1",
+      "semanticFingerprint": "fece9a7e344c5efa3d70815aec6abaa24b8f68b5762eeb077c55134c0b6ba892",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "state_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256
+      },
+      "metrics": {
+        "projectProfile": "state_heavy",
+        "historyProfile": "long",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 513,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_state_heavy_long_s10",
+      "semanticFingerprint": "b68e994cededea81cbdf4b9e78cc0fb8ff9bc054f9d214432ef821f3611053f8",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "state_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256
+      },
+      "metrics": {
+        "projectProfile": "state_heavy",
+        "historyProfile": "long",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 513,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_state_heavy_long_s50",
+      "semanticFingerprint": "643a0462bb4f5ce2712d3cafcd81a3fa2305fccf7d04eb7e9f2068e526c87b80",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "state_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256
+      },
+      "metrics": {
+        "projectProfile": "state_heavy",
+        "historyProfile": "long",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 513,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_combined_large_short_s1",
+      "semanticFingerprint": "c086a4d6ee17a659a51b51225c8f045b2008bc4fc18ca8eb09a23e6aecb9729f",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "combined_large",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256
+      },
+      "metrics": {
+        "projectProfile": "combined_large",
+        "historyProfile": "short",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 17,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_combined_large_short_s10",
+      "semanticFingerprint": "a873a300e1e7846d5b9f0e1a4a5a767f953853e93cad0d55d299d00b63a56a71",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "combined_large",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256
+      },
+      "metrics": {
+        "projectProfile": "combined_large",
+        "historyProfile": "short",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 17,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_combined_large_short_s50",
+      "semanticFingerprint": "6c9efe4d7bdf60eef4cd0dc42b2cbd6cc431b9a9460199ddc0e43e8ca6194327",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "combined_large",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256
+      },
+      "metrics": {
+        "projectProfile": "combined_large",
+        "historyProfile": "short",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 17,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_combined_large_long_s1",
+      "semanticFingerprint": "13a10003d96e510a6e55600798ad0daaaf73eb5d0a02309798a6748de9588d92",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "combined_large",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256
+      },
+      "metrics": {
+        "projectProfile": "combined_large",
+        "historyProfile": "long",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 513,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_combined_large_long_s10",
+      "semanticFingerprint": "9bfadc28e4b16ab20d927c4c6fd81166f1665de78a473c05673cff6a27c8e1fb",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "combined_large",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256
+      },
+      "metrics": {
+        "projectProfile": "combined_large",
+        "historyProfile": "long",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 513,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "propagation_combined_large_long_s50",
+      "semanticFingerprint": "fc1a713a19752a51d11b14deb9e05331b6de10a03e4456fb8d559be5ae96f801",
+      "workload": {
+        "kind": "shared_state_propagation",
+        "projectProfile": "combined_large",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256
+      },
+      "metrics": {
+        "projectProfile": "combined_large",
+        "historyProfile": "long",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 513,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "history_core_medium",
+      "semanticFingerprint": "f238a21a554217f288f183057cbe954314057af6827a1f01b984e5cfd6160abc",
+      "workload": {
+        "kind": "fixed_history_increment",
+        "runtimeKind": "core",
+        "historyProfile": "medium",
+        "preparedLoopChoices": 32,
+        "measuredAdditionalChoices": 16,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "kind": "core",
+        "historyProfile": "medium",
+        "preparedLoopChoices": 32,
+        "measuredAdditionalChoices": 16,
+        "finalHistorySteps": 97,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      }
+    },
+    {
+      "id": "history_narrative_medium",
+      "semanticFingerprint": "017276d6089153f9f865c189db5201f3c06b5dadba08c96d093f741e45c15971",
+      "workload": {
+        "kind": "fixed_history_increment",
+        "runtimeKind": "narrative",
+        "historyProfile": "medium",
+        "preparedLoopChoices": 32,
+        "measuredAdditionalChoices": 16,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "kind": "narrative",
+        "historyProfile": "medium",
+        "preparedLoopChoices": 32,
+        "measuredAdditionalChoices": 16,
+        "finalHistorySteps": 97,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      }
+    },
+    {
+      "id": "history_core_long",
+      "semanticFingerprint": "1d68e0c62942c3ee9272fd5a29f7ffb0700b4bb34ea77617929635c39a2f8354",
+      "workload": {
+        "kind": "fixed_history_increment",
+        "runtimeKind": "core",
+        "historyProfile": "long",
+        "preparedLoopChoices": 128,
+        "measuredAdditionalChoices": 16,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "kind": "core",
+        "historyProfile": "long",
+        "preparedLoopChoices": 128,
+        "measuredAdditionalChoices": 16,
+        "finalHistorySteps": 289,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      }
+    },
+    {
+      "id": "history_narrative_long",
+      "semanticFingerprint": "b8f889c0f9f11e36c7b5ade700a1c6e6f846584b21e192dc32c499424eacc110",
+      "workload": {
+        "kind": "fixed_history_increment",
+        "runtimeKind": "narrative",
+        "historyProfile": "long",
+        "preparedLoopChoices": 128,
+        "measuredAdditionalChoices": 16,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "kind": "narrative",
+        "historyProfile": "long",
+        "preparedLoopChoices": 128,
+        "measuredAdditionalChoices": 16,
+        "finalHistorySteps": 289,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      }
+    },
+    {
+      "id": "history_core_very_long",
+      "semanticFingerprint": "7d7786bdad33043d7af11415f2c600f8b77d5e3795d9471cf4f28f399ee3bec8",
+      "workload": {
+        "kind": "fixed_history_increment",
+        "runtimeKind": "core",
+        "historyProfile": "very_long",
+        "preparedLoopChoices": 512,
+        "measuredAdditionalChoices": 16,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "kind": "core",
+        "historyProfile": "very_long",
+        "preparedLoopChoices": 512,
+        "measuredAdditionalChoices": 16,
+        "finalHistorySteps": 1057,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      }
+    },
+    {
+      "id": "history_narrative_very_long",
+      "semanticFingerprint": "f8c10aab54389734fd786d586a502df7bdec9b0dd58e3d96b16061c82405f55a",
+      "workload": {
+        "kind": "fixed_history_increment",
+        "runtimeKind": "narrative",
+        "historyProfile": "very_long",
+        "preparedLoopChoices": 512,
+        "measuredAdditionalChoices": 16,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      },
+      "metrics": {
+        "kind": "narrative",
+        "historyProfile": "very_long",
+        "preparedLoopChoices": 512,
+        "measuredAdditionalChoices": 16,
+        "finalHistorySteps": 1057,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1
+      }
+    }
+  ],
+  "ownedCases": [
+    {
+      "id": "unchanged_history_medium_s2",
+      "workload": {
+        "kind": "multi_session_unchanged_state_history",
+        "projectProfile": "compact",
+        "historyProfile": "medium",
+        "preparedLoopChoices": 32,
+        "measuredAdditionalChoices": 64,
+        "sessionCount": 2,
+        "persistentStateMutationExpected": false,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "medium",
+        "sessionCount": 2,
+        "preparedLoopChoices": 32,
+        "measuredAdditionalChoices": 64,
+        "sourceHistoryStepsBefore": 65,
+        "sourceHistoryStepsAfter": 193,
+        "siblingHistorySteps": 65,
+        "activeSessionCount": 2,
+        "persistentStateRevision": 0,
+        "counterValue": 0
+      },
+      "semanticFingerprint": "0b935851ea5c17f34c764d7a7a70800f1612b8ee9575e1e66d0024816a85f394"
+    },
+    {
+      "id": "unchanged_history_medium_s50",
+      "workload": {
+        "kind": "multi_session_unchanged_state_history",
+        "projectProfile": "compact",
+        "historyProfile": "medium",
+        "preparedLoopChoices": 32,
+        "measuredAdditionalChoices": 64,
+        "sessionCount": 50,
+        "persistentStateMutationExpected": false,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "medium",
+        "sessionCount": 50,
+        "preparedLoopChoices": 32,
+        "measuredAdditionalChoices": 64,
+        "sourceHistoryStepsBefore": 65,
+        "sourceHistoryStepsAfter": 193,
+        "siblingHistorySteps": 65,
+        "activeSessionCount": 50,
+        "persistentStateRevision": 0,
+        "counterValue": 0
+      },
+      "semanticFingerprint": "e7ce8585ea21555f23aa3be0b35c01ecb10ac6d29c0e163006fb44700524dff0"
+    },
+    {
+      "id": "unchanged_history_long_s2",
+      "workload": {
+        "kind": "multi_session_unchanged_state_history",
+        "projectProfile": "compact",
+        "historyProfile": "long",
+        "preparedLoopChoices": 128,
+        "measuredAdditionalChoices": 64,
+        "sessionCount": 2,
+        "persistentStateMutationExpected": false,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "long",
+        "sessionCount": 2,
+        "preparedLoopChoices": 128,
+        "measuredAdditionalChoices": 64,
+        "sourceHistoryStepsBefore": 257,
+        "sourceHistoryStepsAfter": 385,
+        "siblingHistorySteps": 257,
+        "activeSessionCount": 2,
+        "persistentStateRevision": 0,
+        "counterValue": 0
+      },
+      "semanticFingerprint": "d668f2beffd15fbb55a4ef31c505172eaadcd246324e85da4f299f1d962df326"
+    },
+    {
+      "id": "unchanged_history_long_s50",
+      "workload": {
+        "kind": "multi_session_unchanged_state_history",
+        "projectProfile": "compact",
+        "historyProfile": "long",
+        "preparedLoopChoices": 128,
+        "measuredAdditionalChoices": 64,
+        "sessionCount": 50,
+        "persistentStateMutationExpected": false,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "long",
+        "sessionCount": 50,
+        "preparedLoopChoices": 128,
+        "measuredAdditionalChoices": 64,
+        "sourceHistoryStepsBefore": 257,
+        "sourceHistoryStepsAfter": 385,
+        "siblingHistorySteps": 257,
+        "activeSessionCount": 50,
+        "persistentStateRevision": 0,
+        "counterValue": 0
+      },
+      "semanticFingerprint": "06aeedbe17c9c83429668b7d8d64c7264c0fde0a343eae9f2fc1eced505cd00f"
+    },
+    {
+      "id": "unchanged_history_very_long_s2",
+      "workload": {
+        "kind": "multi_session_unchanged_state_history",
+        "projectProfile": "compact",
+        "historyProfile": "very_long",
+        "preparedLoopChoices": 512,
+        "measuredAdditionalChoices": 64,
+        "sessionCount": 2,
+        "persistentStateMutationExpected": false,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "very_long",
+        "sessionCount": 2,
+        "preparedLoopChoices": 512,
+        "measuredAdditionalChoices": 64,
+        "sourceHistoryStepsBefore": 1025,
+        "sourceHistoryStepsAfter": 1153,
+        "siblingHistorySteps": 1025,
+        "activeSessionCount": 2,
+        "persistentStateRevision": 0,
+        "counterValue": 0
+      },
+      "semanticFingerprint": "ad0554a31eb894e901d9667067a048950591bbce84afbd11f5c1b43193bf65c5"
+    },
+    {
+      "id": "unchanged_history_very_long_s50",
+      "workload": {
+        "kind": "multi_session_unchanged_state_history",
+        "projectProfile": "compact",
+        "historyProfile": "very_long",
+        "preparedLoopChoices": 512,
+        "measuredAdditionalChoices": 64,
+        "sessionCount": 50,
+        "persistentStateMutationExpected": false,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "very_long",
+        "sessionCount": 50,
+        "preparedLoopChoices": 512,
+        "measuredAdditionalChoices": 64,
+        "sourceHistoryStepsBefore": 1025,
+        "sourceHistoryStepsAfter": 1153,
+        "siblingHistorySteps": 1025,
+        "activeSessionCount": 50,
+        "persistentStateRevision": 0,
+        "counterValue": 0
+      },
+      "semanticFingerprint": "d941b5afcbf3b97cab7c2d824053e53511ed332683fbb82ac211413b9bed0b76"
+    },
+    {
+      "id": "prewarmed_propagation_compact_short_s1",
+      "semanticFingerprintMatchesCase": "propagation_compact_short_s1",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "compact",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "short",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 17,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_compact_short_s10",
+      "semanticFingerprintMatchesCase": "propagation_compact_short_s10",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "compact",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "short",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 17,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_compact_short_s50",
+      "semanticFingerprintMatchesCase": "propagation_compact_short_s50",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "compact",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "short",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 17,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_compact_long_s1",
+      "semanticFingerprintMatchesCase": "propagation_compact_long_s1",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "compact",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "long",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 513,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_compact_long_s10",
+      "semanticFingerprintMatchesCase": "propagation_compact_long_s10",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "compact",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "long",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 513,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_compact_long_s50",
+      "semanticFingerprintMatchesCase": "propagation_compact_long_s50",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "compact",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "compact",
+        "historyProfile": "long",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 513,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_event_heavy_short_s1",
+      "semanticFingerprintMatchesCase": "propagation_event_heavy_short_s1",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "event_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "event_heavy",
+        "historyProfile": "short",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 17,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_event_heavy_short_s10",
+      "semanticFingerprintMatchesCase": "propagation_event_heavy_short_s10",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "event_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "event_heavy",
+        "historyProfile": "short",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 17,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_event_heavy_short_s50",
+      "semanticFingerprintMatchesCase": "propagation_event_heavy_short_s50",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "event_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "event_heavy",
+        "historyProfile": "short",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 17,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_event_heavy_long_s1",
+      "semanticFingerprintMatchesCase": "propagation_event_heavy_long_s1",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "event_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "event_heavy",
+        "historyProfile": "long",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 513,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_event_heavy_long_s10",
+      "semanticFingerprintMatchesCase": "propagation_event_heavy_long_s10",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "event_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "event_heavy",
+        "historyProfile": "long",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 513,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_event_heavy_long_s50",
+      "semanticFingerprintMatchesCase": "propagation_event_heavy_long_s50",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "event_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "event_heavy",
+        "historyProfile": "long",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 513,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_choice_heavy_short_s1",
+      "semanticFingerprintMatchesCase": "propagation_choice_heavy_short_s1",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "choice_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "choice_heavy",
+        "historyProfile": "short",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 17,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_choice_heavy_short_s10",
+      "semanticFingerprintMatchesCase": "propagation_choice_heavy_short_s10",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "choice_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "choice_heavy",
+        "historyProfile": "short",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 17,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_choice_heavy_short_s50",
+      "semanticFingerprintMatchesCase": "propagation_choice_heavy_short_s50",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "choice_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "choice_heavy",
+        "historyProfile": "short",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 17,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_choice_heavy_long_s1",
+      "semanticFingerprintMatchesCase": "propagation_choice_heavy_long_s1",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "choice_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "choice_heavy",
+        "historyProfile": "long",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 513,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_choice_heavy_long_s10",
+      "semanticFingerprintMatchesCase": "propagation_choice_heavy_long_s10",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "choice_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "choice_heavy",
+        "historyProfile": "long",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 513,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_choice_heavy_long_s50",
+      "semanticFingerprintMatchesCase": "propagation_choice_heavy_long_s50",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "choice_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "choice_heavy",
+        "historyProfile": "long",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 258,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 1,
+        "historyStepsBeforePerSession": 513,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_state_heavy_short_s1",
+      "semanticFingerprintMatchesCase": "propagation_state_heavy_short_s1",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "state_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "state_heavy",
+        "historyProfile": "short",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 17,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_state_heavy_short_s10",
+      "semanticFingerprintMatchesCase": "propagation_state_heavy_short_s10",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "state_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "state_heavy",
+        "historyProfile": "short",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 17,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_state_heavy_short_s50",
+      "semanticFingerprintMatchesCase": "propagation_state_heavy_short_s50",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "state_heavy",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "state_heavy",
+        "historyProfile": "short",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 17,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_state_heavy_long_s1",
+      "semanticFingerprintMatchesCase": "propagation_state_heavy_long_s1",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "state_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "state_heavy",
+        "historyProfile": "long",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 513,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_state_heavy_long_s10",
+      "semanticFingerprintMatchesCase": "propagation_state_heavy_long_s10",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "state_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "state_heavy",
+        "historyProfile": "long",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 513,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_state_heavy_long_s50",
+      "semanticFingerprintMatchesCase": "propagation_state_heavy_long_s50",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "state_heavy",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "state_heavy",
+        "historyProfile": "long",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2,
+        "authoredChoiceCount": 2,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 513,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_combined_large_short_s1",
+      "semanticFingerprintMatchesCase": "propagation_combined_large_short_s1",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "combined_large",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "combined_large",
+        "historyProfile": "short",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 17,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_combined_large_short_s10",
+      "semanticFingerprintMatchesCase": "propagation_combined_large_short_s10",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "combined_large",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "combined_large",
+        "historyProfile": "short",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 17,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_combined_large_short_s50",
+      "semanticFingerprintMatchesCase": "propagation_combined_large_short_s50",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "combined_large",
+        "historyProfile": "short",
+        "historyLoopChoices": 8,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "combined_large",
+        "historyProfile": "short",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 17,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_combined_large_long_s1",
+      "semanticFingerprintMatchesCase": "propagation_combined_large_long_s1",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "combined_large",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "combined_large",
+        "historyProfile": "long",
+        "sessionCount": 1,
+        "expectedSiblingRebuildCount": 0,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 513,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_combined_large_long_s10",
+      "semanticFingerprintMatchesCase": "propagation_combined_large_long_s10",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "combined_large",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "combined_large",
+        "historyProfile": "long",
+        "sessionCount": 10,
+        "expectedSiblingRebuildCount": 9,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 513,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    },
+    {
+      "id": "prewarmed_propagation_combined_large_long_s50",
+      "semanticFingerprintMatchesCase": "propagation_combined_large_long_s50",
+      "workload": {
+        "kind": "prewarmed_shared_state_propagation",
+        "projectProfile": "combined_large",
+        "historyProfile": "long",
+        "historyLoopChoices": 256,
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "projectPreparationPrewarmed": true,
+        "timingContractVersion": "story_engine.stage9d6.timing_contract.v1",
+        "timerBoundaryContract": "prepare_outside_timer__run_only_inside_timer__semantic_checks_after_timer",
+        "preparationMode": "multi_session_history_and_project_restore_preparation_prebuilt_outside_timer"
+      },
+      "metrics": {
+        "projectProfile": "combined_large",
+        "historyProfile": "long",
+        "sessionCount": 50,
+        "expectedSiblingRebuildCount": 49,
+        "authoredEventCount": 2050,
+        "authoredChoiceCount": 2050,
+        "stateVariableCount": 256,
+        "historyStepsBeforePerSession": 513,
+        "projectPreparationPrewarmed": true,
+        "persistentStateRevision": 1
+      }
+    }
+  ]
+}

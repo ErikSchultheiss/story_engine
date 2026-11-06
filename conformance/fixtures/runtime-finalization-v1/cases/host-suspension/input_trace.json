@@ -1,0 +1,66 @@
+{
+  "formatId": "open_story.conformance_hardening_input_trace",
+  "formatVersion": 1,
+  "runtime": "narrative",
+  "random": {
+    "algorithmId": "story_engine.lcg32",
+    "algorithmVersion": 1,
+    "seed": 0
+  },
+  "maxAutomaticTransitions": 2,
+  "inputs": [
+    {
+      "kind": "startSession",
+      "entryPointId": "entry"
+    },
+    {
+      "kind": "requestHost",
+      "sessionIndex": 0
+    },
+    {
+      "kind": "choose",
+      "sessionIndex": 0,
+      "choiceId": "safe"
+    },
+    {
+      "kind": "restore"
+    },
+    {
+      "kind": "completeHost",
+      "sessionIndex": 0,
+      "requestId": "host_action_session_0_0",
+      "value": "invalid"
+    },
+    {
+      "kind": "completeHost",
+      "sessionIndex": 0,
+      "requestId": "host_action_session_0_0",
+      "value": true
+    },
+    {
+      "kind": "choose",
+      "sessionIndex": 0,
+      "choiceId": "safe"
+    },
+    {
+      "kind": "completeHost",
+      "sessionIndex": 0,
+      "requestId": "host_action_session_0_0",
+      "value": true
+    },
+    {
+      "kind": "continue",
+      "sessionIndex": 0
+    }
+  ],
+  "entryPoints": [
+    {
+      "id": "entry",
+      "eventId": "root"
+    },
+    {
+      "id": "loop",
+      "eventId": "loop"
+    }
+  ]
+}

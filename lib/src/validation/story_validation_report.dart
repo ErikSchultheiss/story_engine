@@ -4,6 +4,7 @@ import 'story_diagnostic_code.dart';
 import 'story_diagnostic_location.dart';
 import 'story_diagnostic_reference.dart';
 import 'story_diagnostic_severity.dart';
+import 'story_ordered_comparison.dart';
 
 /// Immutable, canonically ordered result of validating one authored project.
 final class StoryValidationReport {
@@ -51,8 +52,7 @@ final class StoryValidationReport {
       diagnostics: ordered,
       errors: List<StoryDiagnostic>.unmodifiable(
         ordered.where(
-          (diagnostic) =>
-              diagnostic.severity == StoryDiagnosticSeverity.error,
+          (diagnostic) => diagnostic.severity == StoryDiagnosticSeverity.error,
         ),
       ),
       warnings: List<StoryDiagnostic>.unmodifiable(
@@ -117,7 +117,8 @@ final class StoryValidationReport {
   bool get isValid => !hasErrors;
 
   /// Concise deterministic count summary for logs and developer UIs.
-  String get summary => '${_countLabel(errorCount, 'error')}, '
+  String get summary =>
+      '${_countLabel(errorCount, 'error')}, '
       '${_countLabel(warningCount, 'warning')}, '
       '${_countLabel(informationCount, 'information')}';
 
@@ -151,9 +152,7 @@ final class StoryValidationReport {
     for (final diagnostic in selected) {
       buffer
         ..writeln()
-        ..write(
-          diagnostic.format(includeSuggestion: includeSuggestions),
-        );
+        ..write(diagnostic.format(includeSuggestion: includeSuggestions));
     }
     return buffer.toString();
   }
@@ -190,9 +189,9 @@ int _compareDiagnostics(StoryDiagnostic left, StoryDiagnostic right) {
     return comparison;
   }
 
-  comparison = _severityPriority(left.severity).compareTo(
-    _severityPriority(right.severity),
-  );
+  comparison = _severityPriority(
+    left.severity,
+  ).compareTo(_severityPriority(right.severity));
   if (comparison != 0) {
     return comparison;
   }
@@ -206,30 +205,12 @@ int _compareDiagnostics(StoryDiagnostic left, StoryDiagnostic right) {
 int _compareReferenceLists(
   List<StoryDiagnosticReference> left,
   List<StoryDiagnosticReference> right,
-) {
-  final sharedLength = left.length < right.length ? left.length : right.length;
-  for (var index = 0; index < sharedLength; index++) {
-    final comparison = left[index].compareTo(right[index]);
-    if (comparison != 0) {
-      return comparison;
-    }
-  }
-  return left.length.compareTo(right.length);
-}
+) => compareStoryOrderedValues(left, right);
 
 int _compareLocationLists(
   List<StoryDiagnosticLocation> left,
   List<StoryDiagnosticLocation> right,
-) {
-  final sharedLength = left.length < right.length ? left.length : right.length;
-  for (var index = 0; index < sharedLength; index++) {
-    final comparison = left[index].compareTo(right[index]);
-    if (comparison != 0) {
-      return comparison;
-    }
-  }
-  return left.length.compareTo(right.length);
-}
+) => compareStoryOrderedValues(left, right);
 
 int _severityPriority(StoryDiagnosticSeverity severity) => switch (severity) {
   StoryDiagnosticSeverity.error => 0,

@@ -43,13 +43,10 @@ final class StoryState {
   factory StoryState.fromRawValues({
     required StoryStateSchema schema,
     required Map<StoryVariableId, Object> values,
-  }) => StoryState._validated(
-    schema,
-    <StoryVariableId, StoryValue>{
-      for (final entry in values.entries)
-        entry.key: StoryValue.fromRaw(entry.value),
-    },
-  );
+  }) => StoryState._validated(schema, <StoryVariableId, StoryValue>{
+    for (final entry in values.entries)
+      entry.key: StoryValue.fromRaw(entry.value),
+  });
 
   factory StoryState._validated(
     StoryStateSchema schema,

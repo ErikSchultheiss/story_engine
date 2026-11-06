@@ -36,7 +36,9 @@ void main(List<String> arguments) {
   }
 
   print('story_engine performance baseline');
-  print('Timings are medians in microseconds; compare on the same machine/SDK.');
+  print(
+    'Timings are medians in microseconds; compare on the same machine/SDK.',
+  );
   for (final observation in observations) {
     print('');
     print(
@@ -150,13 +152,13 @@ _BenchmarkObservation _measureProject({
 
   final snapshotRestore = _measureMedian(
     samples,
-    () => StoryEngine.restore(
-      project: decodedProject,
-      snapshot: decodedSnapshot,
-    ),
+    () =>
+        StoryEngine.restore(project: decodedProject, snapshot: decodedSnapshot),
   );
   if (snapshotRestore.value.history != completedEngine.history) {
-    throw StateError('$name snapshot restore did not preserve runtime history.');
+    throw StateError(
+      '$name snapshot restore did not preserve runtime history.',
+    );
   }
 
   final bundleUtf8Bytes = bundle.files.values.fold<int>(

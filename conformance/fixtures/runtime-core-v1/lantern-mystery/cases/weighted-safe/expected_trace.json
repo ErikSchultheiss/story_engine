@@ -1,0 +1,75 @@
+{
+  "formatId": "open_story.conformance_expected_trace",
+  "formatVersion": 1,
+  "observations": [
+    {
+      "afterInputIndex": 0,
+      "status": "awaitingChoice",
+      "currentEventId": "evt_0001",
+      "availableChoiceIds": [
+        "ch_0001",
+        "ch_0003",
+        "ch_0005"
+      ]
+    },
+    {
+      "afterInputIndex": 1,
+      "status": "awaitingChoice",
+      "currentEventId": "evt_0001",
+      "availableChoiceIds": [
+        "ch_0002",
+        "ch_0003",
+        "ch_0005"
+      ]
+    },
+    {
+      "afterInputIndex": 2,
+      "status": "awaitingChoice",
+      "currentEventId": "evt_0001",
+      "availableChoiceIds": [
+        "ch_0003",
+        "ch_0004",
+        "ch_0005"
+      ]
+    },
+    {
+      "afterInputIndex": 3,
+      "status": "awaitingChoice",
+      "currentEventId": "evt_0004",
+      "availableChoiceIds": [
+        "ch_0011",
+        "ch_0013",
+        "ch_0014"
+      ]
+    },
+    {
+      "afterInputIndex": 4,
+      "status": "awaitingChoice",
+      "currentEventId": "evt_0006",
+      "availableChoiceIds": [
+        "ch_0016",
+        "ch_0017"
+      ]
+    },
+    {
+      "afterInputIndex": 5,
+      "status": "awaitingChoice",
+      "currentEventId": "evt_0009",
+      "availableChoiceIds": [
+        "ch_0022"
+      ]
+    },
+    {
+      "afterInputIndex": 6,
+      "status": "awaitingContinue",
+      "currentEventId": "evt_0011",
+      "availableChoiceIds": []
+    },
+    {
+      "afterInputIndex": 7,
+      "status": "terminated",
+      "currentEventId": "evt_0011",
+      "availableChoiceIds": []
+    }
+  ]
+}

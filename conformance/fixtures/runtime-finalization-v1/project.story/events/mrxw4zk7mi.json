@@ -1,0 +1,17 @@
+{
+  "id": "done_b",
+  "entryEffects": [
+    {
+      "kind": "increment_variable",
+      "variableId": "score",
+      "amount": {
+        "type": "integer",
+        "value": 20
+      }
+    }
+  ],
+  "choices": [],
+  "continuationTransition": {
+    "kind": "terminal"
+  }
+}

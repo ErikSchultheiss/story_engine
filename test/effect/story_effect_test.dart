@@ -7,14 +7,8 @@ void main() {
 
     test('set and unset effects are immutable value objects', () {
       const value = StoryBooleanValue(true);
-      final setA = StorySetVariableEffect(
-        variableId: variableId,
-        value: value,
-      );
-      final setB = StorySetVariableEffect(
-        variableId: variableId,
-        value: value,
-      );
+      final setA = StorySetVariableEffect(variableId: variableId, value: value);
+      final setB = StorySetVariableEffect(variableId: variableId, value: value);
       final unsetA = StoryUnsetVariableEffect(variableId: variableId);
       final unsetB = StoryUnsetVariableEffect(variableId: variableId);
 

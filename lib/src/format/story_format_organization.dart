@@ -38,10 +38,7 @@ final class StoryFormatOrganization {
       }
     }
 
-    return StoryFormatOrganization._(
-      groups: copiedGroups,
-      tags: copiedTags,
-    );
+    return StoryFormatOrganization._(groups: copiedGroups, tags: copiedTags);
   }
 
   StoryFormatOrganization._({required this.groups, required this.tags});

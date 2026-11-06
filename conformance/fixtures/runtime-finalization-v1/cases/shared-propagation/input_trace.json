@@ -1,0 +1,73 @@
+{
+  "formatId": "open_story.conformance_hardening_input_trace",
+  "formatVersion": 1,
+  "runtime": "narrative",
+  "random": {
+    "algorithmId": "story_engine.lcg32",
+    "algorithmVersion": 1,
+    "seed": 0
+  },
+  "maxAutomaticTransitions": 2,
+  "inputs": [
+    {
+      "kind": "startSession",
+      "entryPointId": "entry"
+    },
+    {
+      "kind": "startSession",
+      "entryPointId": "entry"
+    },
+    {
+      "kind": "choose",
+      "sessionIndex": 0,
+      "choiceId": "bump"
+    },
+    {
+      "kind": "choose",
+      "sessionIndex": 1,
+      "choiceId": "safe"
+    },
+    {
+      "kind": "requestHost",
+      "sessionIndex": 1
+    },
+    {
+      "kind": "choose",
+      "sessionIndex": 0,
+      "choiceId": "bump"
+    },
+    {
+      "kind": "restore"
+    },
+    {
+      "kind": "completeHost",
+      "sessionIndex": 1,
+      "requestId": "host_action_session_1_0",
+      "value": true
+    },
+    {
+      "kind": "continue",
+      "sessionIndex": 1
+    },
+    {
+      "kind": "choose",
+      "sessionIndex": 0,
+      "choiceId": "bump"
+    },
+    {
+      "kind": "choose",
+      "sessionIndex": 0,
+      "choiceId": "finish"
+    }
+  ],
+  "entryPoints": [
+    {
+      "id": "entry",
+      "eventId": "root"
+    },
+    {
+      "id": "loop",
+      "eventId": "loop"
+    }
+  ]
+}

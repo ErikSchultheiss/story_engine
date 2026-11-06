@@ -11,10 +11,7 @@ void main() {
     });
 
     test('integer and number are distinct value categories', () {
-      expect(
-        StoryIntegerValue(1),
-        isNot(equals(StoryNumberValue(1.0))),
-      );
+      expect(StoryIntegerValue(1), isNot(equals(StoryNumberValue(1.0))));
     });
 
     test('fromRaw converts supported host scalars without coercion', () {

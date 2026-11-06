@@ -1,0 +1,151 @@
+{
+  "formatId": "open_story.conformance_hardening_expected_trace",
+  "formatVersion": 1,
+  "observations": [
+    {
+      "afterInputIndex": 0,
+      "outcome": "rejected",
+      "error": "executionRejected",
+      "checkpointUnchanged": true,
+      "status": "notStarted",
+      "currentEventId": null,
+      "availableChoiceIds": [],
+      "state": null,
+      "history": {
+        "formatId": "open_story.conformance_history",
+        "formatVersion": 1,
+        "steps": []
+      }
+    },
+    {
+      "afterInputIndex": 1,
+      "outcome": "committed",
+      "error": null,
+      "checkpointUnchanged": false,
+      "status": "awaitingContinue",
+      "currentEventId": "guarded",
+      "availableChoiceIds": [],
+      "state": {
+        "formatId": "open_story.conformance_state",
+        "formatVersion": 1,
+        "mode": "explicit",
+        "values": [
+          {
+            "variableId": "score",
+            "state": "set",
+            "value": {
+              "type": "integer",
+              "value": 0
+            }
+          },
+          {
+            "variableId": "flag",
+            "state": "set",
+            "value": {
+              "type": "boolean",
+              "value": true
+            }
+          }
+        ]
+      },
+      "history": {
+        "formatId": "open_story.conformance_history",
+        "formatVersion": 1,
+        "steps": [
+          {
+            "kind": "eventEntered",
+            "eventId": "guarded"
+          }
+        ]
+      }
+    },
+    {
+      "afterInputIndex": 2,
+      "outcome": "committed",
+      "error": null,
+      "checkpointUnchanged": true,
+      "status": "awaitingContinue",
+      "currentEventId": "guarded",
+      "availableChoiceIds": [],
+      "state": {
+        "formatId": "open_story.conformance_state",
+        "formatVersion": 1,
+        "mode": "explicit",
+        "values": [
+          {
+            "variableId": "score",
+            "state": "set",
+            "value": {
+              "type": "integer",
+              "value": 0
+            }
+          },
+          {
+            "variableId": "flag",
+            "state": "set",
+            "value": {
+              "type": "boolean",
+              "value": true
+            }
+          }
+        ]
+      },
+      "history": {
+        "formatId": "open_story.conformance_history",
+        "formatVersion": 1,
+        "steps": [
+          {
+            "kind": "eventEntered",
+            "eventId": "guarded"
+          }
+        ]
+      }
+    },
+    {
+      "afterInputIndex": 3,
+      "outcome": "committed",
+      "error": null,
+      "checkpointUnchanged": false,
+      "status": "terminated",
+      "currentEventId": "guarded",
+      "availableChoiceIds": [],
+      "state": {
+        "formatId": "open_story.conformance_state",
+        "formatVersion": 1,
+        "mode": "explicit",
+        "values": [
+          {
+            "variableId": "score",
+            "state": "set",
+            "value": {
+              "type": "integer",
+              "value": 0
+            }
+          },
+          {
+            "variableId": "flag",
+            "state": "set",
+            "value": {
+              "type": "boolean",
+              "value": true
+            }
+          }
+        ]
+      },
+      "history": {
+        "formatId": "open_story.conformance_history",
+        "formatVersion": 1,
+        "steps": [
+          {
+            "kind": "eventEntered",
+            "eventId": "guarded"
+          },
+          {
+            "kind": "eventContinued",
+            "eventId": "guarded"
+          }
+        ]
+      }
+    }
+  ]
+}

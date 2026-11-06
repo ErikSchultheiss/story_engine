@@ -26,10 +26,7 @@ enum StoryDiagnosticReferenceKind {
 /// unresolved ID in structured form.
 final class StoryDiagnosticReference
     implements Comparable<StoryDiagnosticReference> {
-  const StoryDiagnosticReference._({
-    required this.kind,
-    required this.value,
-  });
+  const StoryDiagnosticReference._({required this.kind, required this.value});
 
   /// Creates a project reference.
   factory StoryDiagnosticReference.project(StoryProjectId id) =>
@@ -67,9 +64,9 @@ final class StoryDiagnosticReference
 
   @override
   int compareTo(StoryDiagnosticReference other) {
-    final kindComparison = _referenceKindPriority(kind).compareTo(
-      _referenceKindPriority(other.kind),
-    );
+    final kindComparison = _referenceKindPriority(
+      kind,
+    ).compareTo(_referenceKindPriority(other.kind));
     if (kindComparison != 0) {
       return kindComparison;
     }

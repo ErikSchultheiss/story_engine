@@ -1,0 +1,38 @@
+{
+  "contract": "open_story.explicit_host_input_vector",
+  "contractVersion": 1,
+  "condition": {
+    "key": "is_night",
+    "schemaNamespace": "com.example.world",
+    "conditionId": "is_night"
+  },
+  "cases": [
+    {
+      "caseId": "night_environment_a",
+      "explicitResult": true,
+      "environmentNoise": {
+        "wallClock": "2001-01-01T00:00:00Z",
+        "hiddenGlobal": "alpha"
+      },
+      "expectedEntryPointId": "entry_night"
+    },
+    {
+      "caseId": "night_environment_b",
+      "explicitResult": true,
+      "environmentNoise": {
+        "wallClock": "2099-12-31T23:59:59Z",
+        "hiddenGlobal": "omega"
+      },
+      "expectedEntryPointId": "entry_night"
+    },
+    {
+      "caseId": "day_explicit_input",
+      "explicitResult": false,
+      "environmentNoise": {
+        "wallClock": "2001-01-01T00:00:00Z",
+        "hiddenGlobal": "alpha"
+      },
+      "expectedEntryPointId": "entry_day"
+    }
+  ]
+}

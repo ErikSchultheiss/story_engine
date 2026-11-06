@@ -39,7 +39,8 @@ final class StoryAllCondition extends StoryCondition {
           _orderedConditionsEqual(conditions, other.conditions);
 
   @override
-  int get hashCode => Object.hash(StoryAllCondition, Object.hashAll(conditions));
+  int get hashCode =>
+      Object.hash(StoryAllCondition, Object.hashAll(conditions));
 
   @override
   String toString() => 'StoryAllCondition($conditions)';
@@ -71,7 +72,8 @@ final class StoryAnyCondition extends StoryCondition {
           _orderedConditionsEqual(conditions, other.conditions);
 
   @override
-  int get hashCode => Object.hash(StoryAnyCondition, Object.hashAll(conditions));
+  int get hashCode =>
+      Object.hash(StoryAnyCondition, Object.hashAll(conditions));
 
   @override
   String toString() => 'StoryAnyCondition($conditions)';
@@ -201,13 +203,15 @@ final class StoryVariableComparisonCondition extends StoryCondition {
       'StoryVariableComparisonCondition($variableId $operator $value)';
 }
 
-bool _isOrderingOperator(StoryComparisonOperator operator) => switch (operator) {
-  StoryComparisonOperator.lessThan ||
-  StoryComparisonOperator.lessThanOrEqual ||
-  StoryComparisonOperator.greaterThan ||
-  StoryComparisonOperator.greaterThanOrEqual => true,
-  StoryComparisonOperator.equal || StoryComparisonOperator.notEqual => false,
-};
+bool _isOrderingOperator(StoryComparisonOperator operator) =>
+    switch (operator) {
+      StoryComparisonOperator.lessThan ||
+      StoryComparisonOperator.lessThanOrEqual ||
+      StoryComparisonOperator.greaterThan ||
+      StoryComparisonOperator.greaterThanOrEqual => true,
+      StoryComparisonOperator.equal ||
+      StoryComparisonOperator.notEqual => false,
+    };
 
 bool _supportsOrdering(StoryValueType type) => switch (type) {
   StoryValueType.integer || StoryValueType.number => true,

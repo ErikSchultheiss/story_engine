@@ -3,47 +3,50 @@ import 'package:test/test.dart';
 
 void main() {
   group('StoryText', () {
-    test('preserves authored text exactly, including empty/whitespace text', () {
-      const empty = StoryText('');
-      const whitespace = StoryText('  line one\nline two  ');
+    test(
+      'preserves authored text exactly, including empty/whitespace text',
+      () {
+        const empty = StoryText('');
+        const whitespace = StoryText('  line one\nline two  ');
 
-      expect(empty.value, '');
-      expect(whitespace.value, '  line one\nline two  ');
-      expect(const StoryText('Foyer'), const StoryText('Foyer'));
-    });
+        expect(empty.value, '');
+        expect(whitespace.value, '  line one\nline two  ');
+        expect(const StoryText('Foyer'), const StoryText('Foyer'));
+      },
+    );
   });
 
   group('StoryEventPresentation', () {
-    test('supports title-only, body-only, and title-plus-body presentation', () {
-      final titleOnly = StoryEventPresentation(
-        title: const StoryText('Foyer'),
-      );
-      final bodyOnly = StoryEventPresentation(
-        body: const StoryText('You enter the station.'),
-      );
-      final complete = StoryEventPresentation(
-        title: const StoryText('Foyer'),
-        body: const StoryText('You enter the station.'),
-      );
-
-      expect(titleOnly.title, const StoryText('Foyer'));
-      expect(titleOnly.body, isNull);
-      expect(bodyOnly.title, isNull);
-      expect(bodyOnly.body, const StoryText('You enter the station.'));
-      expect(
-        complete,
-        StoryEventPresentation(
+    test(
+      'supports title-only, body-only, and title-plus-body presentation',
+      () {
+        final titleOnly = StoryEventPresentation(
+          title: const StoryText('Foyer'),
+        );
+        final bodyOnly = StoryEventPresentation(
+          body: const StoryText('You enter the station.'),
+        );
+        final complete = StoryEventPresentation(
           title: const StoryText('Foyer'),
           body: const StoryText('You enter the station.'),
-        ),
-      );
-    });
+        );
+
+        expect(titleOnly.title, const StoryText('Foyer'));
+        expect(titleOnly.body, isNull);
+        expect(bodyOnly.title, isNull);
+        expect(bodyOnly.body, const StoryText('You enter the station.'));
+        expect(
+          complete,
+          StoryEventPresentation(
+            title: const StoryText('Foyer'),
+            body: const StoryText('You enter the station.'),
+          ),
+        );
+      },
+    );
 
     test('rejects an empty presentation object', () {
-      expect(
-        () => StoryEventPresentation(),
-        throwsArgumentError,
-      );
+      expect(() => StoryEventPresentation(), throwsArgumentError);
     });
   });
 
@@ -106,7 +109,10 @@ void main() {
 
       final engine = StoryEngine(project: project, randomSeed: 1)..start();
 
-      expect(engine.currentEvent?.presentation?.title, const StoryText('Start'));
+      expect(
+        engine.currentEvent?.presentation?.title,
+        const StoryText('Start'),
+      );
       expect(
         engine.availableChoices.single.presentation?.text,
         const StoryText('Finish'),

@@ -52,11 +52,8 @@ final class StoryConditionalTransitionBranch {
           other.transition == transition;
 
   @override
-  int get hashCode => Object.hash(
-    StoryConditionalTransitionBranch,
-    condition,
-    transition,
-  );
+  int get hashCode =>
+      Object.hash(StoryConditionalTransitionBranch, condition, transition);
 
   @override
   String toString() =>
@@ -84,10 +81,7 @@ final class StoryConditionalTransition extends StoryTransition {
             'Use the fallback transition directly when no conditions exist.',
       );
     }
-    return StoryConditionalTransition._(
-      branches: copied,
-      fallback: fallback,
-    );
+    return StoryConditionalTransition._(branches: copied, fallback: fallback);
   }
 
   const StoryConditionalTransition._({
@@ -160,11 +154,8 @@ final class StoryWeightedTransitionOption {
           other.transition == transition;
 
   @override
-  int get hashCode => Object.hash(
-    StoryWeightedTransitionOption,
-    weight,
-    transition,
-  );
+  int get hashCode =>
+      Object.hash(StoryWeightedTransitionOption, weight, transition);
 
   @override
   String toString() =>
@@ -203,10 +194,7 @@ final class StoryWeightedTransition extends StoryTransition {
       total += option.weight;
     }
 
-    return StoryWeightedTransition._(
-      options: copied,
-      totalWeight: total,
-    );
+    return StoryWeightedTransition._(options: copied, totalWeight: total);
   }
 
   const StoryWeightedTransition._({
@@ -231,10 +219,8 @@ final class StoryWeightedTransition extends StoryTransition {
           _orderedOptionsEqual(options, other.options);
 
   @override
-  int get hashCode => Object.hash(
-    StoryWeightedTransition,
-    Object.hashAll(options),
-  );
+  int get hashCode =>
+      Object.hash(StoryWeightedTransition, Object.hashAll(options));
 
   @override
   String toString() => 'StoryWeightedTransition($options)';

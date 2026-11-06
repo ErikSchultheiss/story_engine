@@ -1,18 +1,25 @@
 # Local/build artifacts (mirrors .gitignore because .pubignore takes precedence).
 .dart_tool/
 .packages
-build/
+# Anchor generated output so lib/src/build and test/build remain source.
+/build/
+example/flutter_story_app/build/
 coverage/
 pubspec.lock
 *.iml
 .idea/
 .vscode/
 
+# Runnable conformance tools, corpora and portable tests ship together.
 # Repository/private development material, intentionally not uploaded to pub.dev.
+/.gitignore.public
 doc/architecture/
 doc/PUBLICATION_CHECKLIST.md
 doc/fixtures/
 doc/api/
+test/extension_schema/
+test/architecture/
+test/architecture/stage8*.dart
 lib/src/README.md
 example/flutter_story_app/
 test/example/stage6f_flutter_developer_example_contract_test.dart
@@ -28,3 +35,22 @@ test/architecture/public_repository_safety_test.dart
 key.properties
 local.properties
 benchmark/stage6g_performance_baseline.dart
+
+# Mirror and publication exclusions for local outputs and credentials.
+.flutter-plugins
+.flutter-plugins-dependencies
+*.p12
+*.pfx
+*.pem
+*.key
+cyoa_studio/
+cyoa-studio/
+CYOA Studio/
+CYOA-Development*/
+
+# Root reports produced by local validation and benchmarking.
+/loam-report*.html
+/story_engine*-loam-report.html
+/stage9d*.json
+/prepublication-*.json
+/story_engine*-tests.log

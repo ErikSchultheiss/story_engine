@@ -56,10 +56,7 @@ void main() {
     test('raw host values convert through the declared schema', () {
       final state = StoryState.fromRawValues(
         schema: buildSchema(),
-        values: {
-          trustId: 65,
-          keyId: true,
-        },
+        values: {trustId: 65, keyId: true},
       );
 
       expect(state.valueOf(trustId), StoryIntegerValue(65));

@@ -1,0 +1,45 @@
+{
+  "formatId": "open_story.conformance_input_trace",
+  "formatVersion": 1,
+  "random": {
+    "algorithmId": "story_engine.lcg32",
+    "algorithmVersion": 1,
+    "seed": 0
+  },
+  "inputs": [
+    {
+      "kind": "start"
+    },
+    {
+      "kind": "choose",
+      "choiceId": "ch_0001"
+    },
+    {
+      "kind": "choose",
+      "choiceId": "ch_0002"
+    },
+    {
+      "kind": "choose",
+      "choiceId": "ch_0003"
+    },
+    {
+      "kind": "choose",
+      "choiceId": "ch_0006"
+    },
+    {
+      "kind": "choose",
+      "choiceId": "ch_0009"
+    },
+    {
+      "kind": "choose",
+      "choiceId": "ch_0013"
+    },
+    {
+      "kind": "choose",
+      "choiceId": "ch_0018"
+    },
+    {
+      "kind": "continue"
+    }
+  ]
+}

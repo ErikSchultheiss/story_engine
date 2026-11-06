@@ -32,10 +32,7 @@ void main() {
       expect(state.algorithmId, 'story_engine.test_rng');
       expect(state.algorithmVersion, 2);
       expect(state.stateWords, [1, 2, 3]);
-      expect(
-        () => state.stateWords.add(4),
-        throwsA(isA<UnsupportedError>()),
-      );
+      expect(() => state.stateWords.add(4), throwsA(isA<UnsupportedError>()));
       expect(
         state,
         StoryRuntimeRandomState(
@@ -219,11 +216,7 @@ StoryRuntimeRandomState _randomState() => StoryRuntimeRandomState(
   stateWords: const [123456789],
 );
 
-({
-  StoryRuntimeSnapshot snapshot,
-  StoryState state,
-  StoryEventId currentEventId,
-})
+({StoryRuntimeSnapshot snapshot, StoryState state, StoryEventId currentEventId})
 _startedFixture(StoryEngineStatus status) {
   final variableId = StoryVariableId('var_snapshot_value');
   final schema = StoryStateSchema(

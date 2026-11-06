@@ -11,9 +11,11 @@ void main() {
           StoryDiagnosticCode.presentationChoiceMissingText.value,
           StoryDiagnosticCode.presentationEventEmptyText.value,
           StoryDiagnosticCode
-              .presentationContinuationWithoutMeaningfulPresentation.value,
+              .presentationContinuationWithoutMeaningfulPresentation
+              .value,
           StoryDiagnosticCode
-              .presentationAutomaticEventPresentationNotHostVisible.value,
+              .presentationAutomaticEventPresentationNotHostVisible
+              .value,
         ],
         [
           'presentation.choice_missing_text',
@@ -54,10 +56,9 @@ void main() {
         diagnostic.location.pathString,
         'events[0].choices[0].presentation',
       );
-      expect(
-        diagnostic.references,
-        [StoryDiagnosticReference.choice(choiceId)],
-      );
+      expect(diagnostic.references, [
+        StoryDiagnosticReference.choice(choiceId),
+      ]);
       expect(report.errors, isEmpty);
       expect(report.warnings, isEmpty);
     });
@@ -84,10 +85,11 @@ void main() {
         ],
       );
 
-      final diagnostic = StoryValidator.validate(project).information.singleWhere(
-        (item) =>
-            item.code == StoryDiagnosticCode.presentationChoiceMissingText,
-      );
+      final diagnostic = StoryValidator.validate(project).information
+          .singleWhere(
+            (item) =>
+                item.code == StoryDiagnosticCode.presentationChoiceMissingText,
+          );
 
       expect(
         diagnostic.location.pathString,
@@ -120,8 +122,7 @@ void main() {
         ],
       );
 
-      final diagnostics = StoryValidator.validate(project)
-          .information
+      final diagnostics = StoryValidator.validate(project).information
           .where(
             (item) =>
                 item.code == StoryDiagnosticCode.presentationEventEmptyText,
@@ -129,13 +130,10 @@ void main() {
           .toList();
 
       expect(diagnostics, hasLength(2));
-      expect(
-        diagnostics.map((item) => item.location.pathString).toList(),
-        [
-          'events[0].presentation.body',
-          'events[0].presentation.title',
-        ],
-      );
+      expect(diagnostics.map((item) => item.location.pathString).toList(), [
+        'events[0].presentation.body',
+        'events[0].presentation.title',
+      ]);
     });
 
     test('continuation pause without presentation is a warning', () {
@@ -153,7 +151,8 @@ void main() {
 
       final diagnostic = StoryValidator.validate(project).warnings.singleWhere(
         (item) =>
-            item.code == StoryDiagnosticCode
+            item.code ==
+            StoryDiagnosticCode
                 .presentationContinuationWithoutMeaningfulPresentation,
       );
 
@@ -169,9 +168,7 @@ void main() {
         events: [
           StoryEvent(
             id: eventId,
-            presentation: StoryEventPresentation(
-              title: const StoryText('   '),
-            ),
+            presentation: StoryEventPresentation(title: const StoryText('   ')),
             continuationTransition: const StoryTerminalTransition(),
           ),
         ],
@@ -182,15 +179,15 @@ void main() {
       expect(
         report.warnings.where(
           (item) =>
-              item.code == StoryDiagnosticCode
+              item.code ==
+              StoryDiagnosticCode
                   .presentationContinuationWithoutMeaningfulPresentation,
         ),
         hasLength(1),
       );
       expect(
         report.information.where(
-          (item) =>
-              item.code == StoryDiagnosticCode.presentationEventEmptyText,
+          (item) => item.code == StoryDiagnosticCode.presentationEventEmptyText,
         ),
         hasLength(1),
       );
@@ -217,7 +214,8 @@ void main() {
       expect(
         report.diagnostics.where(
           (item) =>
-              item.code == StoryDiagnosticCode
+              item.code ==
+              StoryDiagnosticCode
                   .presentationContinuationWithoutMeaningfulPresentation,
         ),
         isEmpty,
@@ -242,7 +240,8 @@ void main() {
 
       final diagnostic = StoryValidator.validate(project).warnings.singleWhere(
         (item) =>
-            item.code == StoryDiagnosticCode
+            item.code ==
+            StoryDiagnosticCode
                 .presentationAutomaticEventPresentationNotHostVisible,
       );
 
@@ -303,7 +302,8 @@ void main() {
       expect(
         report.diagnostics.where(
           (item) =>
-              item.code == StoryDiagnosticCode
+              item.code ==
+              StoryDiagnosticCode
                   .presentationAutomaticEventPresentationNotHostVisible,
         ),
         isEmpty,
@@ -311,7 +311,9 @@ void main() {
     });
 
     test('Lantern Mystery has no Stage 3G authoring-quality findings', () {
-      final report = StoryValidator.validate(LanternMysteryFixture.buildProject());
+      final report = StoryValidator.validate(
+        LanternMysteryFixture.buildProject(),
+      );
 
       expect(_stage3GDiagnostics(report), isEmpty);
     });
@@ -324,9 +326,7 @@ void main() {
         events: [
           StoryEvent(
             id: eventId,
-            presentation: StoryEventPresentation(
-              title: const StoryText(' '),
-            ),
+            presentation: StoryEventPresentation(title: const StoryText(' ')),
             continuationTransition: const StoryTerminalTransition(),
           ),
         ],

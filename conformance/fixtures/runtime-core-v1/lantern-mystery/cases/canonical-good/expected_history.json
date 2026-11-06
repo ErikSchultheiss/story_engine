@@ -1,0 +1,77 @@
+{
+  "formatId": "open_story.conformance_history",
+  "formatVersion": 1,
+  "steps": [
+    {
+      "kind": "eventEntered",
+      "eventId": "evt_0001"
+    },
+    {
+      "kind": "choiceSelected",
+      "eventId": "evt_0001",
+      "choiceId": "ch_0001"
+    },
+    {
+      "kind": "eventEntered",
+      "eventId": "evt_0001"
+    },
+    {
+      "kind": "choiceSelected",
+      "eventId": "evt_0001",
+      "choiceId": "ch_0002"
+    },
+    {
+      "kind": "eventEntered",
+      "eventId": "evt_0001"
+    },
+    {
+      "kind": "choiceSelected",
+      "eventId": "evt_0001",
+      "choiceId": "ch_0003"
+    },
+    {
+      "kind": "eventEntered",
+      "eventId": "evt_0002"
+    },
+    {
+      "kind": "choiceSelected",
+      "eventId": "evt_0002",
+      "choiceId": "ch_0006"
+    },
+    {
+      "kind": "eventEntered",
+      "eventId": "evt_0003"
+    },
+    {
+      "kind": "choiceSelected",
+      "eventId": "evt_0003",
+      "choiceId": "ch_0009"
+    },
+    {
+      "kind": "eventEntered",
+      "eventId": "evt_0004"
+    },
+    {
+      "kind": "choiceSelected",
+      "eventId": "evt_0004",
+      "choiceId": "ch_0013"
+    },
+    {
+      "kind": "eventEntered",
+      "eventId": "evt_0007"
+    },
+    {
+      "kind": "choiceSelected",
+      "eventId": "evt_0007",
+      "choiceId": "ch_0018"
+    },
+    {
+      "kind": "eventEntered",
+      "eventId": "evt_0010"
+    },
+    {
+      "kind": "eventContinued",
+      "eventId": "evt_0010"
+    }
+  ]
+}

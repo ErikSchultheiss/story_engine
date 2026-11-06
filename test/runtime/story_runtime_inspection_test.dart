@@ -61,14 +61,11 @@ void main() {
       expect(engine.history.visitedEventIds, [startId]);
       expect(engine.history.eventOccurrenceCount(startId), 2);
       expect(engine.history.selectedChoiceIds, [loopId]);
-      expect(
-        engine.history.steps,
-        [
-          StoryEventEnteredStep(eventId: startId),
-          StoryChoiceSelectedStep(eventId: startId, choiceId: loopId),
-          StoryEventEnteredStep(eventId: startId),
-        ],
-      );
+      expect(engine.history.steps, [
+        StoryEventEnteredStep(eventId: startId),
+        StoryChoiceSelectedStep(eventId: startId, choiceId: loopId),
+        StoryEventEnteredStep(eventId: startId),
+      ]);
 
       engine.choose(finishId);
 
@@ -113,7 +110,11 @@ void main() {
 
       expect(engine.currentEvent?.id, interactiveId);
       expect(engine.history.eventRoute, [firstId, secondId, interactiveId]);
-      expect(engine.history.visitedEventIds, [firstId, secondId, interactiveId]);
+      expect(engine.history.visitedEventIds, [
+        firstId,
+        secondId,
+        interactiveId,
+      ]);
       expect(engine.history.selectedChoiceIds, isEmpty);
     });
 
@@ -134,10 +135,7 @@ void main() {
       );
       final engine = StoryEngine(project: project, randomSeed: 4);
 
-      expect(
-        engine.start,
-        throwsA(isA<StoryEngineConfigurationException>()),
-      );
+      expect(engine.start, throwsA(isA<StoryEngineConfigurationException>()));
 
       expect(engine.status, StoryEngineStatus.notStarted);
       expect(engine.history.isEmpty, isTrue);
@@ -156,9 +154,7 @@ void main() {
             choices: [
               StoryChoice(
                 id: choiceId,
-                transition: StoryEventTransition(
-                  destinationEventId: missingId,
-                ),
+                transition: StoryEventTransition(destinationEventId: missingId),
               ),
             ],
           ),

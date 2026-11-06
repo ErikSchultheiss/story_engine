@@ -1,0 +1,36 @@
+{
+  "formatId": "open_story.conformance_hardening_input_trace",
+  "formatVersion": 1,
+  "runtime": "narrative",
+  "random": {
+    "algorithmId": "story_engine.lcg32",
+    "algorithmVersion": 1,
+    "seed": 0
+  },
+  "maxAutomaticTransitions": 2,
+  "inputs": [
+    {
+      "kind": "startSession",
+      "entryPointId": "loop"
+    },
+    {
+      "kind": "startSession",
+      "entryPointId": "entry"
+    },
+    {
+      "kind": "choose",
+      "sessionIndex": 0,
+      "choiceId": "safe"
+    }
+  ],
+  "entryPoints": [
+    {
+      "id": "entry",
+      "eventId": "root"
+    },
+    {
+      "id": "loop",
+      "eventId": "loop"
+    }
+  ]
+}

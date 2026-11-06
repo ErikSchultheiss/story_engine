@@ -69,7 +69,8 @@ final class StoryFormatCodec {
   /// Organization and extension metadata are intentionally not returned by
   /// this shortcut. Use [decode] when the caller needs a lossless authored
   /// document for editing or re-encoding.
-  StoryProject decodeProject(StoryFormatBundle bundle) => decode(bundle).project;
+  StoryProject decodeProject(StoryFormatBundle bundle) =>
+      decode(bundle).project;
 
   /// Encodes [document] into the canonical Story Format v1 logical bundle.
   StoryFormatBundle encode(StoryFormatDocument document) {
@@ -79,7 +80,8 @@ final class StoryFormatCodec {
       throw StoryFormatCodecException(
         bundlePath: StoryFormatBundleLayout.projectPath,
         jsonPath: r'$',
-        message: 'Only the current Story Format v1 document model can be '
+        message:
+            'Only the current Story Format v1 document model can be '
             'encoded by this codec.',
       );
     }
@@ -91,7 +93,8 @@ final class StoryFormatCodec {
         throw StoryFormatCodecException(
           bundlePath: StoryFormatBundleLayout.projectPath,
           jsonPath: r'$.project.eventIds',
-          message: 'Duplicate event ID ${event.id.value} cannot be encoded '
+          message:
+              'Duplicate event ID ${event.id.value} cannot be encoded '
               'because each stable event identity owns one event file.',
         );
       }
@@ -130,7 +133,9 @@ final class StoryFormatCodec {
   /// runtime-neutral metadata references are preserved for editor repair.
   StoryFormatDocument decode(StoryFormatBundle bundle) {
     final currentBundle = _migrateToCurrent(bundle);
-    final projectSource = currentBundle.file(StoryFormatBundleLayout.projectPath);
+    final projectSource = currentBundle.file(
+      StoryFormatBundleLayout.projectPath,
+    );
     if (projectSource == null) {
       throw const StoryFormatCodecException(
         bundlePath: StoryFormatBundleLayout.projectPath,
@@ -154,7 +159,8 @@ final class StoryFormatCodec {
         throw StoryFormatCodecException(
           bundlePath: StoryFormatBundleLayout.projectPath,
           jsonPath: '\$.project.eventIds[$index]',
-          message: 'Duplicate event ID ${eventId.value} in the project '
+          message:
+              'Duplicate event ID ${eventId.value} in the project '
               'manifest cannot map to a one-file-per-ID v1 bundle.',
         );
       }
@@ -166,7 +172,8 @@ final class StoryFormatCodec {
         throw StoryFormatCodecException(
           bundlePath: path,
           jsonPath: r'$',
-          message: 'Manifest event ${eventId.value} is missing its canonical '
+          message:
+              'Manifest event ${eventId.value} is missing its canonical '
               'event file.',
         );
       }
@@ -176,7 +183,8 @@ final class StoryFormatCodec {
         throw StoryFormatCodecException(
           bundlePath: path,
           jsonPath: r'$.id',
-          message: 'Event file identity ${event.id.value} does not match '
+          message:
+              'Event file identity ${event.id.value} does not match '
               'manifest identity ${eventId.value}.',
         );
       }
@@ -215,7 +223,8 @@ final class StoryFormatCodec {
         throw StoryFormatCodecException(
           bundlePath: path,
           jsonPath: r'$',
-          message: 'Unexpected file in Story Format v1 bundle. Unknown core '
+          message:
+              'Unexpected file in Story Format v1 bundle. Unknown core '
               'files are not ignored silently.',
         );
       }
@@ -260,12 +269,7 @@ final class StoryFormatCodec {
       r'$',
     );
     final formatId = _string(
-      _required(
-        root,
-        'formatId',
-        StoryFormatBundleLayout.projectPath,
-        r'$',
-      ),
+      _required(root, 'formatId', StoryFormatBundleLayout.projectPath, r'$'),
       StoryFormatBundleLayout.projectPath,
       r'$.formatId',
     );
@@ -274,7 +278,8 @@ final class StoryFormatCodec {
         issue: StoryFormatCompatibilityIssue.unsupportedFormatIdentity,
         bundlePath: StoryFormatBundleLayout.projectPath,
         jsonPath: r'$.formatId',
-        message: 'Story Format identity "$formatId" is not supported by the '
+        message:
+            'Story Format identity "$formatId" is not supported by the '
             'current story_engine authored-format reader.',
         foundFormatId: formatId,
       );
@@ -304,7 +309,8 @@ final class StoryFormatCodec {
         issue: StoryFormatCompatibilityIssue.unsupportedFormatVersion,
         bundlePath: StoryFormatBundleLayout.projectPath,
         jsonPath: r'$.formatVersion',
-        message: 'Story Format version $version is newer than supported '
+        message:
+            'Story Format version $version is newer than supported '
             'version $current.',
         foundFormatId: formatId,
         foundFormatVersion: version,
@@ -319,7 +325,8 @@ final class StoryFormatCodec {
         issue: StoryFormatCompatibilityIssue.unsupportedFormatVersion,
         bundlePath: StoryFormatBundleLayout.projectPath,
         jsonPath: r'$.formatVersion',
-        message: 'No Story Format migration path exists from version '
+        message:
+            'No Story Format migration path exists from version '
             '$version to $current.',
         foundFormatId: formatId,
         foundFormatVersion: version,
@@ -368,7 +375,8 @@ final class StoryFormatCodecException implements Exception {
   String get location => '$bundlePath:$jsonPath';
 
   /// Generic recovery guidance for malformed current-version Story Format.
-  String get suggestion => 'Inspect $bundlePath at $jsonPath and correct the '
+  String get suggestion =>
+      'Inspect $bundlePath at $jsonPath and correct the '
       'malformed or unsupported current-version data.';
 
   @override
@@ -432,7 +440,8 @@ _ProjectManifest _decodeProjectManifest(Object? encoded, String bundlePath) {
       issue: StoryFormatCompatibilityIssue.unsupportedFormatIdentity,
       bundlePath: bundlePath,
       jsonPath: r'$.formatId',
-      message: 'Story Format identity "$formatId" is not supported by the '
+      message:
+          'Story Format identity "$formatId" is not supported by the '
           'current story_engine authored-format reader.',
       foundFormatId: formatId,
     );
@@ -448,7 +457,8 @@ _ProjectManifest _decodeProjectManifest(Object? encoded, String bundlePath) {
       issue: StoryFormatCompatibilityIssue.unsupportedFormatVersion,
       bundlePath: bundlePath,
       jsonPath: r'$.formatVersion',
-      message: 'Story Format version $formatVersion is not supported by this '
+      message:
+          'Story Format version $formatVersion is not supported by this '
           'reader; current version is '
           '${StoryFormatMetadata.currentFormatVersion}.',
       foundFormatId: formatId,
@@ -598,11 +608,7 @@ StoryVariableDefinition _decodeVariableDefinition(
     path,
     () => StoryVariableDefinition(
       id: StoryVariableId(
-        _string(
-          _required(map, 'id', bundlePath, path),
-          bundlePath,
-          '$path.id',
-        ),
+        _string(_required(map, 'id', bundlePath, path), bundlePath, '$path.id'),
       ),
       alias: _decodeAlias(map, bundlePath, path),
       type: _decodeValueType(
@@ -638,7 +644,9 @@ Map<String, Object?> _encodeEvent(StoryEvent event) {
   result['choices'] = event.choices.map(_encodeChoice).toList(growable: false);
   final continuationTransition = event.continuationTransition;
   if (continuationTransition != null) {
-    result['continuationTransition'] = _encodeTransition(continuationTransition);
+    result['continuationTransition'] = _encodeTransition(
+      continuationTransition,
+    );
   }
   final automaticTransition = event.automaticTransition;
   if (automaticTransition != null) {
@@ -682,11 +690,7 @@ StoryEvent _decodeEvent(Object? encoded, String bundlePath) {
     path,
     () => StoryEvent(
       id: StoryEventId(
-        _string(
-          _required(map, 'id', bundlePath, path),
-          bundlePath,
-          r'$.id',
-        ),
+        _string(_required(map, 'id', bundlePath, path), bundlePath, r'$.id'),
       ),
       alias: _decodeAlias(map, bundlePath, path),
       presentation: map.containsKey('presentation')
@@ -778,11 +782,7 @@ StoryChoice _decodeChoice(Object? encoded, String bundlePath, String path) {
     path,
     () => StoryChoice(
       id: StoryChoiceId(
-        _string(
-          _required(map, 'id', bundlePath, path),
-          bundlePath,
-          '$path.id',
-        ),
+        _string(_required(map, 'id', bundlePath, path), bundlePath, '$path.id'),
       ),
       alias: _decodeAlias(map, bundlePath, path),
       presentation: map.containsKey('presentation')
@@ -896,12 +896,13 @@ Map<String, Object?> _encodeCondition(StoryCondition condition) =>
         :final variableId,
         :final operator,
         :final value,
-      ) => <String, Object?>{
-        'kind': 'variable_comparison',
-        'variableId': variableId.value,
-        'operator': _comparisonOperatorToken(operator),
-        'value': _encodeValue(value),
-      },
+      ) =>
+        <String, Object?>{
+          'kind': 'variable_comparison',
+          'variableId': variableId.value,
+          'operator': _comparisonOperatorToken(operator),
+          'value': _encodeValue(value),
+        },
     };
 
 StoryCondition _decodeCondition(
@@ -1318,12 +1319,7 @@ StoryTransition _decodeWeightedTransition(
   for (var index = 0; index < optionsData.length; index++) {
     final optionPath = '$path.options[$index]';
     final option = _map(optionsData[index], bundlePath, optionPath);
-    _allowOnly(
-      option,
-      const {'weight', 'transition'},
-      bundlePath,
-      optionPath,
-    );
+    _allowOnly(option, const {'weight', 'transition'}, bundlePath, optionPath);
     options.add(
       _checked(
         bundlePath,
@@ -1382,11 +1378,7 @@ StoryValue _decodeValue(Object? encoded, String bundlePath, String path) {
   final map = _map(encoded, bundlePath, path);
   _allowOnly(map, const {'type', 'value'}, bundlePath, path);
   final type = _decodeValueType(
-    _string(
-      _required(map, 'type', bundlePath, path),
-      bundlePath,
-      '$path.type',
-    ),
+    _string(_required(map, 'type', bundlePath, path), bundlePath, '$path.type'),
     bundlePath,
     '$path.type',
   );
@@ -1488,11 +1480,7 @@ StoryFormatGroup _decodeGroup(Object? encoded, String bundlePath, String path) {
     path,
     () => StoryFormatGroup(
       id: StoryFormatGroupId(
-        _string(
-          _required(map, 'id', bundlePath, path),
-          bundlePath,
-          '$path.id',
-        ),
+        _string(_required(map, 'id', bundlePath, path), bundlePath, '$path.id'),
       ),
       alias: _decodeAlias(map, bundlePath, path),
       label: map.containsKey('label')
@@ -1501,20 +1489,12 @@ StoryFormatGroup _decodeGroup(Object? encoded, String bundlePath, String path) {
       eventIds: [
         for (var index = 0; index < eventIds.length; index++)
           StoryEventId(
-            _string(
-              eventIds[index],
-              bundlePath,
-              '$path.eventIds[$index]',
-            ),
+            _string(eventIds[index], bundlePath, '$path.eventIds[$index]'),
           ),
       ],
       children: [
         for (var index = 0; index < children.length; index++)
-          _decodeGroup(
-            children[index],
-            bundlePath,
-            '$path.children[$index]',
-          ),
+          _decodeGroup(children[index], bundlePath, '$path.children[$index]'),
       ],
     ),
   );
@@ -1535,12 +1515,7 @@ Map<String, Object?> _encodeTag(StoryFormatTag tag) {
 
 StoryFormatTag _decodeTag(Object? encoded, String bundlePath, String path) {
   final map = _map(encoded, bundlePath, path);
-  _allowOnly(
-    map,
-    const {'id', 'alias', 'label', 'eventIds'},
-    bundlePath,
-    path,
-  );
+  _allowOnly(map, const {'id', 'alias', 'label', 'eventIds'}, bundlePath, path);
   final eventIds = _list(
     _required(map, 'eventIds', bundlePath, path),
     bundlePath,
@@ -1551,11 +1526,7 @@ StoryFormatTag _decodeTag(Object? encoded, String bundlePath, String path) {
     path,
     () => StoryFormatTag(
       id: StoryFormatTagId(
-        _string(
-          _required(map, 'id', bundlePath, path),
-          bundlePath,
-          '$path.id',
-        ),
+        _string(_required(map, 'id', bundlePath, path), bundlePath, '$path.id'),
       ),
       alias: _decodeAlias(map, bundlePath, path),
       label: map.containsKey('label')
@@ -1564,11 +1535,7 @@ StoryFormatTag _decodeTag(Object? encoded, String bundlePath, String path) {
       eventIds: [
         for (var index = 0; index < eventIds.length; index++)
           StoryEventId(
-            _string(
-              eventIds[index],
-              bundlePath,
-              '$path.eventIds[$index]',
-            ),
+            _string(eventIds[index], bundlePath, '$path.eventIds[$index]'),
           ),
       ],
     ),
@@ -1622,12 +1589,7 @@ StoryFormatExtensionAttachment _decodeExtension(
   String path,
 ) {
   final map = _map(encoded, bundlePath, path);
-  _allowOnly(
-    map,
-    const {'namespace', 'target', 'payload'},
-    bundlePath,
-    path,
-  );
+  _allowOnly(map, const {'namespace', 'target', 'payload'}, bundlePath, path);
   return _checked(
     bundlePath,
     path,
@@ -1651,32 +1613,31 @@ StoryFormatExtensionAttachment _decodeExtension(
   );
 }
 
-Map<String, Object?> _encodeExtensionTarget(StoryFormatExtensionTarget target) =>
-    switch (target) {
-      StoryFormatProjectExtensionTarget() => <String, Object?>{
-        'kind': 'project',
-      },
-      StoryFormatEventExtensionTarget(:final eventId) => <String, Object?>{
-        'kind': 'event',
-        'id': eventId.value,
-      },
-      StoryFormatChoiceExtensionTarget(:final choiceId) => <String, Object?>{
-        'kind': 'choice',
-        'id': choiceId.value,
-      },
-      StoryFormatVariableExtensionTarget(:final variableId) => <String, Object?>{
-        'kind': 'variable',
-        'id': variableId.value,
-      },
-      StoryFormatGroupExtensionTarget(:final groupId) => <String, Object?>{
-        'kind': 'group',
-        'id': groupId.value,
-      },
-      StoryFormatTagExtensionTarget(:final tagId) => <String, Object?>{
-        'kind': 'tag',
-        'id': tagId.value,
-      },
-    };
+Map<String, Object?> _encodeExtensionTarget(
+  StoryFormatExtensionTarget target,
+) => switch (target) {
+  StoryFormatProjectExtensionTarget() => <String, Object?>{'kind': 'project'},
+  StoryFormatEventExtensionTarget(:final eventId) => <String, Object?>{
+    'kind': 'event',
+    'id': eventId.value,
+  },
+  StoryFormatChoiceExtensionTarget(:final choiceId) => <String, Object?>{
+    'kind': 'choice',
+    'id': choiceId.value,
+  },
+  StoryFormatVariableExtensionTarget(:final variableId) => <String, Object?>{
+    'kind': 'variable',
+    'id': variableId.value,
+  },
+  StoryFormatGroupExtensionTarget(:final groupId) => <String, Object?>{
+    'kind': 'group',
+    'id': groupId.value,
+  },
+  StoryFormatTagExtensionTarget(:final tagId) => <String, Object?>{
+    'kind': 'tag',
+    'id': tagId.value,
+  },
+};
 
 StoryFormatExtensionTarget _decodeExtensionTarget(
   Object? encoded,
@@ -1730,19 +1691,18 @@ int _compareExtensions(
   return left.namespace.value.compareTo(right.namespace.value);
 }
 
-String _extensionTargetSortKey(StoryFormatExtensionTarget target) =>
-    switch (target) {
-      StoryFormatProjectExtensionTarget() => '0:project',
-      StoryFormatEventExtensionTarget(:final eventId) =>
-        '1:event:${eventId.value}',
-      StoryFormatChoiceExtensionTarget(:final choiceId) =>
-        '2:choice:${choiceId.value}',
-      StoryFormatVariableExtensionTarget(:final variableId) =>
-        '3:variable:${variableId.value}',
-      StoryFormatGroupExtensionTarget(:final groupId) =>
-        '4:group:${groupId.value}',
-      StoryFormatTagExtensionTarget(:final tagId) => '5:tag:${tagId.value}',
-    };
+String _extensionTargetSortKey(
+  StoryFormatExtensionTarget target,
+) => switch (target) {
+  StoryFormatProjectExtensionTarget() => '0:project',
+  StoryFormatEventExtensionTarget(:final eventId) => '1:event:${eventId.value}',
+  StoryFormatChoiceExtensionTarget(:final choiceId) =>
+    '2:choice:${choiceId.value}',
+  StoryFormatVariableExtensionTarget(:final variableId) =>
+    '3:variable:${variableId.value}',
+  StoryFormatGroupExtensionTarget(:final groupId) => '4:group:${groupId.value}',
+  StoryFormatTagExtensionTarget(:final tagId) => '5:tag:${tagId.value}',
+};
 
 String _valueTypeToken(StoryValueType type) => switch (type) {
   StoryValueType.boolean => 'boolean',
@@ -1751,21 +1711,18 @@ String _valueTypeToken(StoryValueType type) => switch (type) {
   StoryValueType.string => 'string',
 };
 
-StoryValueType _decodeValueType(
-  String token,
-  String bundlePath,
-  String path,
-) => switch (token) {
-  'boolean' => StoryValueType.boolean,
-  'integer' => StoryValueType.integer,
-  'number' => StoryValueType.number,
-  'string' => StoryValueType.string,
-  _ => throw StoryFormatCodecException(
-    bundlePath: bundlePath,
-    jsonPath: path,
-    message: 'Unknown Story Format v1 value type "$token".',
-  ),
-};
+StoryValueType _decodeValueType(String token, String bundlePath, String path) =>
+    switch (token) {
+      'boolean' => StoryValueType.boolean,
+      'integer' => StoryValueType.integer,
+      'number' => StoryValueType.number,
+      'string' => StoryValueType.string,
+      _ => throw StoryFormatCodecException(
+        bundlePath: bundlePath,
+        jsonPath: path,
+        message: 'Unknown Story Format v1 value type "$token".',
+      ),
+    };
 
 String _comparisonOperatorToken(StoryComparisonOperator operator) =>
     switch (operator) {
@@ -1869,11 +1826,7 @@ Object? _required(
   return map[key];
 }
 
-Map<String, Object?> _map(
-  Object? value,
-  String bundlePath,
-  String path,
-) {
+Map<String, Object?> _map(Object? value, String bundlePath, String path) {
   if (value is! Map) {
     throw StoryFormatCodecException(
       bundlePath: bundlePath,
@@ -1961,7 +1914,8 @@ void _allowOnly(
       throw StoryFormatCodecException(
         bundlePath: bundlePath,
         jsonPath: '$path.$key',
-        message: 'Unknown Story Format v1 core field. Unknown semantic data '
+        message:
+            'Unknown Story Format v1 core field. Unknown semantic data '
             'is not ignored silently; use an explicit extension payload for '
             'opaque metadata.',
       );

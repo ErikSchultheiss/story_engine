@@ -1,0 +1,81 @@
+{
+  "formatId": "open_story.conformance_fixture_set",
+  "formatVersion": 1,
+  "fixtureSetId": "runtime-finalization-v1-hardening",
+  "profile": "runtime-finalization-v1",
+  "contracts": {
+    "storyFormat": {
+      "formatId": "story_engine.story_format",
+      "formatVersion": 1
+    },
+    "runtimeSemantics": {
+      "coreRevision": 1
+    },
+    "deterministicRandom": {
+      "algorithmId": "story_engine.lcg32",
+      "algorithmVersion": 1
+    }
+  },
+  "cases": [
+    {
+      "caseId": "effect-rng-rollback",
+      "path": "cases/effect-rng-rollback",
+      "projectPath": "project.story",
+      "description": "A failed weighted destination rolls back effects, history and the draw before the next input."
+    },
+    {
+      "caseId": "malformed-branch",
+      "path": "cases/malformed-branch",
+      "projectPath": "project.story",
+      "description": "Malformed conditional comparison is rejected atomically."
+    },
+    {
+      "caseId": "short-circuit",
+      "path": "cases/short-circuit",
+      "projectPath": "project.story",
+      "description": "A decisive availability operand skips a malformed later operand."
+    },
+    {
+      "caseId": "restore-random",
+      "path": "cases/restore-random",
+      "projectPath": "project.story",
+      "description": "JSON core restore preserves RNG, history and future execution."
+    },
+    {
+      "caseId": "automatic-guard",
+      "path": "cases/automatic-guard",
+      "projectPath": "project.story",
+      "description": "Automatic transition limit rejects activation without publishing entry effects/history."
+    },
+    {
+      "caseId": "malformed-entry",
+      "path": "cases/malformed-entry",
+      "projectPath": "project.story",
+      "description": "Malformed event availability rejects activation; short-circuited entry remains executable."
+    },
+    {
+      "caseId": "shared-propagation",
+      "path": "cases/shared-propagation",
+      "projectPath": "project.story",
+      "description": "Shared commits reach unfinished and host-suspended sessions while terminated sessions retain historic state."
+    },
+    {
+      "caseId": "host-suspension",
+      "path": "cases/host-suspension",
+      "projectPath": "project.story",
+      "description": "Pending host request survives JSON restore, blocks core inputs, rejects wrong and stale results, and resumes exactly once."
+    },
+    {
+      "caseId": "failed-activation",
+      "path": "cases/failed-activation",
+      "projectPath": "project.story",
+      "description": "Failed session activation preserves allocation, shared state and orchestration RNG."
+    },
+    {
+      "caseId": "late-invalid-restore",
+      "path": "cases/late-invalid-restore",
+      "projectPath": "project.story",
+      "description": "Late retained-session semantic and structural corruption are rejected before restore publication."
+    }
+  ]
+}

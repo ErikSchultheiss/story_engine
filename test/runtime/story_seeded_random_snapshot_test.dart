@@ -19,10 +19,7 @@ void main() {
 
       final actual = [for (final bound in bounds) source.nextInt(bound)];
 
-      expect(
-        actual,
-        [0, 0, 2, 2, 0, 52948, 3701641493, 5135024634160890],
-      );
+      expect(actual, [0, 0, 2, 2, 0, 52948, 3701641493, 5135024634160890]);
       expect(
         source.createRuntimeState(),
         StoryRuntimeRandomState(
@@ -43,7 +40,9 @@ void main() {
 
       for (final entry in expectedBySeed.entries) {
         final source = StorySeededRandomSource.fromSeed(entry.key);
-        final actual = [for (var index = 0; index < 8; index++) source.nextInt(7)];
+        final actual = [
+          for (var index = 0; index < 8; index++) source.nextInt(7),
+        ];
         expect(actual, entry.value, reason: 'seed ${entry.key}');
       }
     });
@@ -58,10 +57,7 @@ void main() {
       final sampled = source.nextInt(4503599627370497);
 
       expect(sampled, 2276713969420775);
-      expect(
-        source.createRuntimeState().stateWords,
-        const [3, 3345418727],
-      );
+      expect(source.createRuntimeState().stateWords, const [3, 3345418727]);
     });
 
     test('restored source continues the exact future sequence', () {
@@ -84,7 +80,10 @@ void main() {
 
       for (final bound in futureBounds) {
         expect(restored.nextInt(bound), uninterrupted.nextInt(bound));
-        expect(restored.createRuntimeState(), uninterrupted.createRuntimeState());
+        expect(
+          restored.createRuntimeState(),
+          uninterrupted.createRuntimeState(),
+        );
       }
     });
 

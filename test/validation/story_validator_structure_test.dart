@@ -41,43 +41,42 @@ void main() {
 
       expect(report.errors, hasLength(1));
       final diagnostic = report.errors.single;
-      expect(
-        diagnostic.code,
-        StoryDiagnosticCode.structureMissingEntryEvent,
-      );
+      expect(diagnostic.code, StoryDiagnosticCode.structureMissingEntryEvent);
       expect(diagnostic.location.kind, StoryDiagnosticLocationKind.project);
       expect(diagnostic.location.pathString, 'entryEventId');
       expect(diagnostic.references, isEmpty);
       expect(report.isValid, isFalse);
     });
 
-    test('entry event ID that resolves nowhere carries missing ID reference', () {
-      final missingId = StoryEventId('event_missing');
-      final project = StoryProject(
-        id: StoryProjectId('project_bad_entry_reference'),
-        entryEventId: missingId,
-        events: [
-          StoryEvent(
-            id: StoryEventId('event_other'),
-            automaticTransition: const StoryTerminalTransition(),
-          ),
-        ],
-      );
+    test(
+      'entry event ID that resolves nowhere carries missing ID reference',
+      () {
+        final missingId = StoryEventId('event_missing');
+        final project = StoryProject(
+          id: StoryProjectId('project_bad_entry_reference'),
+          entryEventId: missingId,
+          events: [
+            StoryEvent(
+              id: StoryEventId('event_other'),
+              automaticTransition: const StoryTerminalTransition(),
+            ),
+          ],
+        );
 
-      final report = StoryValidator.validate(project);
+        final report = StoryValidator.validate(project);
 
-      expect(report.errors, hasLength(1));
-      final diagnostic = report.errors.single;
-      expect(
-        diagnostic.code,
-        StoryDiagnosticCode.structureEntryEventNotFound,
-      );
-      expect(diagnostic.location.pathString, 'entryEventId');
-      expect(
-        diagnostic.references,
-        [StoryDiagnosticReference.event(missingId)],
-      );
-    });
+        expect(report.errors, hasLength(1));
+        final diagnostic = report.errors.single;
+        expect(
+          diagnostic.code,
+          StoryDiagnosticCode.structureEntryEventNotFound,
+        );
+        expect(diagnostic.location.pathString, 'entryEventId');
+        expect(diagnostic.references, [
+          StoryDiagnosticReference.event(missingId),
+        ]);
+      },
+    );
 
     test('valid interactive, continuation, and automatic events pass 3B', () {
       final interactiveId = StoryEventId('event_interactive');
@@ -113,54 +112,54 @@ void main() {
 
       final report = StoryValidator.validate(project);
 
-      expect(
-        report.diagnostics.where(_isStage3BDiagnostic),
-        isEmpty,
-      );
+      expect(report.diagnostics.where(_isStage3BDiagnostic), isEmpty);
       expect(report.isValid, isTrue);
     });
 
-    test('duplicate event ID flags each later occurrence and points to first', () {
-      final duplicateId = StoryEventId('event_duplicate');
-      final project = StoryProject(
-        id: StoryProjectId('project_duplicate_events'),
-        entryEventId: duplicateId,
-        events: [
-          StoryEvent(
-            id: duplicateId,
-            automaticTransition: const StoryTerminalTransition(),
-          ),
-          StoryEvent(
-            id: duplicateId,
-            automaticTransition: const StoryTerminalTransition(),
-          ),
-          StoryEvent(
-            id: duplicateId,
-            automaticTransition: const StoryTerminalTransition(),
-          ),
-        ],
-      );
-
-      final report = StoryValidator.validate(project);
-      final duplicates = report.errors
-          .where(
-            (diagnostic) =>
-                diagnostic.code == StoryDiagnosticCode.identityDuplicateEventId,
-          )
-          .toList();
-
-      expect(duplicates, hasLength(2));
-      expect(duplicates[0].location.pathString, 'events[1]');
-      expect(duplicates[1].location.pathString, 'events[2]');
-      for (final diagnostic in duplicates) {
-        expect(
-          diagnostic.references,
-          [StoryDiagnosticReference.event(duplicateId)],
+    test(
+      'duplicate event ID flags each later occurrence and points to first',
+      () {
+        final duplicateId = StoryEventId('event_duplicate');
+        final project = StoryProject(
+          id: StoryProjectId('project_duplicate_events'),
+          entryEventId: duplicateId,
+          events: [
+            StoryEvent(
+              id: duplicateId,
+              automaticTransition: const StoryTerminalTransition(),
+            ),
+            StoryEvent(
+              id: duplicateId,
+              automaticTransition: const StoryTerminalTransition(),
+            ),
+            StoryEvent(
+              id: duplicateId,
+              automaticTransition: const StoryTerminalTransition(),
+            ),
+          ],
         );
-        expect(diagnostic.relatedLocations, hasLength(1));
-        expect(diagnostic.relatedLocations.single.pathString, 'events[0]');
-      }
-    });
+
+        final report = StoryValidator.validate(project);
+        final duplicates = report.errors
+            .where(
+              (diagnostic) =>
+                  diagnostic.code ==
+                  StoryDiagnosticCode.identityDuplicateEventId,
+            )
+            .toList();
+
+        expect(duplicates, hasLength(2));
+        expect(duplicates[0].location.pathString, 'events[1]');
+        expect(duplicates[1].location.pathString, 'events[2]');
+        for (final diagnostic in duplicates) {
+          expect(diagnostic.references, [
+            StoryDiagnosticReference.event(duplicateId),
+          ]);
+          expect(diagnostic.relatedLocations, hasLength(1));
+          expect(diagnostic.relatedLocations.single.pathString, 'events[0]');
+        }
+      },
+    );
 
     test('choice IDs are unique across the whole project', () {
       final firstEventId = StoryEventId('event_first');
@@ -202,10 +201,9 @@ void main() {
       expect(diagnostic.location.pathString, 'events[1].choices[0]');
       expect(diagnostic.location.eventId, secondEventId);
       expect(diagnostic.location.choiceId, duplicateChoiceId);
-      expect(
-        diagnostic.references,
-        [StoryDiagnosticReference.choice(duplicateChoiceId)],
-      );
+      expect(diagnostic.references, [
+        StoryDiagnosticReference.choice(duplicateChoiceId),
+      ]);
       expect(diagnostic.relatedLocations, hasLength(1));
       expect(
         diagnostic.relatedLocations.single.pathString,
@@ -213,35 +211,38 @@ void main() {
       );
     });
 
-    test('interactive choice without transition is diagnosed as incomplete', () {
-      final eventId = StoryEventId('event_incomplete_choice');
-      final choiceId = StoryChoiceId('choice_incomplete');
-      final project = StoryProject(
-        id: StoryProjectId('project_incomplete_choice'),
-        entryEventId: eventId,
-        events: [
-          StoryEvent(
-            id: eventId,
-            choices: [StoryChoice(id: choiceId)],
-          ),
-        ],
-      );
+    test(
+      'interactive choice without transition is diagnosed as incomplete',
+      () {
+        final eventId = StoryEventId('event_incomplete_choice');
+        final choiceId = StoryChoiceId('choice_incomplete');
+        final project = StoryProject(
+          id: StoryProjectId('project_incomplete_choice'),
+          entryEventId: eventId,
+          events: [
+            StoryEvent(
+              id: eventId,
+              choices: [StoryChoice(id: choiceId)],
+            ),
+          ],
+        );
 
-      final report = StoryValidator.validate(project);
+        final report = StoryValidator.validate(project);
 
-      expect(report.errors, hasLength(1));
-      final diagnostic = report.errors.single;
-      expect(
-        diagnostic.code,
-        StoryDiagnosticCode.structureChoiceMissingTransition,
-      );
-      expect(
-        diagnostic.location.pathString,
-        'events[0].choices[0].transition',
-      );
-      expect(diagnostic.location.eventId, eventId);
-      expect(diagnostic.location.choiceId, choiceId);
-    });
+        expect(report.errors, hasLength(1));
+        final diagnostic = report.errors.single;
+        expect(
+          diagnostic.code,
+          StoryDiagnosticCode.structureChoiceMissingTransition,
+        );
+        expect(
+          diagnostic.location.pathString,
+          'events[0].choices[0].transition',
+        );
+        expect(diagnostic.location.eventId, eventId);
+        expect(diagnostic.location.choiceId, choiceId);
+      },
+    );
 
     test('event with no flow is diagnosed as structurally incomplete', () {
       final eventId = StoryEventId('event_no_flow');
@@ -255,45 +256,38 @@ void main() {
 
       expect(report.errors, hasLength(1));
       final diagnostic = report.errors.single;
-      expect(
-        diagnostic.code,
-        StoryDiagnosticCode.structureEventMissingFlow,
-      );
+      expect(diagnostic.code, StoryDiagnosticCode.structureEventMissingFlow);
       expect(diagnostic.location.pathString, 'events[0]');
       expect(diagnostic.location.eventId, eventId);
     });
 
-    for (final scenario in <({
-      String name,
-      bool choices,
-      bool continuation,
-      bool automatic,
-    })>[
-      (
-        name: 'choices + continuation',
-        choices: true,
-        continuation: true,
-        automatic: false,
-      ),
-      (
-        name: 'choices + automatic',
-        choices: true,
-        continuation: false,
-        automatic: true,
-      ),
-      (
-        name: 'continuation + automatic',
-        choices: false,
-        continuation: true,
-        automatic: true,
-      ),
-      (
-        name: 'all three modes',
-        choices: true,
-        continuation: true,
-        automatic: true,
-      ),
-    ]) {
+    for (final scenario
+        in <({String name, bool choices, bool continuation, bool automatic})>[
+          (
+            name: 'choices + continuation',
+            choices: true,
+            continuation: true,
+            automatic: false,
+          ),
+          (
+            name: 'choices + automatic',
+            choices: true,
+            continuation: false,
+            automatic: true,
+          ),
+          (
+            name: 'continuation + automatic',
+            choices: false,
+            continuation: true,
+            automatic: true,
+          ),
+          (
+            name: 'all three modes',
+            choices: true,
+            continuation: true,
+            automatic: true,
+          ),
+        ]) {
       test('${scenario.name} is one ambiguous-flow error', () {
         final eventId = StoryEventId(
           'event_${scenario.name.replaceAll(' ', '_').replaceAll('+', 'and')}',
@@ -370,9 +364,9 @@ void main() {
       );
 
       expect(
-        StoryValidator.validate(project)
-            .diagnostics
-            .where(_isStage3BDiagnostic),
+        StoryValidator.validate(
+          project,
+        ).diagnostics.where(_isStage3BDiagnostic),
         isEmpty,
       );
     });

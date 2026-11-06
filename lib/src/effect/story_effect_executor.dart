@@ -1,3 +1,4 @@
+import '../explainability/story_effect_explanation.dart';
 import '../identity/story_variable_id.dart';
 import '../state/story_state.dart';
 import '../state/story_value.dart';
@@ -34,6 +35,73 @@ final class StoryEffectExecutor {
     for (final effect in effects) {
       next = apply(effect, next);
     }
+    return next;
+  }
+
+  /// Applies [effects] while recording the actual authored effect attempts.
+  ///
+  /// This package-internal diagnostic path executes each effect exactly once.
+  /// Successful attempts are initially recorded as committed/no-op outcomes.
+  /// If a later effect in this batch fails, earlier successful attempts from
+  /// this batch are rewritten as rolled back and the failing effect is recorded
+  /// as rejected before the original [StoryEffectExecutionException] is
+  /// rethrown. Higher-level runtime transactions may likewise reclassify
+  /// successful attempts as rolled back when a later transition/event step
+  /// prevents the enclosing transaction from committing.
+  StoryState applyAllWithExplanations({
+    required Iterable<StoryEffect> effects,
+    required StoryState state,
+    required StoryEffectSource source,
+    required List<StoryEffectExplanation> explanations,
+  }) {
+    final batchStartIndex = explanations.length;
+    var next = state;
+    var authoredIndex = 0;
+
+    for (final effect in effects) {
+      final variableId = _variableIdOf(effect);
+      final beforeValue = next.values[variableId];
+      try {
+        final afterState = apply(effect, next);
+        final afterValue = afterState.values[variableId];
+        explanations.add(
+          StoryEffectExplanation(
+            source: source,
+            authoredIndex: authoredIndex,
+            variableId: variableId,
+            operation: _operationOf(effect),
+            operand: _operandOf(effect),
+            beforeValue: beforeValue,
+            afterValue: afterValue,
+            outcome: beforeValue == afterValue
+                ? StoryEffectOutcome.noOp
+                : StoryEffectOutcome.committed,
+          ),
+        );
+        next = afterState;
+      } on StoryEffectExecutionException {
+        explanations.add(
+          StoryEffectExplanation(
+            source: source,
+            authoredIndex: authoredIndex,
+            variableId: variableId,
+            operation: _operationOf(effect),
+            operand: _operandOf(effect),
+            beforeValue: beforeValue,
+            afterValue: null,
+            outcome: StoryEffectOutcome.rejected,
+          ),
+        );
+        _markRolledBack(
+          explanations,
+          startIndex: batchStartIndex,
+          endExclusive: explanations.length - 1,
+        );
+        rethrow;
+      }
+      authoredIndex++;
+    }
+
     return next;
   }
 
@@ -143,7 +211,8 @@ final class StoryEffectExecutor {
     } on ArgumentError catch (error) {
       throw StoryEffectExecutionException(
         effect: effect,
-        message: 'Numeric adjustment for $variableId would produce a value '
+        message:
+            'Numeric adjustment for $variableId would produce a value '
             'outside the portable StoryValue domain.',
         cause: error,
       );
@@ -177,10 +246,53 @@ final class StoryEffectExecutor {
     );
   }
 
-  StoryEffectExecutionException _failure(
-    StoryEffect effect,
-    String message,
-  ) => StoryEffectExecutionException(effect: effect, message: message);
+  StoryEffectExecutionException _failure(StoryEffect effect, String message) =>
+      StoryEffectExecutionException(effect: effect, message: message);
+}
+
+StoryVariableId _variableIdOf(StoryEffect effect) => switch (effect) {
+  StorySetVariableEffect(:final variableId) => variableId,
+  StoryUnsetVariableEffect(:final variableId) => variableId,
+  StoryIncrementVariableEffect(:final variableId) => variableId,
+  StoryDecrementVariableEffect(:final variableId) => variableId,
+};
+
+StoryEffectOperation _operationOf(StoryEffect effect) => switch (effect) {
+  StorySetVariableEffect() => StoryEffectOperation.set,
+  StoryUnsetVariableEffect() => StoryEffectOperation.unset,
+  StoryIncrementVariableEffect() => StoryEffectOperation.increment,
+  StoryDecrementVariableEffect() => StoryEffectOperation.decrement,
+};
+
+StoryValue? _operandOf(StoryEffect effect) => switch (effect) {
+  StorySetVariableEffect(:final value) => value,
+  StoryUnsetVariableEffect() => null,
+  StoryIncrementVariableEffect(:final amount) => amount,
+  StoryDecrementVariableEffect(:final amount) => amount,
+};
+
+void _markRolledBack(
+  List<StoryEffectExplanation> explanations, {
+  required int startIndex,
+  required int endExclusive,
+}) {
+  for (var index = startIndex; index < endExclusive; index++) {
+    final explanation = explanations[index];
+    if (explanation.outcome == StoryEffectOutcome.rejected ||
+        explanation.outcome == StoryEffectOutcome.rolledBack) {
+      continue;
+    }
+    explanations[index] = StoryEffectExplanation(
+      source: explanation.source,
+      authoredIndex: explanation.authoredIndex,
+      variableId: explanation.variableId,
+      operation: explanation.operation,
+      operand: explanation.operand,
+      beforeValue: explanation.beforeValue,
+      afterValue: explanation.afterValue,
+      outcome: StoryEffectOutcome.rolledBack,
+    );
+  }
 }
 
 /// Signals malformed or schema-incompatible authored effect logic.
